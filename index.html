@@ -1,0 +1,863 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Power Shift: The Case for Electrification</title>
+  <style>
+    :root {
+      --bg: #0d1117;
+      --surface: #161b22;
+      --surface2: #1f2937;
+      --border: #30363d;
+      --text: #e6edf3;
+      --muted: #8b949e;
+      --accent: #58a6ff;
+      --green: #3fb950;
+      --orange: #f97316;
+      --red: #f85149;
+      --yellow: #d29922;
+      --purple: #a371f7;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      line-height: 1.7;
+    }
+
+    /* NAV */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(13, 17, 23, 0.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 2rem;
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+      height: 56px;
+    }
+    .nav-brand {
+      font-weight: 700;
+      font-size: 1rem;
+      color: var(--accent);
+      text-decoration: none;
+      letter-spacing: -0.02em;
+      white-space: nowrap;
+    }
+    .nav-chapters {
+      display: flex;
+      gap: 0.25rem;
+      list-style: none;
+      overflow-x: auto;
+    }
+    .nav-chapters a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.85rem;
+      padding: 0.35rem 0.75rem;
+      border-radius: 6px;
+      transition: color 0.2s, background 0.2s;
+      white-space: nowrap;
+    }
+    .nav-chapters a:hover { color: var(--text); background: var(--surface); }
+    .nav-chapters a.active { color: var(--accent); background: var(--surface); }
+    .nav-chapters .coming-soon { opacity: 0.4; cursor: default; pointer-events: none; }
+
+    /* HERO */
+    .hero {
+      padding: 5rem 2rem 4rem;
+      text-align: center;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    .chapter-label {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--accent);
+      background: rgba(88, 166, 255, 0.1);
+      border: 1px solid rgba(88, 166, 255, 0.2);
+      border-radius: 20px;
+      padding: 0.3rem 0.9rem;
+      margin-bottom: 1.5rem;
+    }
+    .hero h1 {
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      line-height: 1.15;
+      margin-bottom: 1rem;
+    }
+    .hero h1 span { color: var(--accent); }
+    .hero .subtitle {
+      font-size: 1.15rem;
+      color: var(--muted);
+      max-width: 560px;
+      margin: 0 auto 2.5rem;
+    }
+    .scroll-cue {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      color: var(--muted);
+      font-size: 0.85rem;
+      animation: bounce 2s ease-in-out infinite;
+    }
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(6px); }
+    }
+
+    /* SECTIONS */
+    .section {
+      max-width: 780px;
+      margin: 0 auto;
+      padding: 3rem 2rem;
+    }
+    .section + .section { padding-top: 0; }
+
+    h2 {
+      font-size: 1.75rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 1rem;
+    }
+    h3 {
+      font-size: 1.15rem;
+      font-weight: 600;
+      margin: 2rem 0 0.5rem;
+      color: var(--text);
+    }
+    p { color: #c9d1d9; margin-bottom: 1rem; }
+    p:last-child { margin-bottom: 0; }
+    strong { color: var(--text); }
+
+    /* STAT CARDS */
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin: 2rem 0;
+    }
+    .stat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      text-align: center;
+    }
+    .stat-card .number {
+      font-size: 2.5rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      line-height: 1;
+      margin-bottom: 0.5rem;
+    }
+    .stat-card .label {
+      font-size: 0.85rem;
+      color: var(--muted);
+      line-height: 1.4;
+    }
+    .stat-card.red .number { color: var(--red); }
+    .stat-card.green .number { color: var(--green); }
+    .stat-card.blue .number { color: var(--accent); }
+    .stat-card.orange .number { color: var(--orange); }
+
+    /* ANALOGY BOX */
+    .analogy-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 4px solid var(--accent);
+      border-radius: 0 12px 12px 0;
+      padding: 1.5rem 2rem;
+      margin: 2rem 0;
+    }
+    .analogy-box .analogy-label {
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 0.5rem;
+    }
+    .analogy-box p { color: var(--text); font-style: italic; }
+
+    /* SANKEY DIAGRAM */
+    .diagram-section {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 2rem;
+      margin: 2.5rem 0;
+    }
+    .diagram-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    .diagram-header h3 { margin: 0; color: var(--text); font-size: 1rem; }
+    .toggle-group {
+      display: flex;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 3px;
+      gap: 2px;
+    }
+    .toggle-btn {
+      padding: 0.4rem 1rem;
+      border: none;
+      background: transparent;
+      color: var(--muted);
+      font-size: 0.85rem;
+      font-weight: 500;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .toggle-btn.active {
+      background: var(--surface2);
+      color: var(--text);
+    }
+
+    .sankey-wrap {
+      position: relative;
+      width: 100%;
+    }
+    .sankey-canvas {
+      width: 100%;
+      height: 280px;
+      display: block;
+    }
+
+    .sankey-legend {
+      display: flex;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+      margin-top: 1rem;
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .legend-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .sankey-summary {
+      margin-top: 1.25rem;
+      padding: 1rem 1.25rem;
+      background: var(--bg);
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      font-size: 0.9rem;
+      color: var(--muted);
+      transition: all 0.3s;
+    }
+    .sankey-summary strong { color: var(--text); }
+
+    /* EFFICIENCY TABLE */
+    .eff-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.5rem 0;
+      font-size: 0.9rem;
+    }
+    .eff-table th {
+      text-align: left;
+      padding: 0.6rem 1rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--muted);
+      border-bottom: 1px solid var(--border);
+    }
+    .eff-table td {
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid var(--border);
+      color: #c9d1d9;
+    }
+    .eff-table tr:last-child td { border-bottom: none; }
+    .eff-table .highlight td { color: var(--text); font-weight: 500; }
+    .good { color: var(--green) !important; font-weight: 600; }
+    .bad { color: var(--red) !important; }
+    .neutral { color: var(--yellow) !important; }
+
+    /* EFF BAR */
+    .eff-bar-wrap { display: flex; align-items: center; gap: 0.75rem; }
+    .eff-bar {
+      height: 8px;
+      border-radius: 4px;
+      flex-shrink: 0;
+      transition: width 0.4s ease;
+    }
+
+    /* COUNTERARGUMENT */
+    .qa-block {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      margin: 1rem 0;
+    }
+    .qa-question {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem 1.5rem;
+      cursor: pointer;
+      user-select: none;
+      gap: 1rem;
+    }
+    .qa-question:hover { background: var(--surface2); }
+    .qa-question span {
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: var(--text);
+    }
+    .qa-icon {
+      color: var(--muted);
+      font-size: 1.2rem;
+      flex-shrink: 0;
+      transition: transform 0.25s;
+    }
+    .qa-answer {
+      display: none;
+      padding: 0 1.5rem 1.25rem;
+      font-size: 0.9rem;
+      color: #c9d1d9;
+      border-top: 1px solid var(--border);
+    }
+    .qa-answer p { margin-top: 1rem; }
+    .qa-block.open .qa-icon { transform: rotate(45deg); }
+    .qa-block.open .qa-answer { display: block; }
+
+    /* NEXT CHAPTER CTA */
+    .cta-section {
+      text-align: center;
+      padding: 4rem 2rem 5rem;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    .cta-section h2 { margin-bottom: 0.75rem; }
+    .cta-section p { color: var(--muted); margin-bottom: 2rem; }
+    .cta-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: var(--accent);
+      color: #0d1117;
+      font-weight: 700;
+      font-size: 0.95rem;
+      padding: 0.75rem 1.75rem;
+      border-radius: 8px;
+      text-decoration: none;
+      transition: opacity 0.2s;
+    }
+    .cta-btn:hover { opacity: 0.85; }
+    .cta-btn.disabled {
+      background: var(--surface2);
+      color: var(--muted);
+      cursor: default;
+      pointer-events: none;
+    }
+
+    /* SOURCE FOOTER */
+    .sources {
+      border-top: 1px solid var(--border);
+      padding: 2rem;
+      max-width: 780px;
+      margin: 0 auto;
+    }
+    .sources h4 {
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 0.75rem;
+    }
+    .sources ul {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+    }
+    .sources a {
+      font-size: 0.8rem;
+      color: var(--muted);
+      text-decoration: none;
+    }
+    .sources a:hover { color: var(--accent); }
+
+    /* DIVIDER */
+    .divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 0 2rem;
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 600px) {
+      .diagram-header { flex-direction: column; align-items: flex-start; }
+      .stat-grid { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-brand" href="#">⚡ Power Shift</a>
+  <ul class="nav-chapters">
+    <li><a href="#" class="active">1. The Energy Illusion</a></li>
+    <li><a href="#" class="coming-soon">2. The Efficiency Revolution</a></li>
+    <li><a href="#" class="coming-soon">3. The Invisible Cost of Fuel</a></li>
+    <li><a href="#" class="coming-soon">4. The Missing Battery</a></li>
+    <li><a href="#" class="coming-soon">5. Sunshine on Everything</a></li>
+    <li><a href="#" class="coming-soon">6. The Real Price Tag</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="chapter-label">Chapter 1</div>
+  <h1>The <span>Energy</span> Illusion</h1>
+  <p class="subtitle">Why the scale of the energy transition looks impossible — and why that's an optical illusion built into how we count energy.</p>
+  <div class="scroll-cue">↓ scroll to find out</div>
+</div>
+
+<!-- SECTION: THE CLAIM -->
+<div class="section">
+  <h2>The Number You've Heard</h2>
+  <p>When critics argue that replacing fossil fuels with renewable energy is impossible, they often point to the sheer scale of what America consumes: <strong>93.6 quadrillion BTU of energy in 2023</strong> — a number so large it barely registers.</p>
+  <p>They're not wrong about the number. They're wrong about what it means.</p>
+  <p>That figure is called <strong>primary energy</strong> — and it counts something most people would never think to count: all the energy that burns and immediately becomes useless heat before doing anything for anyone.</p>
+</div>
+
+<!-- STAT CARDS -->
+<div class="section" style="padding-top:0">
+  <div class="stat-grid">
+    <div class="stat-card red">
+      <div class="number">66%</div>
+      <div class="label">of all US primary energy wasted as heat before doing anything useful</div>
+    </div>
+    <div class="stat-card orange">
+      <div class="number">93.6</div>
+      <div class="label">quads of primary energy the US consumed in 2023</div>
+    </div>
+    <div class="stat-card blue">
+      <div class="number">32.1</div>
+      <div class="label">quads that actually delivered useful services — lights, motion, heat</div>
+    </div>
+    <div class="stat-card green">
+      <div class="number">~40</div>
+      <div class="label">quads a fully electrified renewable system would need to deliver the same result</div>
+    </div>
+  </div>
+  <p style="font-size:0.8rem; color:var(--muted)">Source: Lawrence Livermore National Laboratory Energy Flow Charts, 2023. EIA Annual Energy Review.</p>
+</div>
+
+<!-- ANALOGY -->
+<div class="section" style="padding-top:0">
+  <h2>The Leaky Pipe</h2>
+  <p>Imagine paying for 100 gallons of water, but your delivery system leaks so badly that only 34 gallons make it through the pipe. You've been paying for 100 gallons for so long that you've forgotten you only ever <em>needed</em> 34.</p>
+
+  <div class="analogy-box">
+    <div class="analogy-label">The Illusion</div>
+    <p>Someone offers you a new system that delivers your 34 gallons with almost no leakage — 40 gallons in, 34 out. Critics look at your old 100-gallon bill and say: "you can never afford to replace that." But you were never using 100. You were just <em>paying</em> for 100.</p>
+  </div>
+
+  <p>The same logic applies to energy. When a coal plant burns coal, it converts roughly <strong>1 in 3 units of energy into electricity</strong>. The other 2 units heat the air and the cooling water and disappear. That's not a fixable design flaw — it's the physics of combustion. You cannot burn something without losing energy to heat.</p>
+  <p>Renewable energy doesn't burn anything. Solar panels and wind turbines convert energy without combustion, without steam, without exhaust. Their losses — mostly in wires and inverters — are typically <strong>10–20% total</strong>. Not 66%.</p>
+</div>
+
+<!-- INTERACTIVE DIAGRAM -->
+<div class="section" style="padding-top:0">
+  <div class="diagram-section">
+    <div class="diagram-header">
+      <h3>US Energy Flow: Where Does It All Go?</h3>
+      <div class="toggle-group">
+        <button class="toggle-btn active" id="btn-fossil" onclick="setSankey('fossil')">Today's System</button>
+        <button class="toggle-btn" id="btn-electric" onclick="setSankey('electric')">Electrified System</button>
+      </div>
+    </div>
+
+    <div class="sankey-wrap">
+      <canvas class="sankey-canvas" id="sankeyCanvas"></canvas>
+    </div>
+
+    <div class="sankey-legend">
+      <div class="legend-item"><div class="legend-dot" style="background:#f97316"></div> Waste Heat</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#3fb950"></div> Useful Services</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#58a6ff"></div> Primary Energy Input</div>
+    </div>
+
+    <div class="sankey-summary" id="sankeySummary">
+      <strong>Today's system:</strong> 93.6 quads in → 61.5 quads wasted as heat → only 32.1 quads reach useful services. The system is <strong>34% efficient</strong>.
+    </div>
+  </div>
+</div>
+
+<!-- SECTION: WHY PLANTS WASTE SO MUCH -->
+<div class="section" style="padding-top:0">
+  <h2>Why Power Plants Are So Wasteful</h2>
+  <p>A coal plant works by burning coal → heating water into steam → spinning a turbine → generating electricity. Every step loses energy. By the time electricity leaves the plant, most of the fuel's energy is gone.</p>
+
+  <table class="eff-table">
+    <thead>
+      <tr>
+        <th>Generation Type</th>
+        <th>Efficiency</th>
+        <th>Energy Lost</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Average US coal plant</td>
+        <td class="bad">~33%</td>
+        <td class="bad">67% wasted</td>
+        <td><div class="eff-bar-wrap"><div class="eff-bar" style="width:66px; background:var(--red)"></div></div></td>
+      </tr>
+      <tr>
+        <td>Natural gas (simple cycle / peaker)</td>
+        <td class="neutral">~35–40%</td>
+        <td class="neutral">60–65% wasted</td>
+        <td><div class="eff-bar-wrap"><div class="eff-bar" style="width:62px; background:var(--yellow)"></div></div></td>
+      </tr>
+      <tr>
+        <td>Natural gas combined cycle (best)</td>
+        <td class="neutral">~49%</td>
+        <td class="neutral">51% wasted</td>
+        <td><div class="eff-bar-wrap"><div class="eff-bar" style="width:51px; background:var(--yellow)"></div></div></td>
+      </tr>
+      <tr class="highlight">
+        <td>Solar / Wind (renewable)</td>
+        <td class="good">~80–90%</td>
+        <td class="good">&lt;20% lost</td>
+        <td><div class="eff-bar-wrap"><div class="eff-bar" style="width:20px; background:var(--green)"></div></div></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- SECTION: THE MATH -->
+<div class="section" style="padding-top:0">
+  <h2>The Math That Changes Everything</h2>
+  <p>A fully electrified economy powered by renewables — delivering the exact same useful services Americans use today — would need roughly <strong>38–42 quads of primary energy input</strong>. Not 93.6.</p>
+  <p>That's a <strong>55–60% reduction in total energy demand</strong>, not because we'd use less heating or drive fewer miles, but because we'd stop wasting two-thirds of our energy before it does anything.</p>
+
+  <table class="eff-table">
+    <thead>
+      <tr>
+        <th>Energy System</th>
+        <th>Input</th>
+        <th>Useful Output</th>
+        <th>Efficiency</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Current US system (2023)</td>
+        <td>93.6 quads</td>
+        <td>32.1 quads</td>
+        <td class="bad">34%</td>
+      </tr>
+      <tr class="highlight">
+        <td>Electrified renewable system</td>
+        <td class="good">~40 quads</td>
+        <td>32.1 quads</td>
+        <td class="good">~80–85%</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="analogy-box" style="border-left-color: var(--green); margin-top:1.5rem">
+    <div class="analogy-label" style="color:var(--green)">The Punchline</div>
+    <p>Replacing fossil fuels doesn't mean building 93 quads of renewable capacity. It means building ~40 quads — and delivering the same result. The scale of the transition is already cut in half before we've done anything else.</p>
+  </div>
+</div>
+
+<hr class="divider">
+
+<!-- COUNTERARGUMENTS -->
+<div class="section">
+  <h2>Common Objections</h2>
+
+  <div class="qa-block" onclick="toggleQA(this)">
+    <div class="qa-question">
+      <span>"We also burn oil for cars and gas for heating — you can't just compare electricity."</span>
+      <div class="qa-icon">+</div>
+    </div>
+    <div class="qa-answer">
+      <p>Correct — and the efficiency advantage is just as large in those sectors, often larger. An electric vehicle converts <strong>77–85%</strong> of its energy into motion. A gasoline car converts <strong>17–25%</strong>. An electric heat pump delivers 200–400% of the energy it consumes as heat — gas furnaces deliver at most 98%.</p>
+      <p>This chapter covers the generation side. Chapters 2 and 3 walk through transportation and heating directly. The efficiency gap doesn't shrink in other sectors — it grows.</p>
+    </div>
+  </div>
+
+  <div class="qa-block" onclick="toggleQA(this)">
+    <div class="qa-question">
+      <span>"But you need energy to manufacture solar panels — doesn't that cancel it out?"</span>
+      <div class="qa-icon">+</div>
+    </div>
+    <div class="qa-answer">
+      <p>Manufacturing energy is real and already accounted for. A modern solar panel pays back the energy used to produce it in <strong>1–2 years</strong>. Its useful lifespan is <strong>25–35 years</strong>. Every year after payback, it generates clean energy with no further energy debt. The upfront cost is real — it's just a footnote against a 25-year return.</p>
+    </div>
+  </div>
+
+  <div class="qa-block" onclick="toggleQA(this)">
+    <div class="qa-question">
+      <span>"Renewable energy is intermittent — the sun doesn't always shine and the wind doesn't always blow."</span>
+      <div class="qa-icon">+</div>
+    </div>
+    <div class="qa-answer">
+      <p>True, and this is worth taking seriously. But the efficiency argument here stands independent of intermittency — it describes how much energy we need, not how we store or dispatch it. Storage, grid interconnection, and demand response are the tools that solve intermittency. Chapter 4 covers how batteries specifically change the grid math. The short answer: we have more solutions than the question implies.</p>
+    </div>
+  </div>
+</div>
+
+<hr class="divider">
+
+<!-- NEXT CHAPTER CTA -->
+<div class="cta-section">
+  <h2>Next: The Efficiency Revolution</h2>
+  <p>If renewables need less primary energy to deliver the same output — what happens when that electricity powers your car? Your home? Your factory? The numbers get even more interesting.</p>
+  <a href="#" class="cta-btn disabled">Chapter 2 — Coming Soon →</a>
+</div>
+
+<!-- SOURCES -->
+<div class="sources">
+  <h4>Sources</h4>
+  <ul>
+    <li><a href="https://flowcharts.llnl.gov/" target="_blank">Lawrence Livermore National Laboratory — US Energy Flow Charts (2023)</a></li>
+    <li><a href="https://www.eia.gov/energyexplained/us-energy-facts/" target="_blank">EIA — US Energy Facts Explained</a></li>
+    <li><a href="https://www.eia.gov/tools/faqs/faq.php?id=107&t=3" target="_blank">EIA — Power Plant Efficiency & Heat Rates</a></li>
+    <li><a href="https://ourworldindata.org/energy-substitution-method" target="_blank">Our World in Data — The Energy Substitution Method Explained</a></li>
+  </ul>
+</div>
+
+<script>
+  /* ── SANKEY DIAGRAM ── */
+  const canvas = document.getElementById('sankeyCanvas');
+  const ctx = canvas.getContext('2d');
+  let currentMode = 'fossil';
+  let animFrame = null;
+  let animProgress = 1;
+  let animFrom = null;
+  let animTo = null;
+
+  const MODES = {
+    fossil: {
+      input: 93.6,
+      waste: 61.5,
+      useful: 32.1,
+      inputLabel: 'Primary Energy\n93.6 quads',
+      wasteLabel: 'Waste Heat\n61.5 quads (66%)',
+      usefulLabel: 'Useful Services\n32.1 quads (34%)',
+      summary: '<strong>Today\'s system:</strong> 93.6 quads in → 61.5 quads wasted as heat → only 32.1 quads reach useful services. The system is <strong>34% efficient</strong>.'
+    },
+    electric: {
+      input: 40,
+      waste: 7.9,
+      useful: 32.1,
+      inputLabel: 'Renewable Input\n~40 quads',
+      wasteLabel: 'Conversion Losses\n~8 quads (20%)',
+      usefulLabel: 'Useful Services\n32.1 quads (80%)',
+      summary: '<strong>Electrified renewable system:</strong> ~40 quads in → only ~8 quads lost in transmission & conversion → 32.1 quads reach useful services. The system is <strong>~80% efficient</strong>. Same result. 57% less energy.'
+    }
+  };
+
+  function resizeCanvas() {
+    const dpr = window.devicePixelRatio || 1;
+    const rect = canvas.parentElement.getBoundingClientRect();
+    canvas.width = rect.width * dpr;
+    canvas.height = 280 * dpr;
+    canvas.style.width = rect.width + 'px';
+    canvas.style.height = '280px';
+    ctx.scale(dpr, dpr);
+  }
+
+  function lerp(a, b, t) { return a + (b - a) * t; }
+
+  function easeInOut(t) { return t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t; }
+
+  function drawSankey(data) {
+    const W = canvas.width / (window.devicePixelRatio || 1);
+    const H = 280;
+    ctx.clearRect(0, 0, W, H);
+
+    const maxInput = 93.6;
+    const maxBarH = H * 0.7;
+    const minBarH = 14;
+
+    const inputH = Math.max(minBarH, (data.input / maxInput) * maxBarH);
+    const wasteH = Math.max(minBarH, (data.waste / maxInput) * maxBarH);
+    const usefulH = Math.max(minBarH, (data.useful / maxInput) * maxBarH);
+
+    const barW = 28;
+    const leftX = 40;
+    const midX = W / 2;
+    const rightX = W - 40 - barW;
+    const centerY = H / 2;
+
+    // ── INPUT BAR ──
+    const inputY = centerY - inputH / 2;
+    const grad1 = ctx.createLinearGradient(leftX, 0, leftX + barW, 0);
+    grad1.addColorStop(0, '#58a6ff');
+    grad1.addColorStop(1, '#388bfd');
+    roundRect(ctx, leftX, inputY, barW, inputH, 6, grad1);
+
+    // ── FLOW PATHS ──
+    // Waste flow (top)
+    const wasteTopY = centerY - wasteH - 4;
+    const wasteH_bar = wasteH;
+    const flowStartY = inputY;
+    const flowWasteEndY = centerY - (H * 0.18) - wasteH_bar / 2;
+
+    // waste bezier
+    ctx.beginPath();
+    ctx.moveTo(leftX + barW, flowStartY);
+    ctx.bezierCurveTo(midX - 60, flowStartY, midX - 60, flowWasteEndY, midX + 60, flowWasteEndY);
+    ctx.lineTo(midX + 60, flowWasteEndY + wasteH_bar);
+    ctx.bezierCurveTo(midX - 60, flowWasteEndY + wasteH_bar, midX - 60, flowStartY + wasteH_bar * 0.7, leftX + barW, flowStartY + wasteH_bar * 0.7);
+    ctx.closePath();
+    const wasteGrad = ctx.createLinearGradient(leftX + barW, 0, midX + 60, 0);
+    wasteGrad.addColorStop(0, 'rgba(249,115,22,0.7)');
+    wasteGrad.addColorStop(1, 'rgba(249,115,22,0.3)');
+    ctx.fillStyle = wasteGrad;
+    ctx.fill();
+
+    // waste end bar
+    roundRect(ctx, midX + 60, flowWasteEndY, barW, wasteH_bar, 6, '#f97316');
+
+    // useful flow (bottom)
+    const usefulEndY = centerY + (H * 0.04);
+    ctx.beginPath();
+    ctx.moveTo(leftX + barW, flowStartY + wasteH_bar * 0.7);
+    ctx.bezierCurveTo(midX - 60, flowStartY + wasteH_bar * 0.7, midX - 60, usefulEndY, midX + 60, usefulEndY);
+    ctx.lineTo(midX + 60, usefulEndY + usefulH);
+    ctx.bezierCurveTo(midX - 60, usefulEndY + usefulH, midX - 60, flowStartY + inputH, leftX + barW, flowStartY + inputH);
+    ctx.closePath();
+    const usefulGrad = ctx.createLinearGradient(leftX + barW, 0, midX + 60, 0);
+    usefulGrad.addColorStop(0, 'rgba(63,185,80,0.7)');
+    usefulGrad.addColorStop(1, 'rgba(63,185,80,0.3)');
+    ctx.fillStyle = usefulGrad;
+    ctx.fill();
+
+    // useful end bar
+    roundRect(ctx, midX + 60, usefulEndY, barW, usefulH, 6, '#3fb950');
+
+    // ── LABELS ──
+    ctx.textAlign = 'right';
+    ctx.fillStyle = '#e6edf3';
+    ctx.font = '600 12px -apple-system, system-ui, sans-serif';
+    drawMultiline(ctx, data.inputLabel, leftX - 10, centerY, 'right', 16);
+
+    ctx.textAlign = 'left';
+    ctx.fillStyle = '#f97316';
+    ctx.font = '600 11px -apple-system, system-ui, sans-serif';
+    drawMultiline(ctx, data.wasteLabel, midX + 60 + barW + 10, flowWasteEndY + wasteH_bar / 2, 'left', 15);
+
+    ctx.fillStyle = '#3fb950';
+    drawMultiline(ctx, data.usefulLabel, midX + 60 + barW + 10, usefulEndY + usefulH / 2, 'left', 15);
+  }
+
+  function drawMultiline(ctx, text, x, y, align, lineH) {
+    const lines = text.split('\n');
+    const startY = y - ((lines.length - 1) * lineH) / 2;
+    lines.forEach((line, i) => {
+      ctx.fillText(line, x, startY + i * lineH);
+    });
+  }
+
+  function roundRect(ctx, x, y, w, h, r, fill) {
+    ctx.beginPath();
+    ctx.moveTo(x + r, y);
+    ctx.lineTo(x + w - r, y);
+    ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+    ctx.lineTo(x + w, y + h - r);
+    ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+    ctx.lineTo(x + r, y + h);
+    ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+    ctx.lineTo(x, y + r);
+    ctx.quadraticCurveTo(x, y, x + r, y);
+    ctx.closePath();
+    ctx.fillStyle = fill;
+    ctx.fill();
+  }
+
+  function animateTo(fromMode, toMode) {
+    if (animFrame) cancelAnimationFrame(animFrame);
+    animFrom = MODES[fromMode];
+    animTo = MODES[toMode];
+    animProgress = 0;
+
+    function step() {
+      animProgress += 0.04;
+      if (animProgress >= 1) {
+        animProgress = 1;
+        const t = easeInOut(animProgress);
+        drawSankey({
+          input: lerp(animFrom.input, animTo.input, t),
+          waste: lerp(animFrom.waste, animTo.waste, t),
+          useful: lerp(animFrom.useful, animTo.useful, t),
+          inputLabel: animTo.inputLabel,
+          wasteLabel: animTo.wasteLabel,
+          usefulLabel: animTo.usefulLabel,
+        });
+        return;
+      }
+      const t = easeInOut(animProgress);
+      drawSankey({
+        input: lerp(animFrom.input, animTo.input, t),
+        waste: lerp(animFrom.waste, animTo.waste, t),
+        useful: lerp(animFrom.useful, animTo.useful, t),
+        inputLabel: animTo.inputLabel,
+        wasteLabel: animTo.wasteLabel,
+        usefulLabel: animTo.usefulLabel,
+      });
+      animFrame = requestAnimationFrame(step);
+    }
+    step();
+  }
+
+  function setSankey(mode) {
+    const prev = currentMode;
+    currentMode = mode;
+    document.getElementById('btn-fossil').classList.toggle('active', mode === 'fossil');
+    document.getElementById('btn-electric').classList.toggle('active', mode === 'electric');
+    document.getElementById('sankeySummary').innerHTML = MODES[mode].summary;
+    animateTo(prev, mode);
+  }
+
+  /* ── FAQ TOGGLE ── */
+  function toggleQA(el) { el.classList.toggle('open'); }
+
+  /* ── INIT ── */
+  window.addEventListener('resize', () => { resizeCanvas(); drawSankey(MODES[currentMode]); });
+  resizeCanvas();
+  drawSankey(MODES['fossil']);
+</script>
+</body>
+</html>
