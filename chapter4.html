@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chapter 4: The Missing Battery — Power Shift</title>
+  <style>
+    :root {
+      --bg: #0d1117;
+      --surface: #161b22;
+      --surface2: #1f2937;
+      --border: #30363d;
+      --text: #e6edf3;
+      --muted: #8b949e;
+      --accent: #58a6ff;
+      --green: #3fb950;
+      --orange: #f97316;
+      --red: #f85149;
+      --yellow: #d29922;
+      --purple: #a371f7;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif; line-height: 1.7; }
+
+    nav { position: sticky; top: 0; z-index: 100; background: rgba(13,17,23,0.92); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); padding: 0 2rem; display: flex; align-items: center; gap: 2rem; height: 56px; }
+    .nav-brand { font-weight: 700; font-size: 1rem; color: var(--accent); text-decoration: none; letter-spacing: -0.02em; white-space: nowrap; }
+    .nav-chapters { display: flex; gap: 0.25rem; list-style: none; overflow-x: auto; }
+    .nav-chapters a { color: var(--muted); text-decoration: none; font-size: 0.85rem; padding: 0.35rem 0.75rem; border-radius: 6px; transition: color 0.2s, background 0.2s; white-space: nowrap; }
+    .nav-chapters a:hover { color: var(--text); background: var(--surface); }
+    .nav-chapters a.active { color: var(--purple); background: var(--surface); }
+    .nav-chapters .coming-soon { opacity: 0.4; cursor: default; pointer-events: none; }
+
+    .hero { padding: 5rem 2rem 4rem; text-align: center; max-width: 800px; margin: 0 auto; }
+    .chapter-label { display: inline-block; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--purple); background: rgba(163,113,247,0.1); border: 1px solid rgba(163,113,247,0.25); border-radius: 20px; padding: 0.3rem 0.9rem; margin-bottom: 1.5rem; }
+    .hero h1 { font-size: clamp(2rem,5vw,3.5rem); font-weight: 800; letter-spacing: -0.03em; line-height: 1.15; margin-bottom: 1rem; }
+    .hero h1 span { color: var(--purple); }
+    .hero .subtitle { font-size: 1.15rem; color: var(--muted); max-width: 560px; margin: 0 auto 2.5rem; }
+    .scroll-cue { display: flex; align-items: center; justify-content: center; gap: 0.5rem; color: var(--muted); font-size: 0.85rem; animation: bounce 2s ease-in-out infinite; }
+    @keyframes bounce { 0%,100%{transform:translateY(0)}50%{transform:translateY(6px)} }
+
+    .section { max-width: 780px; margin: 0 auto; padding: 3rem 2rem; }
+    .section + .section { padding-top: 0; }
+    h2 { font-size: 1.75rem; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 1rem; }
+    h3 { font-size: 1.1rem; font-weight: 600; margin: 2rem 0 0.5rem; }
+    p { color: #c9d1d9; margin-bottom: 1rem; }
+    p:last-child { margin-bottom: 0; }
+    strong { color: var(--text); }
+
+    .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(175px, 1fr)); gap: 1rem; margin: 2rem 0; }
+    .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; text-align: center; }
+    .stat-card .number { font-size: 2.25rem; font-weight: 800; letter-spacing: -0.03em; line-height: 1; margin-bottom: 0.5rem; }
+    .stat-card .label { font-size: 0.85rem; color: var(--muted); line-height: 1.4; }
+    .stat-card.purple .number { color: var(--purple); }
+    .stat-card.red    .number { color: var(--red); }
+    .stat-card.green  .number { color: var(--green); }
+    .stat-card.orange .number { color: var(--orange); }
+
+    .callout { border-radius: 12px; padding: 1.5rem 2rem; margin: 2rem 0; background: var(--surface); border: 1px solid var(--border); }
+    .callout.purple { border-left: 4px solid var(--purple); border-radius: 0 12px 12px 0; }
+    .callout.green  { border-left: 4px solid var(--green);  border-radius: 0 12px 12px 0; }
+    .callout.blue   { border-left: 4px solid var(--accent); border-radius: 0 12px 12px 0; }
+    .callout.orange { border-left: 4px solid var(--orange); border-radius: 0 12px 12px 0; }
+    .callout-label { font-size: 0.7rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 0.5rem; }
+    .callout.purple .callout-label { color: var(--purple); }
+    .callout.green  .callout-label { color: var(--green); }
+    .callout.blue   .callout-label { color: var(--accent); }
+    .callout.orange .callout-label { color: var(--orange); }
+    .callout p { color: var(--text); font-style: italic; }
+
+    /* ── GRID TYPES ── */
+    .grid-types { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; margin: 2rem 0; }
+    @media(max-width:560px){ .grid-types { grid-template-columns: 1fr; } }
+    .grid-type-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; }
+    .grid-type-card h4 { font-size: 0.85rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.75rem; }
+    .grid-type-card h4.baseload { color: var(--accent); }
+    .grid-type-card h4.peaker   { color: var(--orange); }
+    .grid-type-card p { font-size: 0.88rem; color: var(--muted); font-style: normal; margin-bottom: 0.6rem; }
+    .type-stat { font-size: 1.6rem; font-weight: 800; margin: 0.5rem 0; }
+    .type-stat.blue   { color: var(--accent); }
+    .type-stat.orange { color: var(--orange); }
+
+    /* ── GRID VISUALIZATION ── */
+    .viz-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 2rem; margin: 2rem 0; }
+    .viz-header { display: flex; align-items: flex-start; justify-content: space-between; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem; }
+    .viz-header h3 { margin: 0; font-size: 1.05rem; }
+    .viz-header p { color: var(--muted); font-size: 0.85rem; margin: 0.2rem 0 0; font-style: normal; }
+    .toggle-group { display: flex; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 3px; gap: 2px; flex-shrink: 0; }
+    .toggle-btn { padding: 0.4rem 1rem; border: none; background: transparent; color: var(--muted); font-size: 0.85rem; font-weight: 500; border-radius: 6px; cursor: pointer; transition: all 0.2s; }
+    .toggle-btn.active { background: var(--surface2); color: var(--text); }
+
+    .grid-canvas { width: 100%; height: 260px; display: block; }
+
+    .viz-legend { display: flex; flex-wrap: wrap; gap: 1.25rem; margin-top: 1rem; font-size: 0.8rem; color: var(--muted); }
+    .leg-item { display: flex; align-items: center; gap: 0.4rem; }
+    .leg-dot { width: 12px; height: 12px; border-radius: 3px; flex-shrink: 0; }
+
+    .viz-metrics { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--border); border-radius: 8px; overflow: hidden; margin-top: 1.25rem; }
+    .vm-cell { background: var(--bg); padding: 0.85rem 1rem; text-align: center; }
+    .vm-cell .vm-label { font-size: 0.7rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.3rem; }
+    .vm-cell .vm-val { font-size: 1.15rem; font-weight: 800; transition: color 0.4s; }
+
+    /* ── ECONOMICS TABLE ── */
+    .econ-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--border); border-radius: 12px; overflow: hidden; margin: 1.5rem 0; }
+    @media(max-width:480px){ .econ-grid { grid-template-columns: 1fr; } }
+    .econ-cell { background: var(--surface); padding: 1.25rem 1.5rem; }
+    .econ-cell .ec-label { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.75rem; }
+    .econ-cell.peaker .ec-label { color: var(--orange); }
+    .econ-cell.battery .ec-label { color: var(--purple); }
+    .econ-row { display: flex; justify-content: space-between; font-size: 0.88rem; margin-bottom: 0.5rem; }
+    .econ-row:last-child { margin-bottom: 0; }
+    .econ-row .er-key { color: var(--muted); }
+    .econ-row .er-val { font-weight: 600; color: var(--text); }
+    .econ-row .er-val.bad  { color: var(--red); }
+    .econ-row .er-val.good { color: var(--green); }
+
+    /* ── EV SECTION ── */
+    .ev-battery-vis { margin: 2rem 0; }
+    .ev-bar-row { display: flex; align-items: center; gap: 1rem; margin-bottom: 0.75rem; font-size: 0.85rem; }
+    .ev-bar-label { width: 160px; color: var(--muted); flex-shrink: 0; font-size: 0.82rem; }
+    .ev-bar-bg { flex: 1; height: 22px; background: var(--surface); border-radius: 4px; overflow: hidden; border: 1px solid var(--border); }
+    .ev-bar-fill { height: 100%; border-radius: 3px; display: flex; align-items: center; padding-left: 8px; font-size: 0.72rem; font-weight: 600; color: rgba(255,255,255,0.85); }
+    .ev-bar-val { width: 80px; text-align: right; font-weight: 700; font-size: 0.88rem; flex-shrink: 0; }
+
+    /* ── FAQ ── */
+    .qa-block { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin: 1rem 0; }
+    .qa-question { display: flex; align-items: center; justify-content: space-between; padding: 1rem 1.5rem; cursor: pointer; user-select: none; gap: 1rem; }
+    .qa-question:hover { background: var(--surface2); }
+    .qa-question span { font-size: 0.9rem; font-weight: 500; color: var(--text); }
+    .qa-icon { color: var(--muted); font-size: 1.2rem; flex-shrink: 0; transition: transform 0.25s; }
+    .qa-answer { display: none; padding: 0 1.5rem 1.25rem; font-size: 0.9rem; color: #c9d1d9; border-top: 1px solid var(--border); }
+    .qa-answer p { margin-top: 1rem; }
+    .qa-block.open .qa-icon { transform: rotate(45deg); }
+    .qa-block.open .qa-answer { display: block; }
+
+    .divider { border: none; border-top: 1px solid var(--border); margin: 0 2rem; }
+
+    .cta-section { text-align: center; padding: 4rem 2rem 5rem; max-width: 600px; margin: 0 auto; }
+    .cta-section h2 { margin-bottom: 0.75rem; }
+    .cta-section p { color: var(--muted); margin-bottom: 2rem; }
+    .cta-btn { display: inline-flex; align-items: center; gap: 0.5rem; background: var(--purple); color: #0d1117; font-weight: 700; font-size: 0.95rem; padding: 0.75rem 1.75rem; border-radius: 8px; text-decoration: none; transition: opacity 0.2s; }
+    .cta-btn:hover { opacity: 0.85; }
+    .cta-btn.disabled { background: var(--surface2); color: var(--muted); cursor: default; pointer-events: none; }
+
+    .sources { border-top: 1px solid var(--border); padding: 2rem; max-width: 780px; margin: 0 auto; }
+    .sources h4 { font-size: 0.75rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.75rem; }
+    .sources ul { list-style: none; display: flex; flex-direction: column; gap: 0.3rem; }
+    .sources a { font-size: 0.8rem; color: var(--muted); text-decoration: none; }
+    .sources a:hover { color: var(--accent); }
+
+    @media(max-width:520px){
+      .viz-metrics { grid-template-columns: 1fr 1fr; }
+      .viz-metrics .vm-cell:last-child { grid-column: 1/-1; }
+      .ev-bar-label { width: 110px; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-brand" href="index.html">⚡ Power Shift</a>
+  <ul class="nav-chapters">
+    <li><a href="index.html">1. The Energy Illusion</a></li>
+    <li><a href="chapter2.html">2. The Efficiency Revolution</a></li>
+    <li><a href="chapter3.html">3. The Invisible Cost of Fuel</a></li>
+    <li><a href="chapter4.html" class="active">4. The Missing Battery</a></li>
+    <li><a href="#" class="coming-soon">5. Sunshine on Everything</a></li>
+    <li><a href="#" class="coming-soon">6. The Real Price Tag</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="chapter-label">Chapter 4</div>
+  <h1>The <span>Missing</span> Battery</h1>
+  <p class="subtitle">The US already generates enough electricity. The problem is that we throw most of the capacity away — and a battery is all it takes to stop.</p>
+  <div class="scroll-cue">↓ scroll to find out</div>
+</div>
+
+<!-- HOOK -->
+<div class="section">
+  <h2>Built for the Worst Hour of the Year</h2>
+  <p>Every power grid is designed around a single moment: peak demand. In most of the US, that's a hot summer afternoon when air conditioners run simultaneously across an entire region. For a few hours a year, the grid has to deliver more electricity than at any other time.</p>
+  <p>So we built enough generation capacity for that moment. About <strong>1,189 gigawatts</strong> of it — enough to power every home, business, and factory at full tilt simultaneously, with margin to spare.</p>
+  <p>The problem: the rest of the time, we don't need it. The average US power plant runs at <strong>about 40% of its capacity</strong>. We built a grid for 100% and use 40% on average — and then spend billions maintaining the other 60% in standby, just in case.</p>
+</div>
+
+<!-- STAT CARDS -->
+<div class="section" style="padding-top:0">
+  <div class="stat-grid">
+    <div class="stat-card purple">
+      <div class="number">40%</div>
+      <div class="label">average US grid capacity factor — plants run at 40% of what they could generate</div>
+    </div>
+    <div class="stat-card orange">
+      <div class="number">5–15%</div>
+      <div class="label">capacity factor for gas "peaker" plants — idle most of the year, expensive to keep on standby</div>
+    </div>
+    <div class="stat-card red">
+      <div class="number">$228</div>
+      <div class="label">max levelized cost per MWh for a new gas peaker plant (Lazard, 2024)</div>
+    </div>
+    <div class="stat-card green">
+      <div class="number">$226</div>
+      <div class="label">max levelized cost per MWh for 4-hour battery storage with IRA tax credits (Lazard, 2024)</div>
+    </div>
+  </div>
+  <p style="font-size:0.8rem;color:var(--muted)">Source: Lazard LCOE+ June 2024; EIA electricity capacity and generation data 2023.</p>
+</div>
+
+<!-- BASELOAD VS PEAKER -->
+<div class="section" style="padding-top:0">
+  <h2>Two Kinds of Power Plants</h2>
+  <p>To understand what batteries change, you need to know how the grid currently handles variation in demand.</p>
+
+  <div class="grid-types">
+    <div class="grid-type-card">
+      <h4 class="baseload">Baseload Plants</h4>
+      <p>Nuclear, coal, large hydro, and combined-cycle gas plants run continuously. They're efficient when they run at their designed output — but expensive and slow to ramp up or down. They provide the steady foundation of the grid.</p>
+      <div class="type-stat blue">~56–93%</div>
+      <p style="font-size:0.8rem">capacity factor — these plants run most of the time</p>
+    </div>
+    <div class="grid-type-card">
+      <h4 class="peaker">Peaker Plants</h4>
+      <p>Simple-cycle gas turbines that can spin up quickly to cover demand spikes. They're fast but inefficient — they burn more fuel per unit of electricity and cost more per MWh. They exist purely to handle the peaks that occur a few hours a year.</p>
+      <div class="type-stat orange">5–15%</div>
+      <p style="font-size:0.8rem">capacity factor — peakers sit idle roughly 90% of the time</p>
+    </div>
+  </div>
+
+  <p>The result: we have two tiers of generation. Efficient plants that run constantly, and inefficient standby plants that cost billions to maintain but only run a few hundred hours per year. And when peakers do run, they produce expensive, carbon-heavy electricity to meet demand spikes that last just hours.</p>
+</div>
+
+<!-- INTERACTIVE GRID VISUALIZATION -->
+<div class="section" style="padding-top:0">
+  <div class="viz-card">
+    <div class="viz-header">
+      <div>
+        <h3>A Day on the Grid</h3>
+        <p>How electricity demand is met — today vs. with grid-scale battery storage.</p>
+      </div>
+      <div class="toggle-group">
+        <button class="toggle-btn active" id="btnToday" onclick="setMode('today')">Today</button>
+        <button class="toggle-btn" id="btnStorage" onclick="setMode('storage')">With Storage</button>
+      </div>
+    </div>
+
+    <canvas class="grid-canvas" id="gridCanvas"></canvas>
+
+    <div class="viz-legend">
+      <div class="leg-item"><div class="leg-dot" style="background:#58a6ff"></div> Baseload generation</div>
+      <div class="leg-item"><div class="leg-dot" style="background:#f97316"></div> Peaker plants</div>
+      <div class="leg-item"><div class="leg-dot" style="background:#a371f7"></div> Battery discharging (serving demand)</div>
+      <div class="leg-item"><div class="leg-dot" style="background:#3fb950"></div> Battery charging (storing surplus)</div>
+      <div class="leg-item"><div class="leg-dot" style="background:rgba(255,255,255,0.07);border:1px solid #30363d"></div> Unused installed capacity</div>
+    </div>
+
+    <div class="viz-metrics">
+      <div class="vm-cell">
+        <div class="vm-label">Baseload utilization</div>
+        <div class="vm-val" id="vmUtil" style="color:var(--accent)">40%</div>
+      </div>
+      <div class="vm-cell">
+        <div class="vm-label">Peaker plant hours</div>
+        <div class="vm-val" id="vmPeaker" style="color:var(--orange)">8 hrs today</div>
+      </div>
+      <div class="vm-cell">
+        <div class="vm-label">Wasted capacity</div>
+        <div class="vm-val" id="vmWaste" style="color:var(--red)">~35%</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- WHAT BATTERIES CHANGE -->
+<div class="section" style="padding-top:0">
+  <h2>What Batteries Actually Do</h2>
+  <p>A grid-scale battery doesn't generate electricity. It <em>time-shifts</em> it. Charge it at 3am when demand is low and plants have surplus capacity — then discharge it at 6pm when demand peaks and peakers would otherwise fire up.</p>
+  <p>This changes the economics of every other plant on the grid:</p>
+
+  <div style="display:flex;flex-direction:column;gap:0;border:1px solid var(--border);border-radius:12px;overflow:hidden;margin:1.5rem 0">
+    <div style="padding:1.25rem 1.5rem;background:var(--surface);border-bottom:1px solid var(--border);display:grid;grid-template-columns:48px 1fr;gap:1rem;align-items:start">
+      <div style="width:40px;height:40px;border-radius:10px;background:rgba(88,166,255,0.15);display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0">⚙️</div>
+      <div>
+        <h4 style="font-size:0.95rem;margin-bottom:0.25rem">Baseload plants run more efficiently</h4>
+        <p style="font-size:0.85rem;color:var(--muted);margin:0;font-style:normal">Power plants are most efficient at their design output. Constant-ramp operation wastes fuel. With batteries absorbing overnight surplus and covering evening peaks, baseload plants can run at a steadier, more optimal level — producing more electricity from the same fuel.</p>
+      </div>
+    </div>
+    <div style="padding:1.25rem 1.5rem;background:var(--surface);border-bottom:1px solid var(--border);display:grid;grid-template-columns:48px 1fr;gap:1rem;align-items:start">
+      <div style="width:40px;height:40px;border-radius:10px;background:rgba(63,185,80,0.15);display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0">💰</div>
+      <div>
+        <h4 style="font-size:0.95rem;margin-bottom:0.25rem">Peaker plants become optional</h4>
+        <p style="font-size:0.85rem;color:var(--muted);margin:0;font-style:normal">Peakers cost $110–$228/MWh when running, plus capital and maintenance costs for sitting idle 90% of the time. A 4-hour battery can replace a peaker at equivalent or lower cost — and it produces zero emissions, zero fuel cost, and can respond in milliseconds rather than minutes.</p>
+      </div>
+    </div>
+    <div style="padding:1.25rem 1.5rem;background:var(--surface);border-bottom:1px solid var(--border);display:grid;grid-template-columns:48px 1fr;gap:1rem;align-items:start">
+      <div style="width:40px;height:40px;border-radius:10px;background:rgba(163,113,247,0.15);display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0">⚡</div>
+      <div>
+        <h4 style="font-size:0.95rem;margin-bottom:0.25rem">Renewable curtailment stops</h4>
+        <p style="font-size:0.85rem;color:var(--muted);margin:0;font-style:normal">Wind and solar often generate more than the grid can use at that moment — so operators "curtail" it (switch it off). California alone curtailed over 2.4 million MWh of solar in 2022. Batteries absorb that surplus instead of wasting it, raising renewable utilization from ~23% (solar capacity factor) toward its actual potential.</p>
+      </div>
+    </div>
+    <div style="padding:1.25rem 1.5rem;background:var(--surface);display:grid;grid-template-columns:48px 1fr;gap:1rem;align-items:start">
+      <div style="width:40px;height:40px;border-radius:10px;background:rgba(88,166,255,0.15);display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0">🔒</div>
+      <div>
+        <h4 style="font-size:0.95rem;margin-bottom:0.25rem">Grid stability improves</h4>
+        <p style="font-size:0.85rem;color:var(--muted);margin:0;font-style:normal">Batteries respond to grid fluctuations in milliseconds — far faster than any spinning generator. They can provide frequency regulation, voltage support, and emergency backup capacity far more responsively than the fossil plants they replace. In some markets, this "ancillary service" revenue alone covers a significant fraction of battery costs.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout purple">
+    <div class="callout-label">The reframe</div>
+    <p>We don't need to build more generation to handle EVs and electrification. We need to use what we already built more intelligently. Batteries are the tool that turns a 40%-utilized grid into one that serves growing demand without new fossil fuel plants.</p>
+  </div>
+</div>
+
+<!-- ECONOMICS -->
+<div class="section" style="padding-top:0">
+  <h2>The Economics Have Already Flipped</h2>
+  <p>A decade ago, grid-scale batteries were a novelty. Today they're cost-competitive with the peaker plants they replace — and getting cheaper every year.</p>
+
+  <div class="econ-grid">
+    <div class="econ-cell peaker">
+      <div class="ec-label">Gas Peaker Plant</div>
+      <div class="econ-row"><span class="er-key">Levelized cost (LCOS)</span><span class="er-val bad">$110–$228/MWh</span></div>
+      <div class="econ-row"><span class="er-key">Capacity factor</span><span class="er-val bad">5–15%</span></div>
+      <div class="econ-row"><span class="er-key">Fuel cost</span><span class="er-val bad">Variable / rising</span></div>
+      <div class="econ-row"><span class="er-key">Emissions</span><span class="er-val bad">CO₂ + NOₓ</span></div>
+      <div class="econ-row"><span class="er-key">Response time</span><span class="er-val">10–30 minutes</span></div>
+      <div class="econ-row"><span class="er-key">Trend</span><span class="er-val bad">Costs rising</span></div>
+    </div>
+    <div class="econ-cell battery">
+      <div class="ec-label">4-Hour Battery Storage</div>
+      <div class="econ-row"><span class="er-key">Levelized cost (LCOS)</span><span class="er-val good">$124–$226/MWh*</span></div>
+      <div class="econ-row"><span class="er-key">Capacity factor</span><span class="er-val good">Flexible — as needed</span></div>
+      <div class="econ-row"><span class="er-key">Fuel cost</span><span class="er-val good">$0 (stores electricity)</span></div>
+      <div class="econ-row"><span class="er-key">Emissions</span><span class="er-val good">Zero at point of use</span></div>
+      <div class="econ-row"><span class="er-key">Response time</span><span class="er-val good">&lt;1 second</span></div>
+      <div class="econ-row"><span class="er-key">Trend</span><span class="er-val good">Costs falling ~10%/yr</span></div>
+    </div>
+  </div>
+  <p style="font-size:0.8rem;color:var(--muted)">*With IRA investment tax credit. Without subsidy: $170–$296/MWh. Source: Lazard LCOE+ June 2024. NREL projects battery capex declining a further 37% by 2035.</p>
+
+  <div class="callout green">
+    <div class="callout-label">Already happening</div>
+    <p>California has retired or converted dozens of peaker plants since 2021, replacing them with battery storage. Arizona, Texas, and New England are following. This isn't a future projection — utilities are making this choice right now based on current economics.</p>
+  </div>
+</div>
+
+<!-- EVs AS GRID ASSETS -->
+<div class="section" style="padding-top:0">
+  <h2>EVs: Charging Is a Feature, Not a Bug</h2>
+  <p>Earlier chapters showed that electrifying vehicles <em>reduces</em> total energy demand. There's a second grid benefit that often surprises people: EVs are batteries. And there are a lot of them.</p>
+
+  <div class="ev-battery-vis">
+    <div style="font-size:0.75rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.05em;display:grid;grid-template-columns:160px 1fr 110px;gap:1rem;padding-bottom:0.5rem;border-bottom:1px solid var(--border);margin-bottom:0.75rem">
+      <span>Storage</span><span>Scale (relative)</span><span>Total GWh</span>
+    </div>
+    <div class="ev-bar-row">
+      <div class="ev-bar-label">All US grid batteries (2023)</div>
+      <div class="ev-bar-bg"><div class="ev-bar-fill" style="width:3%;background:var(--purple)">~50</div></div>
+      <div class="ev-bar-val" style="color:var(--purple)">~50 GWh</div>
+    </div>
+    <div class="ev-bar-row">
+      <div class="ev-bar-label">1 million EVs (50 kWh avg)</div>
+      <div class="ev-bar-bg"><div class="ev-bar-fill" style="width:4%;background:var(--accent)">50</div></div>
+      <div class="ev-bar-val" style="color:var(--accent)">50 GWh</div>
+    </div>
+    <div class="ev-bar-row">
+      <div class="ev-bar-label">10 million EVs</div>
+      <div class="ev-bar-bg"><div class="ev-bar-fill" style="width:40%;background:var(--accent)">500 GWh</div></div>
+      <div class="ev-bar-val" style="color:var(--accent)">500 GWh</div>
+    </div>
+    <div class="ev-bar-row">
+      <div class="ev-bar-label" style="color:var(--text);font-weight:600">US daily electricity use</div>
+      <div class="ev-bar-bg"><div class="ev-bar-fill" style="width:91%;background:var(--yellow)">~11,400 GWh</div></div>
+      <div class="ev-bar-val" style="color:var(--yellow)">11,400 GWh</div>
+    </div>
+    <div class="ev-bar-row">
+      <div class="ev-bar-label" style="color:var(--green);font-weight:600">280M EVs (all US cars)</div>
+      <div class="ev-bar-bg"><div class="ev-bar-fill" style="width:100%;background:var(--green)">14,000 GWh</div></div>
+      <div class="ev-bar-val" style="color:var(--green)">14,000 GWh</div>
+    </div>
+  </div>
+
+  <p>A fully electrified US vehicle fleet would represent approximately <strong>14,000 GWh of distributed battery storage</strong> — more than a full day of US electricity consumption. You'd never draw all of it at once, but even 10–20% participation in smart charging programs would represent the largest flexible demand resource in history.</p>
+  <p>EVs that charge at night consume off-peak surplus that currently goes to waste — helping utilities run baseload plants more efficiently. And bidirectional charging (vehicle-to-grid, or V2G) allows EVs to sell stored electricity back to the grid during peak hours — turning millions of parked cars into a virtual power plant.</p>
+
+  <div class="callout blue">
+    <div class="callout-label">Grid operators already see this</div>
+    <p>California, Texas, and several New England states now offer EV charging incentives specifically timed to off-peak hours. Utilities don't worry about EVs crashing the grid at night — they worry about EV owners charging at 5pm. Smart charging infrastructure is the solution, and it's already being deployed.</p>
+  </div>
+</div>
+
+<hr class="divider">
+
+<!-- FAQ -->
+<div class="section">
+  <h2>Common Objections</h2>
+
+  <div class="qa-block" onclick="toggleQA(this)">
+    <div class="qa-question">
+      <span>"Batteries only store a few hours of power — what about week-long cloudy, calm weather?"</span>
+      <div class="qa-icon">+</div>
+    </div>
+    <div class="qa-answer">
+      <p>This is the right question to ask, and it's worth being precise about it. The batteries described in this chapter are solving a <em>daily</em> problem: peak demand that occurs for a few hours each day. Four-hour batteries are already cost-competitive and being deployed at scale for this purpose. They're not designed to cover multi-day weather events.</p>
+      <p>The multi-day problem — what grid engineers call "long-duration storage" — is real and actively being worked on. Solutions include pumped hydro (already the largest grid storage in the US at ~550 GWh), hydrogen from renewable electrolysis, grid-scale flow batteries, and geographic diversification (wind is usually blowing somewhere). None of these require a breakthrough — they need continued investment and deployment. The daily storage problem, which drives most of the economic case in this chapter, is already solved.</p>
+    </div>
+  </div>
+
+  <div class="qa-block" onclick="toggleQA(this)">
+    <div class="qa-question">
+      <span>"Doesn't manufacturing batteries have a large environmental footprint?"</span>
+      <div class="qa-icon">+</div>
+    </div>
+    <div class="qa-answer">
+      <p>It does, and it's worth quantifying rather than dismissing. Lithium-ion battery manufacturing is energy and material intensive. A typical utility-scale battery system takes roughly 1–2 years of operation to "pay back" the carbon cost of its manufacture on the average US grid — similar to solar panels. Over a 15–20 year lifespan, the net benefit is substantial.</p>
+      <p>The more important comparison is against the alternative: peaker plants emit CO₂ every time they run, have their own construction footprint, and consume natural gas that requires the extraction and supply chain costs outlined in Chapter 3. Battery manufacturing is a one-time upfront cost; fossil generation is a recurring one.</p>
+    </div>
+  </div>
+
+  <div class="qa-block" onclick="toggleQA(this)">
+    <div class="qa-question">
+      <span>"If batteries are so good, why isn't the grid already full of them?"</span>
+      <div class="qa-icon">+</div>
+    </div>
+    <div class="qa-answer">
+      <p>It's getting there — rapidly. US grid-scale battery capacity grew by 82% in 2023 alone, from ~11 GW to ~20 GW. Deployments are accelerating each year. The IRA tax credits reduced battery costs significantly and triggered a wave of projects.</p>
+      <p>The lag between "economically viable" and "fully deployed" is normal for major infrastructure. It took decades after natural gas became the cheapest option before it dominated the grid. Battery economics crossed the peaker-parity threshold around 2021–2022; we're now in the ramp-up phase. Regulatory frameworks, interconnection queues, and long-term utility planning cycles create inertia — but not fundamental barriers. The projects are being approved and built.</p>
+    </div>
+  </div>
+
+  <div class="qa-block" onclick="toggleQA(this)">
+    <div class="qa-question">
+      <span>"What happens when a million EV owners all plug in at 6pm after work?"</span>
+      <div class="qa-icon">+</div>
+    </div>
+    <div class="qa-answer">
+      <p>This is the legitimate concern behind the "grid can't handle it" argument, and it's real — if charging happens in an uncoordinated, unmanaged way at peak hours, it adds demand precisely when the grid is most stressed.</p>
+      <p>The solution is smart charging: chargers that communicate with the grid and shift charging to off-peak hours, incentivized by time-of-use electricity pricing. Most EV owners charge overnight anyway — the car sits in a driveway for 10 hours and needs 8 kWh on average per day. Smart chargers can delay that charge until 2am and have it done before morning. Utilities actively <em>want</em> this demand — it lets them run baseload plants at higher utilization through the night rather than throttling down. The problem is coordination, not capacity.</p>
+    </div>
+  </div>
+</div>
+
+<hr class="divider">
+
+<div class="cta-section">
+  <h2>Next: Sunshine on Everything</h2>
+  <p>We've covered demand reduction and grid storage. Chapter 5 looks at the supply side: how solar can be deployed on space we're already using — rooftops, parking lots, farmland — rather than claiming new land.</p>
+  <a href="#" class="cta-btn disabled">Chapter 5 — Coming Soon →</a>
+</div>
+
+<div class="sources">
+  <h4>Sources</h4>
+  <ul>
+    <li><a href="https://www.lazard.com/media/gjyffoqd/lazards-lcoeplus-june-2024.pdf" target="_blank">Lazard LCOE+ June 2024 — Levelized Cost of Storage Analysis</a></li>
+    <li><a href="https://atb.nrel.gov/electricity/2024/utility-scale_battery_storage" target="_blank">NREL ATB 2024 — Utility-Scale Battery Storage cost projections</a></li>
+    <li><a href="https://www.eia.gov/energyexplained/electricity/electricity-in-the-us-generation-capacity-and-sales.php" target="_blank">EIA — US Electricity Generation Capacity and Sales</a></li>
+    <li><a href="https://www.cesa.org/replacing-fossil-fueled-peaker-power-plants-with-battery-energy-storage/" target="_blank">CESA — Replacing Fossil-Fueled Peaker Plants with Battery Energy Storage</a></li>
+    <li><a href="https://pubs.acs.org/doi/10.1021/acs.est.2c09319" target="_blank">Environmental Science &amp; Technology — Battery vs. peaker replacement costs</a></li>
+  </ul>
+</div>
+
+<script>
+  /* ── GRID VISUALIZATION ── */
+  const canvas = document.getElementById('gridCanvas');
+  const ctx = canvas.getContext('2d');
+
+  // Demand curve: 24 data points (hourly), normalized 0–100 where 100 = peak
+  const demand = [65,62,59,57,59,64,72,80,85,87,86,85,83,84,85,88,91,96,100,97,90,82,75,68];
+  const TOTAL_CAP = 128; // installed capacity headroom
+
+  let currentMode = 'today';
+  let animT = 1;
+  let animFrom = 'today';
+  let animTo = 'today';
+  let animFrame = null;
+
+  function resizeCanvas() {
+    const dpr = window.devicePixelRatio || 1;
+    const rect = canvas.parentElement.getBoundingClientRect();
+    canvas.width = rect.width * dpr;
+    canvas.height = 260 * dpr;
+    canvas.style.width = rect.width + 'px';
+    canvas.style.height = '260px';
+    ctx.scale(dpr, dpr);
+  }
+
+  function lerp(a, b, t) { return a + (b - a) * t; }
+  function ease(t) { return t < 0.5 ? 2*t*t : -1 + (4 - 2*t)*t; }
+
+  function computeLayers(mode) {
+    // Returns arrays of length 24 for each layer
+    const baseloadLevel = mode === 'today' ? 60 : 73;
+    const battCap = 30; // max battery charge
+    const layers = [];
+
+    // Battery state tracking for storage mode
+    let battSoC = battCap * 0.5;
+
+    for (let h = 0; h < 24; h++) {
+      const d = demand[h];
+      let base, peaker, battDischarge, battCharge, waste;
+
+      if (mode === 'today') {
+        base = Math.min(baseloadLevel, d);
+        peaker = Math.max(0, d - baseloadLevel);
+        battDischarge = 0;
+        battCharge = 0;
+        waste = TOTAL_CAP - d;
+      } else {
+        // Storage mode: run baseload higher and flatter, use battery for peaks
+        base = baseloadLevel;
+        const delta = base - d; // positive = surplus (charge), negative = deficit (discharge)
+
+        if (delta >= 0) {
+          // Surplus: charge battery
+          const chargeAmt = Math.min(delta, battCap - battSoC);
+          battSoC += chargeAmt;
+          battCharge = chargeAmt;
+          battDischarge = 0;
+          peaker = 0;
+          waste = TOTAL_CAP - base;
+        } else {
+          // Deficit: discharge battery, use peakers if battery empty
+          const needed = -delta;
+          const fromBatt = Math.min(needed, battSoC);
+          battSoC -= fromBatt;
+          battDischarge = fromBatt;
+          battCharge = 0;
+          peaker = Math.max(0, needed - fromBatt);
+          waste = TOTAL_CAP - d;
+        }
+      }
+
+      layers.push({ base, peaker, battDischarge, battCharge, waste, d });
+    }
+    return layers;
+  }
+
+  function drawGrid(tween) {
+    const W = canvas.width / (window.devicePixelRatio || 1);
+    const H = 260;
+    ctx.clearRect(0, 0, W, H);
+
+    const PAD_L = 38, PAD_R = 12, PAD_T = 16, PAD_B = 36;
+    const plotW = W - PAD_L - PAD_R;
+    const plotH = H - PAD_T - PAD_B;
+
+    const layersA = computeLayers(animFrom);
+    const layersB = computeLayers(animTo);
+    const t = ease(tween);
+
+    function yScale(v) { return PAD_T + plotH * (1 - v / 135); }
+    function xPos(h) { return PAD_L + (h / 23) * plotW; }
+
+    // ── Draw filled areas ──
+    const draws = [
+      // unused capacity
+      {
+        fill: 'rgba(255,255,255,0.04)',
+        getTop: (la, lb, i) => lerp(la[i].base + la[i].peaker + la[i].battDischarge + la[i].waste, lb[i].base + lb[i].peaker + lb[i].battDischarge + lb[i].waste, t),
+        getBot: (la, lb, i) => lerp(la[i].d, lb[i].d, t),
+      },
+      // battery charging (green, above base, where surplus)
+      {
+        fill: '#3fb950',
+        getTop: (la, lb, i) => lerp(la[i].base + la[i].battCharge, lb[i].base + lb[i].battCharge, t),
+        getBot: (la, lb, i) => lerp(la[i].base, lb[i].base, t),
+      },
+      // peakers (orange)
+      {
+        fill: '#f97316',
+        getTop: (la, lb, i) => lerp(la[i].base + la[i].peaker, lb[i].base + lb[i].peaker, t),
+        getBot: (la, lb, i) => lerp(la[i].base, lb[i].base, t),
+      },
+      // battery discharging (purple, fills gap between base and demand)
+      {
+        fill: '#a371f7',
+        getTop: (la, lb, i) => lerp(la[i].base + la[i].peaker + la[i].battDischarge, lb[i].base + lb[i].peaker + lb[i].battDischarge, t),
+        getBot: (la, lb, i) => lerp(la[i].base + la[i].peaker, lb[i].base + lb[i].peaker, t),
+      },
+      // baseload (blue)
+      {
+        fill: '#58a6ff',
+        getTop: (la, lb, i) => lerp(la[i].base, lb[i].base, t),
+        getBot: () => 0,
+      },
+    ];
+
+    draws.forEach(({ fill, getTop, getBot }) => {
+      ctx.beginPath();
+      // top edge (left to right)
+      for (let i = 0; i < 24; i++) {
+        const x = xPos(i);
+        const y = yScale(getTop(layersA, layersB, i));
+        if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+      }
+      // bottom edge (right to left)
+      for (let i = 23; i >= 0; i--) {
+        const x = xPos(i);
+        const y = yScale(getBot(layersA, layersB, i));
+        ctx.lineTo(x, y);
+      }
+      ctx.closePath();
+      ctx.fillStyle = fill;
+      ctx.fill();
+    });
+
+    // ── Demand curve ──
+    ctx.beginPath();
+    ctx.strokeStyle = 'rgba(255,255,255,0.9)';
+    ctx.lineWidth = 2;
+    for (let i = 0; i < 24; i++) {
+      const x = xPos(i);
+      const y = yScale(demand[i]);
+      if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    }
+    ctx.stroke();
+
+    // ── Installed capacity line ──
+    ctx.beginPath();
+    ctx.strokeStyle = 'rgba(255,255,255,0.15)';
+    ctx.lineWidth = 1;
+    ctx.setLineDash([5, 5]);
+    ctx.moveTo(PAD_L, yScale(TOTAL_CAP));
+    ctx.lineTo(PAD_L + plotW, yScale(TOTAL_CAP));
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    // ── Axes ──
+    ctx.fillStyle = 'rgba(139,148,158,0.7)';
+    ctx.font = `10px -apple-system, sans-serif`;
+    ctx.textAlign = 'right';
+    [0, 25, 50, 75, 100].forEach(v => {
+      const y = yScale(v);
+      ctx.fillText(v, PAD_L - 4, y + 3);
+      ctx.beginPath();
+      ctx.strokeStyle = 'rgba(255,255,255,0.05)';
+      ctx.lineWidth = 1;
+      ctx.moveTo(PAD_L, y);
+      ctx.lineTo(PAD_L + plotW, y);
+      ctx.stroke();
+    });
+
+    ctx.textAlign = 'center';
+    [0, 6, 12, 18, 23].forEach(h => {
+      const label = h === 0 ? '12am' : h === 6 ? '6am' : h === 12 ? 'Noon' : h === 18 ? '6pm' : '11pm';
+      ctx.fillText(label, xPos(h), H - PAD_B + 16);
+    });
+
+    // capacity label
+    ctx.textAlign = 'left';
+    ctx.fillStyle = 'rgba(255,255,255,0.25)';
+    ctx.font = `9px -apple-system, sans-serif`;
+    ctx.fillText('Installed capacity', PAD_L + 4, yScale(TOTAL_CAP) - 4);
+
+    // demand label
+    ctx.fillStyle = 'rgba(255,255,255,0.7)';
+    ctx.fillText('Demand', PAD_L + 4, yScale(demand[10]) - 6);
+  }
+
+  function updateMetrics(mode) {
+    const layers = computeLayers(mode);
+    const peakerHours = layers.filter(l => l.peaker > 0).length;
+    const avgUtil = layers.reduce((s, l) => s + l.base, 0) / 24 / TOTAL_CAP * 100;
+    const avgWaste = layers.reduce((s, l) => s + l.waste, 0) / 24 / TOTAL_CAP * 100;
+
+    document.getElementById('vmUtil').textContent = Math.round(avgUtil) + '%';
+    document.getElementById('vmUtil').style.color = mode === 'storage' ? 'var(--green)' : 'var(--accent)';
+    document.getElementById('vmPeaker').textContent = peakerHours + ' hrs today';
+    document.getElementById('vmPeaker').style.color = peakerHours > 4 ? 'var(--orange)' : 'var(--green)';
+    document.getElementById('vmWaste').textContent = '~' + Math.round(avgWaste) + '%';
+    document.getElementById('vmWaste').style.color = avgWaste > 25 ? 'var(--red)' : 'var(--yellow)';
+  }
+
+  function animateTo(from, to) {
+    if (animFrame) cancelAnimationFrame(animFrame);
+    animFrom = from;
+    animTo = to;
+    animT = 0;
+    function step() {
+      animT += 0.035;
+      if (animT >= 1) { animT = 1; drawGrid(1); updateMetrics(to); return; }
+      drawGrid(animT);
+      animFrame = requestAnimationFrame(step);
+    }
+    step();
+  }
+
+  function setMode(mode) {
+    const prev = currentMode;
+    currentMode = mode;
+    document.getElementById('btnToday').classList.toggle('active', mode === 'today');
+    document.getElementById('btnStorage').classList.toggle('active', mode === 'storage');
+    animateTo(prev, mode);
+  }
+
+  function toggleQA(el) { el.classList.toggle('open'); }
+
+  window.addEventListener('resize', () => { resizeCanvas(); drawGrid(1); });
+  resizeCanvas();
+  drawGrid(1);
+  updateMetrics('today');
+</script>
+</body>
+</html>
