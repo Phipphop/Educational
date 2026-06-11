@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chapter 5: Sunshine on Everything — Power Shift</title>
+  <style>
+    :root {
+      --bg: #0d1117;
+      --surface: #161b22;
+      --surface2: #1f2937;
+      --border: #30363d;
+      --text: #e6edf3;
+      --muted: #8b949e;
+      --accent: #58a6ff;
+      --green: #3fb950;
+      --orange: #f97316;
+      --red: #f85149;
+      --yellow: #d29922;
+      --gold: #f5c518;
+      --purple: #a371f7;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif; line-height: 1.7; }
+
+    nav { position: sticky; top: 0; z-index: 100; background: rgba(13,17,23,0.92); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); padding: 0 2rem; display: flex; align-items: center; gap: 2rem; height: 56px; }
+    .nav-brand { font-weight: 700; font-size: 1rem; color: var(--accent); text-decoration: none; letter-spacing: -0.02em; white-space: nowrap; }
+    .nav-chapters { display: flex; gap: 0.25rem; list-style: none; overflow-x: auto; }
+    .nav-chapters a { color: var(--muted); text-decoration: none; font-size: 0.85rem; padding: 0.35rem 0.75rem; border-radius: 6px; transition: color 0.2s, background 0.2s; white-space: nowrap; }
+    .nav-chapters a:hover { color: var(--text); background: var(--surface); }
+    .nav-chapters a.active { color: var(--gold); background: var(--surface); }
+    .nav-chapters .coming-soon { opacity: 0.4; cursor: default; pointer-events: none; }
+
+    .hero { padding: 5rem 2rem 4rem; text-align: center; max-width: 800px; margin: 0 auto; }
+    .chapter-label { display: inline-block; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gold); background: rgba(245,197,24,0.1); border: 1px solid rgba(245,197,24,0.25); border-radius: 20px; padding: 0.3rem 0.9rem; margin-bottom: 1.5rem; }
+    .hero h1 { font-size: clamp(2rem,5vw,3.5rem); font-weight: 800; letter-spacing: -0.03em; line-height: 1.15; margin-bottom: 1rem; }
+    .hero h1 span { color: var(--gold); }
+    .hero .subtitle { font-size: 1.15rem; color: var(--muted); max-width: 560px; margin: 0 auto 2.5rem; }
+    .scroll-cue { display: flex; align-items: center; justify-content: center; gap: 0.5rem; color: var(--muted); font-size: 0.85rem; animation: bounce 2s ease-in-out infinite; }
+    @keyframes bounce { 0%,100%{transform:translateY(0)}50%{transform:translateY(6px)} }
+
+    .section { max-width: 780px; margin: 0 auto; padding: 3rem 2rem; }
+    .section + .section { padding-top: 0; }
+    h2 { font-size: 1.75rem; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 1rem; }
+    h3 { font-size: 1.1rem; font-weight: 600; margin: 2rem 0 0.5rem; }
+    p { color: #c9d1d9; margin-bottom: 1rem; }
+    p:last-child { margin-bottom: 0; }
+    strong { color: var(--text); }
+
+    .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(175px, 1fr)); gap: 1rem; margin: 2rem 0; }
+    .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; text-align: center; }
+    .stat-card .number { font-size: 2.25rem; font-weight: 800; letter-spacing: -0.03em; line-height: 1; margin-bottom: 0.5rem; }
+    .stat-card .label { font-size: 0.85rem; color: var(--muted); line-height: 1.4; }
+    .stat-card.gold   .number { color: var(--gold); }
+    .stat-card.green  .number { color: var(--green); }
+    .stat-card.blue   .number { color: var(--accent); }
+    .stat-card.orange .number { color: var(--orange); }
+
+    .callout { border-radius: 12px; padding: 1.5rem 2rem; margin: 2rem 0; background: var(--surface); border: 1px solid var(--border); }
+    .callout.gold   { border-left: 4px solid var(--gold);   border-radius: 0 12px 12px 0; }
+    .callout.green  { border-left: 4px solid var(--green);  border-radius: 0 12px 12px 0; }
+    .callout.blue   { border-left: 4px solid var(--accent); border-radius: 0 12px 12px 0; }
+    .callout.orange { border-left: 4px solid var(--orange); border-radius: 0 12px 12px 0; }
+    .callout-label { font-size: 0.7rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 0.5rem; }
+    .callout.gold   .callout-label { color: var(--gold); }
+    .callout.green  .callout-label { color: var(--green); }
+    .callout.blue   .callout-label { color: var(--accent); }
+    .callout.orange .callout-label { color: var(--orange); }
+    .callout p { color: var(--text); font-style: italic; }
+
+    /* ── POTENTIAL EXPLORER ── */
+    .explorer-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 2rem; margin: 2rem 0; }
+    .explorer-card h3 { margin: 0 0 0.35rem; font-size: 1.05rem; }
+    .explorer-card .ex-sub { font-size: 0.85rem; color: var(--muted); margin-bottom: 1.75rem; }
+
+    .potential-bar-wrap { margin-bottom: 1.5rem; }
+    .pot-header { display: grid; grid-template-columns: 1fr 90px; gap: 0.5rem; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); padding-bottom: 0.5rem; border-bottom: 1px solid var(--border); margin-bottom: 0.75rem; }
+    .pot-row { display: grid; grid-template-columns: 1fr 90px; align-items: center; gap: 0.75rem; margin-bottom: 0.65rem; }
+    .pot-bar-outer { height: 28px; background: var(--surface2); border-radius: 4px; overflow: hidden; border: 1px solid var(--border); position: relative; }
+    .pot-bar-fill { height: 100%; border-radius: 3px; display: flex; align-items: center; padding-left: 8px; font-size: 0.72rem; font-weight: 600; color: rgba(255,255,255,0.9); transition: width 0.8s cubic-bezier(0.25,0.46,0.45,0.94); }
+    .pot-bar-demand { position: absolute; top: 0; height: 100%; border-right: 2px dashed rgba(255,255,255,0.4); pointer-events: none; }
+    .pot-val { font-size: 0.9rem; font-weight: 700; text-align: right; }
+    .pot-label { font-size: 0.82rem; color: var(--muted); margin-bottom: 0.2rem; }
+    .pot-label strong { color: var(--text); }
+
+    .ex-total { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--border); border-radius: 8px; overflow: hidden; margin-top: 1.25rem; }
+    .ex-cell { background: var(--bg); padding: 0.85rem 1.25rem; text-align: center; }
+    .ex-cell .ec-lab { font-size: 0.7rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.25rem; }
+    .ex-cell .ec-val { font-size: 1.35rem; font-weight: 800; }
+    .ex-note { font-size: 0.75rem; color: var(--muted); margin-top: 0.75rem; }
+
+    /* ── DEPLOYMENT SCENARIOS ── */
+    .scenarios { display: flex; flex-direction: column; gap: 0; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin: 2rem 0; }
+    .scenario { display: grid; grid-template-columns: 52px 1fr; gap: 0; border-bottom: 1px solid var(--border); background: var(--surface); transition: background 0.15s; cursor: default; }
+    .scenario:last-child { border-bottom: none; }
+    .scenario:hover { background: var(--surface2); }
+    .sc-icon { display: flex; align-items: center; justify-content: center; font-size: 1.4rem; padding: 1.25rem 0.5rem; border-right: 1px solid var(--border); }
+    .sc-body { padding: 1.25rem 1.5rem; }
+    .sc-body h4 { font-size: 0.95rem; font-weight: 600; margin-bottom: 0.25rem; }
+    .sc-body p { font-size: 0.85rem; color: var(--muted); margin: 0; font-style: normal; }
+    .sc-tag { display: inline-block; font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; padding: 0.15rem 0.5rem; border-radius: 4px; margin-left: 0.5rem; vertical-align: middle; }
+    .sc-tag.solid { background: rgba(63,185,80,0.15); color: var(--green); }
+    .sc-tag.est   { background: rgba(245,197,24,0.12); color: var(--gold); }
+
+    /* ── VIRTUOUS CYCLE ── */
+    .cycle-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 1px; background: var(--border); border-radius: 12px; overflow: hidden; margin: 2rem 0; }
+    @media(max-width:520px){ .cycle-grid { grid-template-columns: 1fr; } }
+    .cycle-cell { background: var(--surface); padding: 1.5rem; text-align: center; }
+    .cycle-cell .cy-icon { font-size: 2rem; margin-bottom: 0.75rem; }
+    .cycle-cell h4 { font-size: 0.9rem; font-weight: 700; margin-bottom: 0.5rem; }
+    .cycle-cell p { font-size: 0.82rem; color: var(--muted); margin: 0; font-style: normal; }
+    .cycle-arrow { display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: var(--muted); }
+    @media(max-width:520px){ .cycle-arrow { transform: rotate(90deg); } }
+
+    /* ── REGIONS ── */
+    .regions-grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(160px,1fr)); gap: 1rem; margin: 1.5rem 0; }
+    .region-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 1rem; text-align: center; }
+    .region-card .rc-sun { font-size: 0.75rem; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 0.5rem; }
+    .region-card h4 { font-size: 0.88rem; font-weight: 600; margin-bottom: 0.3rem; }
+    .region-card p { font-size: 0.78rem; color: var(--muted); margin: 0; font-style: normal; }
+    .rc-bar { height: 6px; border-radius: 3px; margin: 0.4rem auto; max-width: 80px; }
+
+    /* ── FAQ ── */
+    .qa-block { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin: 1rem 0; }
+    .qa-question { display: flex; align-items: center; justify-content: space-between; padding: 1rem 1.5rem; cursor: pointer; user-select: none; gap: 1rem; }
+    .qa-question:hover { background: var(--surface2); }
+    .qa-question span { font-size: 0.9rem; font-weight: 500; color: var(--text); }
+    .qa-icon { color: var(--muted); font-size: 1.2rem; flex-shrink: 0; transition: transform 0.25s; }
+    .qa-answer { display: none; padding: 0 1.5rem 1.25rem; font-size: 0.9rem; color: #c9d1d9; border-top: 1px solid var(--border); }
+    .qa-answer p { margin-top: 1rem; }
+    .qa-block.open .qa-icon { transform: rotate(45deg); }
+    .qa-block.open .qa-answer { display: block; }
+
+    .divider { border: none; border-top: 1px solid var(--border); margin: 0 2rem; }
+
+    .cta-section { text-align: center; padding: 4rem 2rem 5rem; max-width: 600px; margin: 0 auto; }
+    .cta-section h2 { margin-bottom: 0.75rem; }
+    .cta-section p { color: var(--muted); margin-bottom: 2rem; }
+    .cta-btn { display: inline-flex; align-items: center; gap: 0.5rem; background: var(--gold); color: #0d1117; font-weight: 700; font-size: 0.95rem; padding: 0.75rem 1.75rem; border-radius: 8px; text-decoration: none; transition: opacity 0.2s; }
+    .cta-btn:hover { opacity: 0.85; }
+    .cta-btn.disabled { background: var(--surface2); color: var(--muted); cursor: default; pointer-events: none; }
+
+    .sources { border-top: 1px solid var(--border); padding: 2rem; max-width: 780px; margin: 0 auto; }
+    .sources h4 { font-size: 0.75rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.75rem; }
+    .sources ul { list-style: none; display: flex; flex-direction: column; gap: 0.3rem; }
+    .sources a { font-size: 0.8rem; color: var(--muted); text-decoration: none; }
+    .sources a:hover { color: var(--accent); }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-brand" href="index.html">⚡ Power Shift</a>
+  <ul class="nav-chapters">
+    <li><a href="index.html">1. The Energy Illusion</a></li>
+    <li><a href="chapter2.html">2. The Efficiency Revolution</a></li>
+    <li><a href="chapter3.html">3. The Invisible Cost of Fuel</a></li>
+    <li><a href="chapter4.html">4. The Missing Battery</a></li>
+    <li><a href="chapter5.html" class="active">5. Sunshine on Everything</a></li>
+    <li><a href="#" class="coming-soon">6. The Real Price Tag</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="chapter-label">Chapter 5</div>
+  <h1>Sunshine on <span>Everything</span></h1>
+  <p class="subtitle">The solar debate assumes we need to claim new land. We don't. The surfaces we already use — rooftops, parking lots, farmland — could supply the majority of US electricity without displacing a single acre.</p>
+  <div class="scroll-cue">↓ scroll to find out</div>
+</div>
+
+<!-- HOOK -->
+<div class="section">
+  <h2>The Wrong Question</h2>
+  <p>Critics of solar often frame the land use question like this: <em>"You'd need to cover enormous areas of land to power the whole country — solar can't scale without destroying natural habitats."</em></p>
+  <p>That framing starts from a flawed premise. It imagines solar as something that goes <em>instead of</em> existing land uses — replacing farmland, forests, or open space. But solar panels don't care what's underneath them. They can sit on top of rooftops, float over parking spaces, and shade crops that grow better in partial shadow.</p>
+  <p>The question isn't <em>where do we put solar</em>. It's <em>what are we already covering</em> that could also be generating electricity?</p>
+</div>
+
+<!-- STAT CARDS -->
+<div class="section" style="padding-top:0">
+  <div class="stat-grid">
+    <div class="stat-card gold">
+      <div class="number">34%</div>
+      <div class="label">of all US electricity could come from rooftop solar alone, using existing buildings (NREL 2016)</div>
+    </div>
+    <div class="stat-card green">
+      <div class="number">1,432</div>
+      <div class="label">TWh/year of rooftop solar potential across US residential and commercial buildings</div>
+    </div>
+    <div class="stat-card blue">
+      <div class="number">800M+</div>
+      <div class="label">parking spaces in the US — most uncovered, unshaded, and generating nothing</div>
+    </div>
+    <div class="stat-card orange">
+      <div class="number">186%</div>
+      <div class="label">land productivity gain in agrivoltaic systems — solar panels + crops on the same land</div>
+    </div>
+  </div>
+  <p style="font-size:0.8rem;color:var(--muted)">Source: NREL Gagnon et al. 2016 rooftop solar study; DOE agrivoltaics research; various parking space estimates.</p>
+</div>
+
+<!-- INTERACTIVE POTENTIAL EXPLORER -->
+<div class="section" style="padding-top:0">
+  <div class="explorer-card">
+    <h3>Solar Potential by Surface Type</h3>
+    <p class="ex-sub">How much US electricity could each deployment category supply? The dashed line marks total 2023 US electricity demand.</p>
+
+    <div class="potential-bar-wrap">
+      <div class="pot-header">
+        <span>Source &amp; potential</span>
+        <span style="text-align:right">TWh/year</span>
+      </div>
+
+      <!-- US electricity demand reference bar = 4,178 TWh = 100% of bar width -->
+
+      <div>
+        <div class="pot-label"><strong>Residential rooftops</strong> — homes, apartments. NREL technical potential.</div>
+        <div class="pot-row">
+          <div class="pot-bar-outer">
+            <div class="pot-bar-fill" id="bar1" style="width:0%;background:var(--gold)">926 TWh</div>
+            <div class="pot-bar-demand" style="left:100%"></div>
+          </div>
+          <div class="pot-val" style="color:var(--gold)">926 TWh</div>
+        </div>
+        <div class="pot-label"><strong>Commercial &amp; industrial rooftops</strong> — warehouses, offices, factories.</div>
+        <div class="pot-row">
+          <div class="pot-bar-outer">
+            <div class="pot-bar-fill" id="bar2" style="width:0%;background:var(--yellow)">506 TWh</div>
+            <div class="pot-bar-demand" style="left:100%"></div>
+          </div>
+          <div class="pot-val" style="color:var(--yellow)">506 TWh</div>
+        </div>
+        <div class="pot-label"><strong>Parking canopies</strong> — 10% of US parking covered with solar carports. <span style="color:var(--gold);font-size:0.75rem">Estimate</span></div>
+        <div class="pot-row">
+          <div class="pot-bar-outer">
+            <div class="pot-bar-fill" id="bar3" style="width:0%;background:var(--orange)">~290 TWh</div>
+            <div class="pot-bar-demand" style="left:100%"></div>
+          </div>
+          <div class="pot-val" style="color:var(--orange)">~290 TWh</div>
+        </div>
+        <div class="pot-label"><strong>Agrivoltaics</strong> — 1% of US farmland dual-use with solar. <span style="color:var(--gold);font-size:0.75rem">Estimate</span></div>
+        <div class="pot-row">
+          <div class="pot-bar-outer">
+            <div class="pot-bar-fill" id="bar4" style="width:0%;background:var(--green)">~380 TWh</div>
+            <div class="pot-bar-demand" style="left:100%"></div>
+          </div>
+          <div class="pot-val" style="color:var(--green)">~380 TWh</div>
+        </div>
+        <div class="pot-label" style="color:var(--text);font-weight:600">Total US electricity demand (2023)</div>
+        <div class="pot-row">
+          <div class="pot-bar-outer">
+            <div class="pot-bar-fill" style="width:100%;background:rgba(255,255,255,0.08);border:1px dashed rgba(255,255,255,0.3)">4,178 TWh demand</div>
+          </div>
+          <div class="pot-val" style="color:var(--muted)">4,178 TWh</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="ex-total">
+      <div class="ex-cell">
+        <div class="ec-lab">Combined potential (above)</div>
+        <div class="ec-val" style="color:var(--gold)">~2,100 TWh</div>
+      </div>
+      <div class="ex-cell">
+        <div class="ec-lab">% of 2023 US demand</div>
+        <div class="ec-val" style="color:var(--green)">~50%</div>
+      </div>
+    </div>
+    <p class="ex-note">Note: NREL rooftop figures are published technical potential (2016); parking and agrivoltaic figures are order-of-magnitude estimates. All four categories combined cover roughly half of US electricity demand without touching a single acre of undeveloped land.</p>
+  </div>
+</div>
+
+<!-- DEPLOYMENT SCENARIOS -->
+<div class="section" style="padding-top:0">
+  <h2>Where Solar Actually Goes</h2>
+
+  <div class="scenarios">
+    <div class="scenario">
+      <div class="sc-icon">🏠</div>
+      <div class="sc-body">
+        <h4>Residential Rooftops <span class="sc-tag solid">Sourced</span></h4>
+        <p>NREL's landmark 2016 study found that US residential rooftops alone could supply <strong>926 TWh/year</strong> — about 22% of total US electricity demand. Add commercial buildings and the total reaches 1,432 TWh (34% of demand). These panels sit on surfaces that already exist, shelter buildings from heat (reducing cooling costs), and move electricity generation to where it's consumed — skipping most of the grid's 5–6% transmission losses. Roughly 3.3 million homes per year are built or re-roofed, each one an opportunity.</p>
+      </div>
+    </div>
+
+    <div class="scenario">
+      <div class="sc-icon">🚗</div>
+      <div class="sc-body">
+        <h4>Parking Canopies <span class="sc-tag est">Estimated</span></h4>
+        <p>The United States has an estimated 500–800 million parking spaces — an astonishing amount of paved, sun-exposed surface generating nothing. Solar canopies over parking lots provide shade for cars (reducing interior temperatures and AC demand), generate power for EV charging directly on-site, and require no new land. If just 10% of US parking spaces were covered, the resulting generation would roughly equal the output of 40 large nuclear plants. France passed a law in 2023 requiring solar canopies on all parking lots with more than 80 spaces.</p>
+      </div>
+    </div>
+
+    <div class="scenario">
+      <div class="sc-icon">🌾</div>
+      <div class="sc-body">
+        <h4>Agrivoltaics — Solar + Farming <span class="sc-tag solid">Sourced</span></h4>
+        <p>Agrivoltaics — the practice of growing crops under or between solar panels — has moved from experiment to established practice. Research shows up to <strong>186% combined land productivity</strong> in agrivoltaic systems compared to using the land for either solar or farming alone. The logic: partial shade from panels reduces water evaporation, extends the growing season for cool-season crops (lettuce, spinach, herbs), and protects against extreme heat. Farmers earn lease revenue from solar developers while continuing to farm the same land. Studies from the DOE and several universities show the benefits are real across a wide range of crop types and climates.</p>
+      </div>
+    </div>
+
+    <div class="scenario">
+      <div class="sc-icon">🏭</div>
+      <div class="sc-body">
+        <h4>Warehouses &amp; Industrial Rooftops <span class="sc-tag solid">Sourced</span></h4>
+        <p>Large commercial and industrial buildings — warehouses, distribution centers, manufacturing plants — often have large, flat, unshaded rooftops with structural capacity to support solar. Amazon, Walmart, Apple, and Target collectively operate some of the largest corporate solar installations in the world. The NREL study's 506 TWh/year from commercial rooftops is likely an underestimate, as it used 2014 solar efficiency figures; modern panels generate 20–30% more power from the same area. These installations generate electricity directly where energy-intensive operations need it, often in industrial zones far from residential areas.</p>
+      </div>
+    </div>
+
+    <div class="scenario">
+      <div class="sc-icon">💧</div>
+      <div class="sc-body">
+        <h4>Reservoirs &amp; Canals <span class="sc-tag est">Estimated</span></h4>
+        <p>Floating solar on water reservoirs and solar panels covering irrigation canals are both real and growing. California's Project Nexus showed that covering irrigation canals with solar panels reduced water evaporation by 39% while generating enough electricity to power 75,000 homes — from a stretch of canal that was already built and maintained. The US has roughly 40,000 miles of irrigation canals. Covering even a fraction would generate significant power while reducing water loss in drought-stressed regions — a dual benefit that costs less than building solar on land.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- DISTRIBUTED GENERATION BENEFIT -->
+<div class="section" style="padding-top:0">
+  <h2>Close to Home Changes Everything</h2>
+  <p>Utility-scale solar built in the desert is valuable. But solar on your roof does something different: it <em>removes</em> your home from the grid's demand side during the hours when the sun shines.</p>
+  <p>This is a different kind of benefit than adding supply at a central plant. Distributed generation:</p>
+
+  <div style="display:flex;flex-direction:column;gap:0.5rem;margin:1.5rem 0">
+    <div style="display:grid;grid-template-columns:28px 1fr;gap:0.75rem;align-items:start;padding:0.75rem 0;border-bottom:1px solid var(--border)">
+      <span style="color:var(--gold);font-weight:700">→</span>
+      <p style="margin:0;font-size:0.9rem"><strong>Reduces transmission losses</strong> — electricity used where it's generated doesn't travel through hundreds of miles of wire, skipping the grid's ~5–6% transmission loss entirely.</p>
+    </div>
+    <div style="display:grid;grid-template-columns:28px 1fr;gap:0.75rem;align-items:start;padding:0.75rem 0;border-bottom:1px solid var(--border)">
+      <span style="color:var(--gold);font-weight:700">→</span>
+      <p style="margin:0;font-size:0.9rem"><strong>Reduces peak demand</strong> — solar generation peaks in the afternoon when air conditioning demand peaks. Rooftop solar directly offsets the load that causes peaker plants to fire up (Chapter 4).</p>
+    </div>
+    <div style="display:grid;grid-template-columns:28px 1fr;gap:0.75rem;align-items:start;padding:0.75rem 0;border-bottom:1px solid var(--border)">
+      <span style="color:var(--gold);font-weight:700">→</span>
+      <p style="margin:0;font-size:0.9rem"><strong>Reduces grid infrastructure strain</strong> — fewer electrons traveling long distances means less stress on substations, transformers, and distribution lines — extending their lifespans and reducing blackout risk.</p>
+    </div>
+    <div style="display:grid;grid-template-columns:28px 1fr;gap:0.75rem;align-items:start;padding:0.75rem 0">
+      <span style="color:var(--gold);font-weight:700">→</span>
+      <p style="margin:0;font-size:0.9rem"><strong>Creates resilience</strong> — a home with solar and a battery can keep running during grid outages. A neighborhood with high solar penetration is partially insulated from regional supply disruptions.</p>
+    </div>
+  </div>
+</div>
+
+<!-- VIRTUOUS CYCLE -->
+<div class="section" style="padding-top:0">
+  <h2>The Home Energy Cycle</h2>
+  <p>Chapters 2, 4, and 5 point toward the same destination. Put them together and you get something that's already happening in millions of homes:</p>
+
+  <div class="cycle-grid">
+    <div class="cycle-cell">
+      <div class="cy-icon">☀️</div>
+      <h4>Rooftop Solar</h4>
+      <p>Generates electricity during daylight hours — more than the home needs during the day</p>
+    </div>
+    <div class="cycle-arrow">→</div>
+    <div class="cycle-cell">
+      <div class="cy-icon">🔋</div>
+      <h4>Home Battery</h4>
+      <p>Stores daytime solar surplus for evening use — or sells it back to the grid at peak prices</p>
+    </div>
+    <div class="cycle-arrow">→</div>
+    <div class="cycle-cell">
+      <div class="cy-icon">🚗</div>
+      <h4>Electric Vehicle</h4>
+      <p>Charges from solar and battery overnight — fueled entirely by the sun, with zero fuel cost</p>
+    </div>
+  </div>
+
+  <p style="margin-top:1.5rem">This combination — already commercially available and declining in cost — effectively removes a home from fossil fuel dependence for both transportation and electricity. The monthly electricity and fuel bill can drop to near zero. The grid sees less demand. The EV charges on sunlight. No new land was used.</p>
+
+  <div class="callout green">
+    <div class="callout-label">Already at scale</div>
+    <p>In Hawaii, where electricity prices have historically been very high, over 30% of single-family homes now have rooftop solar. In California, new residential construction is required to include solar. This isn't a future scenario — it's a policy direction that's already in motion, and the economics support it even without mandates in most sunny states.</p>
+  </div>
+</div>
+
+<!-- REGIONAL SOLAR -->
+<div class="section" style="padding-top:0">
+  <h2>"But I Don't Live in the Sun Belt"</h2>
+  <p>Solar is often dismissed as a technology that only works in Arizona. The reality is more nuanced — and more optimistic.</p>
+
+  <div class="regions-grid">
+    <div class="region-card">
+      <div class="rc-sun" style="color:var(--gold)">High solar</div>
+      <h4>Southwest US</h4>
+      <div class="rc-bar" style="background:var(--gold);width:75px"></div>
+      <p>6–7 peak sun hours/day. Solar panels here produce 50–70% more electricity than the US average. The Mojave and Sonoran deserts are among the best solar resources on earth.</p>
+    </div>
+    <div class="region-card">
+      <div class="rc-sun" style="color:var(--yellow)">Good solar</div>
+      <h4>Southeast &amp; Plains</h4>
+      <div class="rc-bar" style="background:var(--yellow);width:58px"></div>
+      <p>4.5–6 peak sun hours/day. Florida, Texas, and the Great Plains have excellent solar resources that are largely untapped. Florida generates less solar than Massachusetts despite far more sun.</p>
+    </div>
+    <div class="region-card">
+      <div class="rc-sun" style="color:var(--orange)">Viable solar</div>
+      <h4>Midwest &amp; Northeast</h4>
+      <div class="rc-bar" style="background:var(--orange);width:44px"></div>
+      <p>3.5–4.5 peak sun hours/day. Germany — cloudier than any US state — generates ~12% of its electricity from solar and has 60 GW installed. The Northeast is economically viable, especially with high grid prices.</p>
+    </div>
+    <div class="region-card">
+      <div class="rc-sun" style="color:var(--accent)">Still works</div>
+      <h4>Pacific Northwest</h4>
+      <div class="rc-bar" style="background:var(--accent);width:32px"></div>
+      <p>3–4 peak sun hours/day. Lowest US solar resource, but still produces meaningful power in summer months. Often paired with abundant hydro and wind for a complementary mix.</p>
+    </div>
+  </div>
+
+  <div class="callout blue">
+    <div class="callout-label">The Germany comparison</div>
+    <p>Germany sits at roughly the latitude of Canada's Hudson Bay and has a cloudier climate than any US state. It has still deployed over 80 GW of solar capacity and generates ~12% of its total electricity from solar, with ambitions to reach 50% by 2035. The US is the Saudi Arabia of solar resources by comparison — and has deployed a fraction of what the economics justify.</p>
+  </div>
+</div>
+
+<hr class="divider">
+
+<!-- FAQ -->
+<div class="section">
+  <h2>Common Objections</h2>
+
+  <div class="qa-block" onclick="toggleQA(this)">
+    <div class="qa-question">
+      <span>"Solar panels degrade and wear out — isn't that a long-term problem?"</span>
+      <div class="qa-icon">+</div>
+    </div>
+    <div class="qa-answer">
+      <p>Solar panels do degrade over time, at a rate of about <strong>0.5% per year</strong> — meaning a panel installed today will still produce about 87% of its original output after 25 years. Most manufacturers offer 25-year performance warranties. Modern panels tested in harsh climates have shown degradation rates even lower than this.</p>
+      <p>End-of-life is a legitimate question. Panel recycling infrastructure is in early stages — most panels today end up in landfills at end-of-life, which is a real problem the industry needs to solve. Several manufacturers now offer take-back programs, and the EU has mandatory recycling requirements. The issue is manageable and being actively worked on, but worth naming rather than dismissing.</p>
+    </div>
+  </div>
+
+  <div class="qa-block" onclick="toggleQA(this)">
+    <div class="qa-question">
+      <span>"Homeowners and farmers can't afford solar — this only benefits the wealthy."</span>
+      <div class="qa-icon">+</div>
+    </div>
+    <div class="qa-answer">
+      <p>Cost access is a genuine equity issue. The federal Investment Tax Credit (ITC) covers 30% of solar installation costs, but only for homeowners who owe federal taxes — renters and low-income households often don't benefit. Community solar programs — where subscribers buy a share of a larger solar installation and receive credits on their utility bill — are expanding rapidly and provide solar benefits to renters and those without suitable rooftops.</p>
+      <p>For farmers, the economics of agrivoltaics are increasingly compelling: lease revenue from solar developers provides a stable income stream alongside crops, and the DOE and USDA have active programs supporting agrivoltaic adoption. The Rural Energy for America Program (REAP) provides grants and loans for agricultural solar installations.</p>
+    </div>
+  </div>
+
+  <div class="qa-block" onclick="toggleQA(this)">
+    <div class="qa-question">
+      <span>"If everyone has rooftop solar, how does the utility make money and maintain the grid?"</span>
+      <div class="qa-icon">+</div>
+    </div>
+    <div class="qa-answer">
+      <p>This is a real regulatory challenge, and utilities are right to raise it. If customers generate their own power and the grid-fixed-cost recovery model doesn't adapt, the remaining non-solar customers end up paying more to maintain infrastructure — a "death spiral" dynamic that several utilities have experienced in high-solar markets.</p>
+      <p>The solution isn't to restrict rooftop solar — it's to restructure utility rate designs so grid maintenance costs are recovered through connection fees rather than per-kWh charges, and to expand utility business models into services (grid management, storage, EV charging). California, Hawaii, and several other states are actively working through these redesigns. It's a policy challenge, not a technical barrier to rooftop solar.</p>
+    </div>
+  </div>
+
+  <div class="qa-block" onclick="toggleQA(this)">
+    <div class="qa-question">
+      <span>"Doesn't solar require rare or toxic materials that are hard to mine?"</span>
+      <div class="qa-icon">+</div>
+    </div>
+    <div class="qa-answer">
+      <p>The vast majority of solar panels (over 90%) use silicon — the second most abundant element in Earth's crust — as the primary semiconductor material. There's no scarcity issue with silicon. Some older thin-film technologies used cadmium telluride or copper indium gallium selenide, but silicon remains dominant.</p>
+      <p>Silver is used in solar panel electrodes and is the main material supply concern — panels use roughly 20 mg of silver per watt. As solar scales dramatically, this could create silver supply pressure. The industry is actively developing lower-silver and silver-free electrode technologies; silver content per panel has already dropped 90% over the past decade and continues to fall. Unlike lithium in batteries, silver isn't consumed during solar operation — it can be fully recovered at end-of-life.</p>
+    </div>
+  </div>
+</div>
+
+<hr class="divider">
+
+<div class="cta-section">
+  <h2>Next: The Real Price Tag</h2>
+  <p>We've now covered why demand is smaller than critics claim, why efficiency multiplies the effect, why supply can scale on existing surfaces, and why storage solves the reliability question. The final chapter puts a dollar figure on what we're already paying for the current system — and what we'd save.</p>
+  <a href="#" class="cta-btn disabled">Chapter 6 — Coming Soon →</a>
+</div>
+
+<div class="sources">
+  <h4>Sources</h4>
+  <ul>
+    <li><a href="https://www.nrel.gov/docs/fy16osti/65298.pdf" target="_blank">NREL — Rooftop Solar Photovoltaic Technical Potential (Gagnon et al. 2016)</a></li>
+    <li><a href="https://www.energy.gov/eere/solar/articles/agrivoltaics-solar-energy-and-farming-same-land" target="_blank">U.S. DOE — Agrivoltaics: Solar Energy and Farming on the Same Land</a></li>
+    <li><a href="https://www.energy.gov/sites/default/files/2022-09/Solar%20Futures%20Study.pdf" target="_blank">DOE Solar Futures Study 2021</a></li>
+    <li><a href="https://www.nrel.gov/docs/fy22osti/83586.pdf" target="_blank">NREL — Distributed Solar Technical Potential</a></li>
+    <li><a href="https://ourworldindata.org/solar-power" target="_blank">Our World in Data — Solar Power</a></li>
+  </ul>
+</div>
+
+<script>
+  function toggleQA(el) { el.classList.toggle('open'); }
+
+  // animate bars on load
+  const bars = [
+    { id: 'bar1', pct: (926 / 4178) * 100 },
+    { id: 'bar2', pct: (506 / 4178) * 100 },
+    { id: 'bar3', pct: (290 / 4178) * 100 },
+    { id: 'bar4', pct: (380 / 4178) * 100 },
+  ];
+
+  function animateBars() {
+    bars.forEach((b, i) => {
+      setTimeout(() => {
+        document.getElementById(b.id).style.width = b.pct + '%';
+      }, 300 + i * 200);
+    });
+  }
+
+  // trigger when section scrolls into view
+  const explorer = document.querySelector('.explorer-card');
+  let fired = false;
+  const obs = new IntersectionObserver(entries => {
+    if (entries[0].isIntersecting && !fired) {
+      fired = true;
+      animateBars();
+    }
+  }, { threshold: 0.3 });
+  obs.observe(explorer);
+</script>
+</body>
+</html>
