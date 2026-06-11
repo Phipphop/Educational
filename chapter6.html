@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chapter 6: The Real Price Tag — Power Shift</title>
+  <style>
+    :root {
+      --bg: #0d1117;
+      --surface: #161b22;
+      --surface2: #1f2937;
+      --border: #30363d;
+      --text: #e6edf3;
+      --muted: #8b949e;
+      --accent: #58a6ff;
+      --green: #3fb950;
+      --orange: #f97316;
+      --red: #f85149;
+      --yellow: #d29922;
+      --gold: #f5c518;
+      --purple: #a371f7;
+      --teal: #2dd4bf;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif; line-height: 1.7; }
+
+    nav { position: sticky; top: 0; z-index: 100; background: rgba(13,17,23,0.92); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); padding: 0 2rem; display: flex; align-items: center; gap: 2rem; height: 56px; }
+    .nav-brand { font-weight: 700; font-size: 1rem; color: var(--accent); text-decoration: none; letter-spacing: -0.02em; white-space: nowrap; }
+    .nav-chapters { display: flex; gap: 0.25rem; list-style: none; overflow-x: auto; }
+    .nav-chapters a { color: var(--muted); text-decoration: none; font-size: 0.85rem; padding: 0.35rem 0.75rem; border-radius: 6px; transition: color 0.2s, background 0.2s; white-space: nowrap; }
+    .nav-chapters a:hover { color: var(--text); background: var(--surface); }
+    .nav-chapters a.active { color: var(--teal); background: var(--surface); }
+
+    .hero { padding: 5rem 2rem 4rem; text-align: center; max-width: 800px; margin: 0 auto; }
+    .chapter-label { display: inline-block; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--teal); background: rgba(45,212,191,0.1); border: 1px solid rgba(45,212,191,0.25); border-radius: 20px; padding: 0.3rem 0.9rem; margin-bottom: 1.5rem; }
+    .hero h1 { font-size: clamp(2rem,5vw,3.5rem); font-weight: 800; letter-spacing: -0.03em; line-height: 1.15; margin-bottom: 1rem; }
+    .hero h1 span { color: var(--teal); }
+    .hero .subtitle { font-size: 1.15rem; color: var(--muted); max-width: 580px; margin: 0 auto 2.5rem; }
+    .scroll-cue { display: flex; align-items: center; justify-content: center; gap: 0.5rem; color: var(--muted); font-size: 0.85rem; animation: bounce 2s ease-in-out infinite; }
+    @keyframes bounce { 0%,100%{transform:translateY(0)}50%{transform:translateY(6px)} }
+
+    .section { max-width: 780px; margin: 0 auto; padding: 3rem 2rem; }
+    .section + .section { padding-top: 0; }
+    h2 { font-size: 1.75rem; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 1rem; }
+    h3 { font-size: 1.1rem; font-weight: 600; margin: 2rem 0 0.5rem; }
+    p { color: #c9d1d9; margin-bottom: 1rem; }
+    p:last-child { margin-bottom: 0; }
+    strong { color: var(--text); }
+
+    .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(175px, 1fr)); gap: 1rem; margin: 2rem 0; }
+    .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; text-align: center; }
+    .stat-card .number { font-size: 2.1rem; font-weight: 800; letter-spacing: -0.03em; line-height: 1; margin-bottom: 0.5rem; }
+    .stat-card .label { font-size: 0.85rem; color: var(--muted); line-height: 1.4; }
+    .stat-card.red    .number { color: var(--red); }
+    .stat-card.green  .number { color: var(--green); }
+    .stat-card.teal   .number { color: var(--teal); }
+    .stat-card.orange .number { color: var(--orange); }
+
+    .callout { border-radius: 12px; padding: 1.5rem 2rem; margin: 2rem 0; background: var(--surface); border: 1px solid var(--border); }
+    .callout.teal   { border-left: 4px solid var(--teal);   border-radius: 0 12px 12px 0; }
+    .callout.green  { border-left: 4px solid var(--green);  border-radius: 0 12px 12px 0; }
+    .callout.red    { border-left: 4px solid var(--red);    border-radius: 0 12px 12px 0; }
+    .callout.orange { border-left: 4px solid var(--orange); border-radius: 0 12px 12px 0; }
+    .callout.blue   { border-left: 4px solid var(--accent); border-radius: 0 12px 12px 0; }
+    .callout-label { font-size: 0.7rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 0.5rem; }
+    .callout.teal   .callout-label { color: var(--teal); }
+    .callout.green  .callout-label { color: var(--green); }
+    .callout.red    .callout-label { color: var(--red); }
+    .callout.orange .callout-label { color: var(--orange); }
+    .callout.blue   .callout-label { color: var(--accent); }
+    .callout p { color: var(--text); font-style: italic; }
+
+    /* ── COST BREAKDOWN VIZ ── */
+    .cost-stacks { display: flex; flex-direction: column; gap: 0; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin: 2rem 0; }
+    .cost-row { display: grid; grid-template-columns: 1fr 140px; align-items: center; border-bottom: 1px solid var(--border); background: var(--surface); }
+    .cost-row:last-child { border-bottom: none; }
+    .cost-row:hover { background: var(--surface2); }
+    .cost-left { padding: 1rem 1.25rem; }
+    .cost-left h4 { font-size: 0.9rem; font-weight: 600; margin-bottom: 0.2rem; }
+    .cost-left p { font-size: 0.8rem; color: var(--muted); margin: 0; font-style: normal; }
+    .cost-right { padding: 1rem 1.25rem; text-align: right; border-left: 1px solid var(--border); }
+    .cost-amount { font-size: 1.1rem; font-weight: 800; }
+    .cost-sub { font-size: 0.72rem; color: var(--muted); }
+    .cost-total { background: var(--surface2); }
+    .cost-total .cost-left h4 { font-size: 1rem; color: var(--text); }
+    .cost-total .cost-amount { font-size: 1.3rem; color: var(--red); }
+
+    /* ── TRUE COST CALCULATOR ── */
+    .calc-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 2rem; margin: 2rem 0; }
+    .calc-card h3 { margin: 0 0 0.3rem; font-size: 1.05rem; }
+    .calc-sub { font-size: 0.85rem; color: var(--muted); margin-bottom: 1.75rem; }
+    .calc-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; margin-bottom: 1.75rem; }
+    @media(max-width:480px){ .calc-inputs { grid-template-columns: 1fr; } }
+    .calc-field label { display: block; font-size: 0.78rem; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem; }
+    .calc-field input[type=range] { width: 100%; cursor: pointer; accent-color: var(--teal); }
+    .range-val { font-size: 1.1rem; font-weight: 700; color: var(--teal); margin-top: 0.2rem; }
+
+    .bill-compare { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--border); border-radius: 10px; overflow: hidden; margin-bottom: 1.25rem; }
+    @media(max-width:480px){ .bill-compare { grid-template-columns: 1fr; } }
+    .bc-cell { background: var(--bg); padding: 1.25rem; }
+    .bc-cell .bc-label { font-size: 0.72rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.4rem; }
+    .bc-cell .bc-val { font-size: 2rem; font-weight: 800; letter-spacing: -0.03em; }
+    .bc-cell .bc-sub { font-size: 0.78rem; color: var(--muted); margin-top: 0.2rem; }
+    .bc-cell.visible .bc-val { color: var(--accent); }
+    .bc-cell.real .bc-val { color: var(--red); }
+
+    .hidden-breakdown { margin-top: 1rem; }
+    .hb-row { display: flex; align-items: center; justify-content: space-between; padding: 0.5rem 0; border-bottom: 1px solid var(--border); font-size: 0.85rem; }
+    .hb-row:last-child { border-bottom: none; }
+    .hb-label { color: var(--muted); }
+    .hb-val { font-weight: 600; }
+    .hb-row.total { padding-top: 0.75rem; font-weight: 700; }
+    .hb-row.total .hb-label { color: var(--text); }
+    .hb-row.total .hb-val { color: var(--red); font-size: 1rem; }
+
+    /* ── LCOE COMPARISON ── */
+    .lcoe-grid { display: flex; flex-direction: column; gap: 0.6rem; margin: 1.5rem 0; }
+    .lcoe-row { display: grid; grid-template-columns: 180px 1fr 90px; align-items: center; gap: 1rem; font-size: 0.85rem; }
+    @media(max-width:520px){ .lcoe-row { grid-template-columns: 120px 1fr 65px; } }
+    .lcoe-label { color: var(--muted); font-size: 0.82rem; }
+    .lcoe-bar-bg { height: 24px; background: var(--surface); border-radius: 4px; overflow: hidden; border: 1px solid var(--border); }
+    .lcoe-bar-fill { height: 100%; border-radius: 3px; display: flex; align-items: center; padding-left: 6px; font-size: 0.7rem; font-weight: 600; color: rgba(255,255,255,0.85); }
+    .lcoe-val { font-weight: 700; text-align: right; font-size: 0.88rem; }
+    .lcoe-header { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); display: grid; grid-template-columns: 180px 1fr 90px; gap: 1rem; padding-bottom: 0.5rem; border-bottom: 1px solid var(--border); margin-bottom: 0.5rem; }
+    @media(max-width:520px){ .lcoe-header { grid-template-columns: 120px 1fr 65px; } }
+
+    /* ── SIX CHAPTER SYNTHESIS ── */
+    .synthesis-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--border); border-radius: 12px; overflow: hidden; margin: 2rem 0; }
+    @media(max-width:540px){ .synthesis-grid { grid-template-columns: 1fr; } }
+    .syn-cell { background: var(--surface); padding: 1.25rem 1.5rem; }
+    .syn-cell .syn-ch { font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 0.4rem; }
+    .syn-cell h4 { font-size: 0.9rem; font-weight: 600; margin-bottom: 0.35rem; }
+    .syn-cell p { font-size: 0.8rem; color: var(--muted); margin: 0; font-style: normal; }
+    .syn-cell .syn-key { font-size: 1.1rem; font-weight: 800; margin-bottom: 0.25rem; }
+
+    /* ── CONCLUSION ── */
+    .conclusion { background: linear-gradient(135deg, rgba(45,212,191,0.08) 0%, rgba(63,185,80,0.05) 100%); border: 1px solid rgba(45,212,191,0.2); border-radius: 16px; padding: 2.5rem; margin: 2rem 0; text-align: center; }
+    .conclusion h2 { font-size: 1.5rem; margin-bottom: 1rem; }
+    .conclusion p { color: #c9d1d9; max-width: 600px; margin: 0 auto 1rem; }
+
+    /* ── FAQ ── */
+    .qa-block { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin: 1rem 0; }
+    .qa-question { display: flex; align-items: center; justify-content: space-between; padding: 1rem 1.5rem; cursor: pointer; user-select: none; gap: 1rem; }
+    .qa-question:hover { background: var(--surface2); }
+    .qa-question span { font-size: 0.9rem; font-weight: 500; color: var(--text); }
+    .qa-icon { color: var(--muted); font-size: 1.2rem; flex-shrink: 0; transition: transform 0.25s; }
+    .qa-answer { display: none; padding: 0 1.5rem 1.25rem; font-size: 0.9rem; color: #c9d1d9; border-top: 1px solid var(--border); }
+    .qa-answer p { margin-top: 1rem; }
+    .qa-block.open .qa-icon { transform: rotate(45deg); }
+    .qa-block.open .qa-answer { display: block; }
+
+    .divider { border: none; border-top: 1px solid var(--border); margin: 0 2rem; }
+
+    .sources { border-top: 1px solid var(--border); padding: 2rem; max-width: 780px; margin: 0 auto; }
+    .sources h4 { font-size: 0.75rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.75rem; }
+    .sources ul { list-style: none; display: flex; flex-direction: column; gap: 0.3rem; }
+    .sources a { font-size: 0.8rem; color: var(--muted); text-decoration: none; }
+    .sources a:hover { color: var(--accent); }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-brand" href="index.html">⚡ Power Shift</a>
+  <ul class="nav-chapters">
+    <li><a href="index.html">1. The Energy Illusion</a></li>
+    <li><a href="chapter2.html">2. The Efficiency Revolution</a></li>
+    <li><a href="chapter3.html">3. The Invisible Cost of Fuel</a></li>
+    <li><a href="chapter4.html">4. The Missing Battery</a></li>
+    <li><a href="chapter5.html">5. Sunshine on Everything</a></li>
+    <li><a href="chapter6.html" class="active">6. The Real Price Tag</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="chapter-label">Chapter 6</div>
+  <h1>The <span>Real</span> Price Tag</h1>
+  <p class="subtitle">You already know what you pay for energy. You probably don't know what energy actually costs — in health, in blackouts, in subsidies, and in disasters. The bill is already here. It's just hidden.</p>
+  <div class="scroll-cue">↓ scroll to find out</div>
+</div>
+
+<!-- HOOK -->
+<div class="section">
+  <h2>Two Different Bills</h2>
+  <p>When people argue against electrification, the implicit assumption is that the current energy system is free — that transitioning means paying more for something we're getting for nothing. That assumption is wrong.</p>
+  <p>The current fossil fuel system carries enormous costs that don't show up on your energy bill. They show up in hospital bills, insurance premiums, FEMA disaster relief, federal tax subsidies, and the economic drag of blackouts. Americans are already paying them — collectively, every year — they just don't see the invoice.</p>
+  <p>Understanding the <em>real</em> cost of energy changes the question from "can we afford to transition?" to "can we afford not to?"</p>
+</div>
+
+<!-- STAT CARDS -->
+<div class="section" style="padding-top:0">
+  <div class="stat-grid">
+    <div class="stat-card red">
+      <div class="number">$820B</div>
+      <div class="label">estimated annual US health costs from fossil fuel air pollution and climate-driven health impacts</div>
+    </div>
+    <div class="stat-card orange">
+      <div class="number">350,000</div>
+      <div class="label">Americans who die prematurely each year from fossil fuel PM2.5 air pollution (Harvard, 2021)</div>
+    </div>
+    <div class="stat-card red">
+      <div class="number">$150B</div>
+      <div class="label">annual cost of US power outages to businesses and households (DOE/EPRI estimates)</div>
+    </div>
+    <div class="stat-card teal">
+      <div class="number">$24–96</div>
+      <div class="label">/MWh — new utility solar cost in 2024 (Lazard), cheaper than every new fossil fuel source</div>
+    </div>
+  </div>
+  <p style="font-size:0.8rem;color:var(--muted)">Source: Vohra et al. 2021 (*Environmental Research*); NRDC 2021 health cost synthesis; DOE/EPRI outage cost studies; Lazard LCOE+ June 2024.</p>
+</div>
+
+<!-- HEALTH COSTS -->
+<div class="section" style="padding-top:0">
+  <h2>The Health Bill We're Already Paying</h2>
+  <p>Burning fossil fuels releases fine particulate matter (PM2.5), nitrogen oxides, sulfur dioxide, and other pollutants directly into the air Americans breathe. The health consequences are large and well-documented.</p>
+  <p>A landmark 2021 study published in <em>Environmental Research</em> (Vohra et al., Harvard) found that fossil fuel combustion is responsible for <strong>350,000 premature deaths in the United States every year</strong> — more than double previous estimates, because the study used updated risk models that account for health impacts at lower pollution concentrations than earlier research assumed.</p>
+  <p>Globally, the same study found 8.7 million deaths annually — approximately <strong>1 in 5 deaths worldwide</strong> attributable to air pollution from burning fossil fuels.</p>
+
+  <div class="cost-stacks">
+    <div class="cost-row">
+      <div class="cost-left">
+        <h4>Premature mortality from PM2.5</h4>
+        <p>Lost productivity, medical costs in final months, mortality valuation (VSL-based)</p>
+      </div>
+      <div class="cost-right">
+        <div class="cost-amount" style="color:var(--red)">~$600B+</div>
+        <div class="cost-sub">per year</div>
+      </div>
+    </div>
+    <div class="cost-row">
+      <div class="cost-left">
+        <h4>Ozone pollution health impacts</h4>
+        <p>Asthma hospitalizations, respiratory disease, reduced lung function in children</p>
+      </div>
+      <div class="cost-right">
+        <div class="cost-amount" style="color:var(--orange)">~$7.9B</div>
+        <div class="cost-sub">per year (EPA)</div>
+      </div>
+    </div>
+    <div class="cost-row">
+      <div class="cost-left">
+        <h4>Climate-driven health impacts</h4>
+        <p>Heat-related illness, vector-borne disease expansion, extreme weather injury</p>
+      </div>
+      <div class="cost-right">
+        <div class="cost-amount" style="color:var(--orange)">~$100B+</div>
+        <div class="cost-sub">per year (growing)</div>
+      </div>
+    </div>
+    <div class="cost-row cost-total">
+      <div class="cost-left">
+        <h4>Total estimated annual health costs from fossil fuels</h4>
+        <p>NRDC synthesis of peer-reviewed literature (2021)</p>
+      </div>
+      <div class="cost-right">
+        <div class="cost-amount">~$820B</div>
+        <div class="cost-sub">per year</div>
+      </div>
+    </div>
+  </div>
+
+  <p style="font-size:0.85rem;color:var(--muted)">Note: The $820B figure is an advocacy-funded synthesis of peer-reviewed literature and should be understood as an estimate with meaningful uncertainty. The underlying 350,000 deaths figure is peer-reviewed and considered conservative by some researchers. The EPA estimates $77 in health benefits for every $1 spent reducing PM2.5.</p>
+</div>
+
+<!-- OUTAGE COSTS -->
+<div class="section" style="padding-top:0">
+  <h2>The Reliability Bill</h2>
+  <p>The US electrical grid loses more power per customer than almost any other developed country's grid. The American Society of Civil Engineers gives it a C– grade. Aging infrastructure, extreme weather events (which are increasing in frequency and severity), and underinvestment combine to produce a remarkably unreliable system for the world's largest economy.</p>
+
+  <div class="cost-stacks">
+    <div class="cost-row">
+      <div class="cost-left">
+        <h4>Business disruption and lost productivity</h4>
+        <p>Manufacturing shutdowns, spoilage, data loss, service interruptions</p>
+      </div>
+      <div class="cost-right">
+        <div class="cost-amount" style="color:var(--red)">$67–150B</div>
+        <div class="cost-sub">per year (range of estimates)</div>
+      </div>
+    </div>
+    <div class="cost-row">
+      <div class="cost-left">
+        <h4>Residential costs</h4>
+        <p>Spoiled food, hotel stays, generator fuel, medical equipment failure</p>
+      </div>
+      <div class="cost-right">
+        <div class="cost-amount" style="color:var(--orange)">$15–25B</div>
+        <div class="cost-sub">per year</div>
+      </div>
+    </div>
+    <div class="cost-row cost-total">
+      <div class="cost-left">
+        <h4>Total outage cost range</h4>
+        <p>ORNL, EPRI, and DOE studies — methodologies differ, all figures are large</p>
+      </div>
+      <div class="cost-right">
+        <div class="cost-amount">$100–150B</div>
+        <div class="cost-sub">per year</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout orange">
+    <div class="callout-label">The grid is getting less reliable, not more</div>
+    <p>Major power outages lasting more than an hour have increased significantly over the past two decades — primarily driven by more frequent and intense extreme weather events. The grid was designed for a climate that no longer exists. Modernization, which includes storage (Chapter 4) and distributed solar (Chapter 5), is the path to a more resilient system — not a more vulnerable one.</p>
+  </div>
+</div>
+
+<!-- SUBSIDIES -->
+<div class="section" style="padding-top:0">
+  <h2>The Subsidy Irony</h2>
+  <p>The fossil fuel industry receives significant direct subsidies from the federal government — tax breaks that exist specifically because of the political history of the oil and gas industry, not because they're economically justified.</p>
+  <p>These include the <strong>intangible drilling cost deduction</strong> (allowing oil companies to deduct ~70% of drilling costs in the first year), the <strong>percentage depletion allowance</strong> (allowing companies to deduct a fixed percentage of revenue from producing wells regardless of actual costs), and various other provisions that reduce the effective tax rate for fossil fuel companies well below the standard corporate rate.</p>
+
+  <div class="cost-stacks" style="margin-top:1.5rem">
+    <div class="cost-row">
+      <div class="cost-left">
+        <h4>Direct federal tax subsidies to fossil fuels</h4>
+        <p>Intangible drilling, depletion allowance, foreign tax credits, and other provisions</p>
+      </div>
+      <div class="cost-right">
+        <div class="cost-amount" style="color:var(--orange)">~$20B+</div>
+        <div class="cost-sub">per year (conservative)</div>
+      </div>
+    </div>
+    <div class="cost-row">
+      <div class="cost-left">
+        <h4>Implicit subsidies (unpaid externalities)</h4>
+        <p>Health costs, climate costs, and environmental damage not reflected in fuel prices</p>
+      </div>
+      <div class="cost-right">
+        <div class="cost-amount" style="color:var(--red)">$1T+</div>
+        <div class="cost-sub">per year (IMF estimate)</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout red">
+    <div class="callout-label">The implicit subsidy argument</div>
+    <p>The IMF calculates global fossil fuel subsidies at $5.9 trillion per year when "implicit subsidies" are included — meaning the health, environmental, and climate costs that are imposed on the public but not reflected in the price of fuel. When fossil fuel companies sell gasoline at $3.50 a gallon, society absorbs the health and climate costs separately. The full cost of a gallon of gas — if it had to include its health and climate externalities — would be substantially higher. Renewable energy, which produces neither PM2.5 nor CO₂ at the point of generation, doesn't create this hidden tab.</p>
+  </div>
+</div>
+
+<!-- TRUE COST CALCULATOR -->
+<div class="section" style="padding-top:0">
+  <div class="calc-card">
+    <h3>Your True Energy Cost</h3>
+    <p class="calc-sub">Enter your household's visible energy bills. See your proportional share of the hidden costs the current system imposes on every American household.</p>
+
+    <div class="calc-inputs">
+      <div class="calc-field">
+        <label>Annual electricity bill</label>
+        <input type="range" id="elecBill" min="400" max="4000" step="100" value="1400" oninput="updateTrueCost()">
+        <div class="range-val">$<span id="elecBillVal">1,400</span>/year</div>
+      </div>
+      <div class="calc-field">
+        <label>Annual gas / heating fuel bill</label>
+        <input type="range" id="gasBill" min="0" max="4000" step="100" value="900" oninput="updateTrueCost()">
+        <div class="range-val">$<span id="gasBillVal">900</span>/year</div>
+      </div>
+      <div class="calc-field">
+        <label>Annual gasoline (car fuel) bill</label>
+        <input type="range" id="carBill" min="0" max="6000" step="100" value="2000" oninput="updateTrueCost()">
+        <div class="range-val">$<span id="carBillVal">2,000</span>/year</div>
+      </div>
+      <div class="calc-field">
+        <label>Household size</label>
+        <input type="range" id="hhSize" min="1" max="6" step="1" value="2" oninput="updateTrueCost()">
+        <div class="range-val"><span id="hhSizeVal">2</span> people</div>
+      </div>
+    </div>
+
+    <div class="bill-compare">
+      <div class="bc-cell visible">
+        <div class="bc-label">What you see on your bills</div>
+        <div class="bc-val" id="visibleBill">$4,300</div>
+        <div class="bc-sub">electricity + gas + fuel per year</div>
+      </div>
+      <div class="bc-cell real">
+        <div class="bc-label">Your real energy cost</div>
+        <div class="bc-val" id="realBill">$12,800</div>
+        <div class="bc-sub">bills + your share of hidden costs</div>
+      </div>
+    </div>
+
+    <div class="hidden-breakdown" id="hiddenBreakdown">
+      <!-- filled by JS -->
+    </div>
+
+    <div style="margin-top:1.25rem;padding:1rem;background:var(--bg);border-radius:8px;border:1px solid var(--border);font-size:0.78rem;color:var(--muted)">
+      Hidden cost shares based on: $820B health costs ÷ 130M US households; $125B outage costs ÷ 130M households; $20B direct subsidies ÷ 130M households; $80B estimated climate disaster costs ÷ 130M households. Per-capita figures scaled by household size. All estimates carry significant uncertainty.
+    </div>
+  </div>
+</div>
+
+<!-- LCOE: RENEWABLES NOW WIN -->
+<div class="section" style="padding-top:0">
+  <h2>The Moment Renewables Won</h2>
+  <p>For decades, the argument against renewable energy was simple: it's too expensive. That argument is now factually reversed. New solar and wind are the cheapest sources of new electricity in most of the world — not just on environmental grounds, but on pure economics.</p>
+  <p>Lazard's authoritative Levelized Cost of Energy (LCOE) analysis, updated annually, shows where we are in 2024:</p>
+
+  <div class="lcoe-grid">
+    <div class="lcoe-header">
+      <span>Source</span><span>Levelized cost ($/MWh)</span><span>Range</span>
+    </div>
+    <div class="lcoe-row">
+      <div class="lcoe-label" style="color:var(--green);font-weight:600">Utility solar (new)</div>
+      <div class="lcoe-bar-bg"><div class="lcoe-bar-fill" style="width:20%;background:var(--green)">$24–96</div></div>
+      <div class="lcoe-val" style="color:var(--green)">$24–96</div>
+    </div>
+    <div class="lcoe-row">
+      <div class="lcoe-label" style="color:var(--green);font-weight:600">Onshore wind (new)</div>
+      <div class="lcoe-bar-bg"><div class="lcoe-bar-fill" style="width:17%;background:var(--green)">$22–73</div></div>
+      <div class="lcoe-val" style="color:var(--green)">$22–73</div>
+    </div>
+    <div class="lcoe-row">
+      <div class="lcoe-label">Natural gas CC (new)</div>
+      <div class="lcoe-bar-bg"><div class="lcoe-bar-fill" style="width:22%;background:var(--yellow)">$39–101</div></div>
+      <div class="lcoe-val" style="color:var(--yellow)">$39–101</div>
+    </div>
+    <div class="lcoe-row">
+      <div class="lcoe-label">Coal (new)</div>
+      <div class="lcoe-bar-bg"><div class="lcoe-bar-fill" style="width:40%;background:var(--orange)">$65–166</div></div>
+      <div class="lcoe-val" style="color:var(--orange)">$65–166</div>
+    </div>
+    <div class="lcoe-row">
+      <div class="lcoe-label">Gas peakers (new)</div>
+      <div class="lcoe-bar-bg"><div class="lcoe-bar-fill" style="width:55%;background:var(--red)">$110–228</div></div>
+      <div class="lcoe-val" style="color:var(--red)">$110–228</div>
+    </div>
+    <div class="lcoe-row">
+      <div class="lcoe-label">Nuclear (new)</div>
+      <div class="lcoe-bar-bg"><div class="lcoe-bar-fill" style="width:75%;background:var(--purple)">$141–221+</div></div>
+      <div class="lcoe-val" style="color:var(--purple)">$141–221+</div>
+    </div>
+  </div>
+  <p style="font-size:0.8rem;color:var(--muted)">Source: Lazard LCOE+ June 2024. LCOE reflects unsubsidized costs; does not include health or carbon externalities for fossil fuels, which would increase their costs substantially.</p>
+
+  <div class="callout teal">
+    <div class="callout-label">This is unsubsidized</div>
+    <p>These solar and wind costs are without the IRA tax credits that now make clean energy even cheaper. The subsidies exist to accelerate deployment — but solar and wind would be winning on economics alone in most markets even without them. The argument that renewables only work with subsidies was settled around 2018 and has become more wrong with every passing year.</p>
+  </div>
+</div>
+
+<!-- SIX CHAPTER SYNTHESIS -->
+<div class="section" style="padding-top:0">
+  <h2>The Case in Six Arguments</h2>
+  <p>These chapters have built a single connected argument. Here it is in summary:</p>
+
+  <div class="synthesis-grid">
+    <div class="syn-cell">
+      <div class="syn-ch" style="color:var(--accent)">Chapter 1 — The Energy Illusion</div>
+      <div class="syn-key" style="color:var(--accent)">66% wasted before it's used</div>
+      <h4>The scale of the transition is overstated</h4>
+      <p>Primary energy accounting includes the heat wasted in combustion. Renewables deliver the same useful energy from ~40 quads instead of 93.6 — a 57% reduction in total energy needed before we've done anything else.</p>
+    </div>
+    <div class="syn-cell">
+      <div class="syn-ch" style="color:var(--green)">Chapter 2 — The Efficiency Revolution</div>
+      <div class="syn-key" style="color:var(--green)">5× more efficient at the wheel</div>
+      <h4>Electrification reduces demand, it doesn't add to it</h4>
+      <p>An EV delivers 82% of electricity to the wheels; a gas car delivers 20% of fuel. Heat pumps deliver 2–4× more heat than gas furnaces per unit of energy. The grid can handle electrification because the energy demand per service goes down.</p>
+    </div>
+    <div class="syn-cell">
+      <div class="syn-ch" style="color:var(--orange)">Chapter 3 — The Invisible Cost of Fuel</div>
+      <div class="syn-key" style="color:var(--orange)">Only 11–16% reaches your wheels</div>
+      <h4>The supply chain waste makes fossil fuels far worse than they appear</h4>
+      <p>Well-to-wheel, gasoline converts only 11–16% of the original barrel's energy into motion. EVs on renewables convert 68–76%. The efficiency gap is 4–7× when the full chain is counted.</p>
+    </div>
+    <div class="syn-cell">
+      <div class="syn-ch" style="color:var(--purple)">Chapter 4 — The Missing Battery</div>
+      <div class="syn-key" style="color:var(--purple)">Grid runs at 40% capacity</div>
+      <h4>We already have enough generation — we just waste most of it</h4>
+      <p>Batteries let existing plants run at optimal efficiency, eliminate expensive peakers, absorb curtailed renewables, and are now cost-competitive. The grid can handle growing demand without new fossil plants.</p>
+    </div>
+    <div class="syn-cell">
+      <div class="syn-ch" style="color:var(--gold)">Chapter 5 — Sunshine on Everything</div>
+      <div class="syn-key" style="color:var(--gold)">~50% of demand from existing surfaces</div>
+      <h4>Solar doesn't need new land</h4>
+      <p>Rooftops, parking lots, farmland, and irrigation canals could supply roughly half of US electricity without displacing a single acre. Rooftop solar alone — NREL's figure — covers 34% of demand.</p>
+    </div>
+    <div class="syn-cell">
+      <div class="syn-ch" style="color:var(--teal)">Chapter 6 — The Real Price Tag</div>
+      <div class="syn-key" style="color:var(--teal)">$1T+ in hidden annual costs</div>
+      <h4>The current system isn't free — it's just hidden</h4>
+      <p>$820B in health costs, $150B in blackouts, $20B+ in direct subsidies, and growing climate disaster costs are already being paid. Electrification replaces this tab with systems that are now cheaper on raw economics alone.</p>
+    </div>
+  </div>
+</div>
+
+<hr class="divider">
+
+<!-- FAQ -->
+<div class="section">
+  <h2>Common Objections</h2>
+
+  <div class="qa-block" onclick="toggleQA(this)">
+    <div class="qa-question">
+      <span>"The $820B health cost figure sounds like it came from an advocacy group."</span>
+      <div class="qa-icon">+</div>
+    </div>
+    <div class="qa-answer">
+      <p>The synthesis report is from NRDC, which is an advocacy organization. That's worth flagging. However, the underlying 350,000 deaths figure comes from a peer-reviewed paper in <em>Environmental Research</em> (Vohra et al. 2021, Harvard), which is independent academic research. The economic translation of those deaths into dollar figures uses standard EPA methodology (Value of Statistical Life, or VSL) — the same method the EPA uses in its own regulatory cost-benefit analyses.</p>
+      <p>The 350,000 deaths figure is itself considered by some researchers to be conservative, as it uses risk estimates at PM2.5 concentrations where earlier epidemiological data is sparse. The direction of uncertainty is that actual mortality may be higher, not lower. We present the full range of confidence here rather than cite only the number that sounds biggest.</p>
+    </div>
+  </div>
+
+  <div class="qa-block" onclick="toggleQA(this)">
+    <div class="qa-question">
+      <span>"If renewables are cheaper, why isn't the market already building them everywhere?"</span>
+      <div class="qa-icon">+</div>
+    </div>
+    <div class="qa-answer">
+      <p>It is — at a record pace. The US added more renewable generation capacity in 2023 than in any previous year, and the same is true globally. The IEA reported that clean energy investment globally surpassed fossil fuel investment for the first time in 2023.</p>
+      <p>The lag has several explanations: long-term utility contracts with existing fossil fuel plants that haven't expired, permitting and interconnection backlogs that can delay projects by years, political opposition in regions with fossil fuel economic interests, and the fact that economic crossover for solar/wind only happened around 2018–2020 — the market is responding but infrastructure takes time. The trend line is unambiguous: new fossil fuel investment is declining; new clean energy investment is at all-time highs and accelerating.</p>
+    </div>
+  </div>
+
+  <div class="qa-block" onclick="toggleQA(this)">
+    <div class="qa-question">
+      <span>"Won't electrification cost trillions in upfront investment? Who pays for that?"</span>
+      <div class="qa-icon">+</div>
+    </div>
+    <div class="qa-answer">
+      <p>Yes, the transition requires significant capital investment — estimated in the range of $3–5 trillion over the next 20–30 years in the US to fully decarbonize electricity and transportation. That sounds enormous until you compare it to what we're already spending.</p>
+      <p>The US spends approximately $1.4 trillion per year on fossil fuels — oil, gas, and coal for transportation, heating, and power generation combined. Over 20 years, that's $28 trillion of ongoing expenditure on a system that also carries $1 trillion+ per year in hidden costs. The transition investment is roughly equivalent to two to three years of what we're already spending on fossil fuels, after which the ongoing costs are dramatically lower — fuel-free generation, fewer peakers, lower health costs. The question isn't whether we can afford to transition. It's whether we can afford to keep spending $28 trillion on the system we have.</p>
+    </div>
+  </div>
+
+  <div class="qa-block" onclick="toggleQA(this)">
+    <div class="qa-question">
+      <span>"What about the jobs that would be lost in fossil fuel industries?"</span>
+      <div class="qa-icon">+</div>
+    </div>
+    <div class="qa-answer">
+      <p>This is a genuinely important concern that deserves a serious answer rather than dismissal. The fossil fuel industry directly employs roughly 1 million Americans, many in communities where there are few alternative employers. These jobs are often high-paying and represent real economic security for real people.</p>
+      <p>The clean energy sector already employs approximately 3.3 million Americans and is the fastest-growing job category in the country. Solar installer is the fastest-growing occupation in the Bureau of Labor Statistics data. The net job picture is strongly positive — but job creation in Phoenix doesn't help a coal miner in West Virginia whose mine closes. This is a just-transition problem that requires deliberate policy: retraining programs, investment in affected communities, prioritizing clean energy development in fossil fuel regions. The IRA explicitly includes provisions for this. The transition is winnable on jobs — but only if the displacement is treated as a serious obligation, not an afterthought.</p>
+    </div>
+  </div>
+</div>
+
+<hr class="divider">
+
+<!-- CONCLUSION -->
+<div class="section">
+  <div class="conclusion">
+    <h2>The Question Was Never "Can We Afford It?"</h2>
+    <p>The technologies exist. Solar, wind, batteries, heat pumps, and electric vehicles are all deployed at scale today — not as experiments, but as commercial products that are already cheaper than the alternatives they're replacing.</p>
+    <p>The transition doesn't require sacrificing comfort, convenience, or economic growth. It requires redirecting investment from a system that wastes two-thirds of its energy and generates $1 trillion per year in hidden costs, toward a system that is more efficient, more reliable, and increasingly cheaper.</p>
+    <p>The question was never whether we could afford to transition. It's whether we can afford to wait.</p>
+    <div style="margin-top:2rem;display:flex;gap:1rem;justify-content:center;flex-wrap:wrap">
+      <a href="index.html" style="display:inline-flex;align-items:center;gap:0.5rem;background:var(--teal);color:#0d1117;font-weight:700;font-size:0.9rem;padding:0.7rem 1.5rem;border-radius:8px;text-decoration:none">← Start from Chapter 1</a>
+      <a href="chapter2.html" style="display:inline-flex;align-items:center;gap:0.5rem;background:var(--surface);color:var(--text);font-weight:600;font-size:0.9rem;padding:0.7rem 1.5rem;border-radius:8px;text-decoration:none;border:1px solid var(--border)">The Efficiency Revolution →</a>
+    </div>
+  </div>
+</div>
+
+<div class="sources">
+  <h4>Sources</h4>
+  <ul>
+    <li><a href="https://www.sciencedirect.com/science/article/abs/pii/S0013935121000487" target="_blank">Vohra et al. 2021 — "Global mortality from outdoor fine particle pollution generated by fossil fuel combustion," Environmental Research (peer-reviewed)</a></li>
+    <li><a href="https://news.harvard.edu/gazette/story/2021/02/deaths-from-fossil-fuel-emissions-higher-than-thought/" target="_blank">Harvard Gazette — Fossil fuel deaths higher than thought (2021)</a></li>
+    <li><a href="https://www.nrdc.org/press-releases/report-health-costs-climate-change-and-fossil-fuel-pollution-tops-820-billion-year" target="_blank">NRDC — $820B health cost synthesis report (2021)</a></li>
+    <li><a href="https://www.ornl.gov/news/analysis-shows-power-outages-cost-us-electricity-customers-billions" target="_blank">ORNL — Power outage cost analysis</a></li>
+    <li><a href="https://www.energy.gov/oe/articles/understanding-cost-power-interruptions-us-electricity-consumers" target="_blank">DOE/EPRI — Understanding the cost of power interruptions</a></li>
+    <li><a href="https://www.lazard.com/media/gjyffoqd/lazards-lcoeplus-june-2024.pdf" target="_blank">Lazard LCOE+ June 2024 — Levelized Cost of Energy Analysis</a></li>
+    <li><a href="https://www.imf.org/en/Publications/WP/Issues/2021/09/23/Still-Not-Getting-Energy-Prices-Right-A-Global-and-Country-Update-of-Fossil-Fuel-Subsidies-466004" target="_blank">IMF — Fossil Fuel Subsidies (2021): $5.9 trillion globally including implicit subsidies</a></li>
+  </ul>
+</div>
+
+<script>
+  const US_HH = 130e6;
+
+  function fmt(n) {
+    if (n >= 1000) return '$' + (n/1000).toFixed(1) + 'K';
+    return '$' + Math.round(n).toLocaleString();
+  }
+
+  function updateTrueCost() {
+    const elec = +document.getElementById('elecBill').value;
+    const gas  = +document.getElementById('gasBill').value;
+    const car  = +document.getElementById('carBill').value;
+    const hh   = +document.getElementById('hhSize').value;
+
+    document.getElementById('elecBillVal').textContent = elec.toLocaleString();
+    document.getElementById('gasBillVal').textContent  = gas.toLocaleString();
+    document.getElementById('carBillVal').textContent  = car.toLocaleString();
+    document.getElementById('hhSizeVal').textContent   = hh;
+
+    const visible = elec + gas + car;
+
+    // per-household hidden costs, scaled by household size (relative to avg 2.53)
+    const scale = hh / 2.53;
+    const healthShare  = Math.round((820e9 / US_HH) * scale);
+    const outageShare  = Math.round((125e9  / US_HH) * scale);
+    const subsidyShare = Math.round((20e9   / US_HH) * scale);
+    const climateShare = Math.round((80e9   / US_HH) * scale);
+    const totalHidden  = healthShare + outageShare + subsidyShare + climateShare;
+    const realTotal    = visible + totalHidden;
+
+    document.getElementById('visibleBill').textContent = '$' + visible.toLocaleString();
+    document.getElementById('realBill').textContent    = '$' + realTotal.toLocaleString();
+
+    document.getElementById('hiddenBreakdown').innerHTML = `
+      <div style="font-size:0.78rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.5rem;padding-top:0.5rem;border-top:1px solid var(--border)">
+        Where the hidden costs come from
+      </div>
+      <div class="hb-row">
+        <span class="hb-label">Your visible energy bills</span>
+        <span class="hb-val" style="color:var(--accent)">$${visible.toLocaleString()}</span>
+      </div>
+      <div class="hb-row">
+        <span class="hb-label">Your share of fossil fuel health costs ($820B ÷ ${US_HH/1e6}M households × ${hh} people)</span>
+        <span class="hb-val" style="color:var(--red)">$${healthShare.toLocaleString()}</span>
+      </div>
+      <div class="hb-row">
+        <span class="hb-label">Your share of annual grid outage costs ($125B)</span>
+        <span class="hb-val" style="color:var(--orange)">$${outageShare.toLocaleString()}</span>
+      </div>
+      <div class="hb-row">
+        <span class="hb-label">Your share of direct fossil fuel subsidies ($20B)</span>
+        <span class="hb-val" style="color:var(--yellow)">$${subsidyShare.toLocaleString()}</span>
+      </div>
+      <div class="hb-row">
+        <span class="hb-label">Your share of climate disaster costs ($80B/yr estimate)</span>
+        <span class="hb-val" style="color:var(--orange)">$${climateShare.toLocaleString()}</span>
+      </div>
+      <div class="hb-row total">
+        <span class="hb-label">True annual energy cost</span>
+        <span class="hb-val">$${realTotal.toLocaleString()}</span>
+      </div>
+    `;
+  }
+
+  function toggleQA(el) { el.classList.toggle('open'); }
+
+  updateTrueCost();
+</script>
+</body>
+</html>
