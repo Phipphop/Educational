@@ -56,12 +56,16 @@
       gap: 0.25rem;
       list-style: none;
       overflow-x: auto;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+      min-width: 0;
     }
+    .nav-chapters::-webkit-scrollbar { display: none; }
     .nav-chapters a {
       color: var(--muted);
       text-decoration: none;
-      font-size: 0.85rem;
-      padding: 0.35rem 0.75rem;
+      font-size: 0.8rem;
+      padding: 0.35rem 0.6rem;
       border-radius: 6px;
       transition: color 0.2s, background 0.2s;
       white-space: nowrap;
@@ -716,9 +720,9 @@
     const usefulH = Math.max(minBarH, (data.useful / maxInput) * maxBarH);
 
     const barW = 28;
-    const leftX = 40;
-    const midX = W / 2;
-    const rightX = W - 40 - barW;
+    const leftX = Math.round(W * 0.13);
+    const rightBarX = Math.round(W * 0.62);
+    const cpX = Math.round(W * 0.46);  // bezier control point x
     const centerY = H / 2;
 
     // ── INPUT BAR ──
@@ -729,8 +733,6 @@
     roundRect(ctx, leftX, inputY, barW, inputH, 6, grad1);
 
     // ── FLOW PATHS ──
-    // Waste flow (top)
-    const wasteTopY = centerY - wasteH - 4;
     const wasteH_bar = wasteH;
     const flowStartY = inputY;
     const flowWasteEndY = centerY - (H * 0.18) - wasteH_bar / 2;
@@ -738,49 +740,51 @@
     // waste bezier
     ctx.beginPath();
     ctx.moveTo(leftX + barW, flowStartY);
-    ctx.bezierCurveTo(midX - 60, flowStartY, midX - 60, flowWasteEndY, midX + 60, flowWasteEndY);
-    ctx.lineTo(midX + 60, flowWasteEndY + wasteH_bar);
-    ctx.bezierCurveTo(midX - 60, flowWasteEndY + wasteH_bar, midX - 60, flowStartY + wasteH_bar * 0.7, leftX + barW, flowStartY + wasteH_bar * 0.7);
+    ctx.bezierCurveTo(cpX, flowStartY, cpX, flowWasteEndY, rightBarX, flowWasteEndY);
+    ctx.lineTo(rightBarX, flowWasteEndY + wasteH_bar);
+    ctx.bezierCurveTo(cpX, flowWasteEndY + wasteH_bar, cpX, flowStartY + wasteH_bar * 0.7, leftX + barW, flowStartY + wasteH_bar * 0.7);
     ctx.closePath();
-    const wasteGrad = ctx.createLinearGradient(leftX + barW, 0, midX + 60, 0);
+    const wasteGrad = ctx.createLinearGradient(leftX + barW, 0, rightBarX, 0);
     wasteGrad.addColorStop(0, 'rgba(249,115,22,0.7)');
     wasteGrad.addColorStop(1, 'rgba(249,115,22,0.3)');
     ctx.fillStyle = wasteGrad;
     ctx.fill();
 
     // waste end bar
-    roundRect(ctx, midX + 60, flowWasteEndY, barW, wasteH_bar, 6, '#f97316');
+    roundRect(ctx, rightBarX, flowWasteEndY, barW, wasteH_bar, 6, '#f97316');
 
     // useful flow (bottom)
     const usefulEndY = centerY + (H * 0.04);
     ctx.beginPath();
     ctx.moveTo(leftX + barW, flowStartY + wasteH_bar * 0.7);
-    ctx.bezierCurveTo(midX - 60, flowStartY + wasteH_bar * 0.7, midX - 60, usefulEndY, midX + 60, usefulEndY);
-    ctx.lineTo(midX + 60, usefulEndY + usefulH);
-    ctx.bezierCurveTo(midX - 60, usefulEndY + usefulH, midX - 60, flowStartY + inputH, leftX + barW, flowStartY + inputH);
+    ctx.bezierCurveTo(cpX, flowStartY + wasteH_bar * 0.7, cpX, usefulEndY, rightBarX, usefulEndY);
+    ctx.lineTo(rightBarX, usefulEndY + usefulH);
+    ctx.bezierCurveTo(cpX, usefulEndY + usefulH, cpX, flowStartY + inputH, leftX + barW, flowStartY + inputH);
     ctx.closePath();
-    const usefulGrad = ctx.createLinearGradient(leftX + barW, 0, midX + 60, 0);
+    const usefulGrad = ctx.createLinearGradient(leftX + barW, 0, rightBarX, 0);
     usefulGrad.addColorStop(0, 'rgba(63,185,80,0.7)');
     usefulGrad.addColorStop(1, 'rgba(63,185,80,0.3)');
     ctx.fillStyle = usefulGrad;
     ctx.fill();
 
     // useful end bar
-    roundRect(ctx, midX + 60, usefulEndY, barW, usefulH, 6, '#3fb950');
+    roundRect(ctx, rightBarX, usefulEndY, barW, usefulH, 6, '#3fb950');
 
     // ── LABELS ──
-    ctx.textAlign = 'right';
+    // Input: centered below left bar
+    ctx.textAlign = 'center';
     ctx.fillStyle = '#e6edf3';
-    ctx.font = '600 12px -apple-system, system-ui, sans-serif';
-    drawMultiline(ctx, data.inputLabel, leftX - 10, centerY, 'right', 16);
+    ctx.font = '600 11px -apple-system, system-ui, sans-serif';
+    drawMultiline(ctx, data.inputLabel, leftX + barW / 2, inputY + inputH + 22, 'center', 15);
 
+    // Right labels: left-aligned beside right bars
     ctx.textAlign = 'left';
     ctx.fillStyle = '#f97316';
     ctx.font = '600 11px -apple-system, system-ui, sans-serif';
-    drawMultiline(ctx, data.wasteLabel, midX + 60 + barW + 10, flowWasteEndY + wasteH_bar / 2, 'left', 15);
+    drawMultiline(ctx, data.wasteLabel, rightBarX + barW + 10, flowWasteEndY + wasteH_bar / 2, 'left', 15);
 
     ctx.fillStyle = '#3fb950';
-    drawMultiline(ctx, data.usefulLabel, midX + 60 + barW + 10, usefulEndY + usefulH / 2, 'left', 15);
+    drawMultiline(ctx, data.usefulLabel, rightBarX + barW + 10, usefulEndY + usefulH / 2, 'left', 15);
   }
 
   function drawMultiline(ctx, text, x, y, align, lineH) {
