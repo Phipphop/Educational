@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chapter 2: The Efficiency Revolution — Power Shift</title>
+  <style>
+    :root {
+      --bg: #0d1117;
+      --surface: #161b22;
+      --surface2: #1f2937;
+      --border: #30363d;
+      --text: #e6edf3;
+      --muted: #8b949e;
+      --accent: #58a6ff;
+      --green: #3fb950;
+      --orange: #f97316;
+      --red: #f85149;
+      --yellow: #d29922;
+      --purple: #a371f7;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      line-height: 1.7;
+    }
+
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(13, 17, 23, 0.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 2rem;
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+      height: 56px;
+    }
+    .nav-brand { font-weight: 700; font-size: 1rem; color: var(--accent); text-decoration: none; letter-spacing: -0.02em; white-space: nowrap; }
+    .nav-chapters { display: flex; gap: 0.25rem; list-style: none; overflow-x: auto; }
+    .nav-chapters a { color: var(--muted); text-decoration: none; font-size: 0.85rem; padding: 0.35rem 0.75rem; border-radius: 6px; transition: color 0.2s, background 0.2s; white-space: nowrap; }
+    .nav-chapters a:hover { color: var(--text); background: var(--surface); }
+    .nav-chapters a.active { color: var(--accent); background: var(--surface); }
+    .nav-chapters .coming-soon { opacity: 0.4; cursor: default; pointer-events: none; }
+
+    .hero { padding: 5rem 2rem 4rem; text-align: center; max-width: 800px; margin: 0 auto; }
+    .chapter-label { display: inline-block; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--green); background: rgba(63, 185, 80, 0.1); border: 1px solid rgba(63, 185, 80, 0.2); border-radius: 20px; padding: 0.3rem 0.9rem; margin-bottom: 1.5rem; }
+    .hero h1 { font-size: clamp(2rem, 5vw, 3.5rem); font-weight: 800; letter-spacing: -0.03em; line-height: 1.15; margin-bottom: 1rem; }
+    .hero h1 span { color: var(--green); }
+    .hero .subtitle { font-size: 1.15rem; color: var(--muted); max-width: 560px; margin: 0 auto 2.5rem; }
+    .scroll-cue { display: flex; align-items: center; justify-content: center; gap: 0.5rem; color: var(--muted); font-size: 0.85rem; animation: bounce 2s ease-in-out infinite; }
+    @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(6px); } }
+
+    .section { max-width: 780px; margin: 0 auto; padding: 3rem 2rem; }
+    .section + .section { padding-top: 0; }
+
+    h2 { font-size: 1.75rem; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 1rem; }
+    h3 { font-size: 1.1rem; font-weight: 600; margin: 2rem 0 0.5rem; color: var(--text); }
+    p { color: #c9d1d9; margin-bottom: 1rem; }
+    p:last-child { margin-bottom: 0; }
+    strong { color: var(--text); }
+
+    .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; margin: 2rem 0; }
+    .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; text-align: center; }
+    .stat-card .number { font-size: 2.5rem; font-weight: 800; letter-spacing: -0.03em; line-height: 1; margin-bottom: 0.5rem; }
+    .stat-card .label { font-size: 0.85rem; color: var(--muted); line-height: 1.4; }
+    .stat-card.red .number { color: var(--red); }
+    .stat-card.green .number { color: var(--green); }
+    .stat-card.blue .number { color: var(--accent); }
+    .stat-card.orange .number { color: var(--orange); }
+    .stat-card.purple .number { color: var(--purple); }
+
+    .callout { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem 2rem; margin: 2rem 0; }
+    .callout.green { border-left: 4px solid var(--green); border-radius: 0 12px 12px 0; }
+    .callout.orange { border-left: 4px solid var(--orange); border-radius: 0 12px 12px 0; }
+    .callout.blue { border-left: 4px solid var(--accent); border-radius: 0 12px 12px 0; }
+    .callout-label { font-size: 0.7rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 0.5rem; }
+    .callout.green .callout-label { color: var(--green); }
+    .callout.orange .callout-label { color: var(--orange); }
+    .callout.blue .callout-label { color: var(--accent); }
+    .callout p { color: var(--text); font-style: italic; }
+
+    .drivetrain-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin: 2rem 0; }
+    @media (max-width: 600px) { .drivetrain-grid { grid-template-columns: 1fr; } }
+    .drivetrain-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; }
+    .drivetrain-card h4 { font-size: 0.85rem; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 1.25rem; }
+    .drivetrain-card.ice h4 { color: var(--red); }
+    .drivetrain-card.ev h4 { color: var(--green); }
+    .energy-row { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.6rem; font-size: 0.85rem; }
+    .energy-bar-bg { flex: 1; height: 20px; background: var(--surface2); border-radius: 4px; overflow: hidden; }
+    .energy-bar-fill { height: 100%; border-radius: 4px; }
+    .energy-row-label { width: 120px; color: var(--muted); font-size: 0.8rem; flex-shrink: 0; }
+    .energy-row-val { width: 36px; text-align: right; font-weight: 600; font-size: 0.82rem; flex-shrink: 0; }
+    .bar-heat { background: var(--red); opacity: 0.7; }
+    .bar-useful { background: var(--green); }
+    .bar-ev-loss { background: var(--accent); opacity: 0.5; }
+    .drivetrain-total { margin-top: 1rem; padding-top: 0.75rem; border-top: 1px solid var(--border); font-size: 0.95rem; font-weight: 700; }
+    .drivetrain-card.ice .drivetrain-total { color: var(--red); }
+    .drivetrain-card.ev .drivetrain-total { color: var(--green); }
+
+    .heat-pump-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin: 2rem 0; }
+    @media (max-width: 600px) { .heat-pump-grid { grid-template-columns: 1fr; } }
+    .hp-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; text-align: center; }
+    .hp-card h4 { font-size: 0.8rem; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 1.5rem; }
+    .hp-card.gas h4 { color: var(--orange); }
+    .hp-card.heat-pump h4 { color: var(--green); }
+    .hp-meter { width: 120px; height: 120px; margin: 0 auto 1rem; }
+    .hp-meter svg { width: 100%; height: 100%; }
+    .hp-label { font-size: 2rem; font-weight: 800; }
+    .hp-sublabel { font-size: 0.8rem; color: var(--muted); margin-top: 0.25rem; }
+    .hp-card.gas .hp-label { color: var(--orange); }
+    .hp-card.heat-pump .hp-label { color: var(--green); }
+    .hp-desc { font-size: 0.82rem; color: var(--muted); margin-top: 0.75rem; }
+
+    .calc-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 2rem; margin: 2rem 0; }
+    .calc-card h3 { margin: 0 0 0.35rem; font-size: 1.05rem; }
+    .calc-subtitle { font-size: 0.85rem; color: var(--muted); margin-bottom: 1.75rem; }
+    .calc-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; margin-bottom: 1.75rem; }
+    @media (max-width: 520px) { .calc-inputs { grid-template-columns: 1fr; } }
+    .calc-field label { display: block; font-size: 0.78rem; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem; }
+    .calc-field input {
+      width: 100%;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      font-size: 1rem;
+      padding: 0.6rem 0.9rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .calc-field input[type=range] { padding: 0; border: none; background: transparent; cursor: pointer; accent-color: var(--green); }
+    .range-val { font-size: 1.1rem; font-weight: 700; color: var(--green); margin-top: 0.2rem; }
+
+    .calc-results { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--border); border-radius: 10px; overflow: hidden; margin-bottom: 1.5rem; }
+    @media (max-width: 520px) { .calc-results { grid-template-columns: 1fr; } }
+    .result-cell { background: var(--bg); padding: 1rem 1.25rem; }
+    .result-cell .r-label { font-size: 0.75rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.3rem; }
+    .result-cell .r-val { font-size: 1.4rem; font-weight: 800; letter-spacing: -0.02em; }
+    .result-cell .r-sub { font-size: 0.78rem; color: var(--muted); margin-top: 0.15rem; }
+    .result-cell.highlight { background: var(--surface); }
+    .r-val.gas { color: var(--orange); }
+    .r-val.ev { color: var(--green); }
+    .r-val.save { color: var(--accent); }
+
+    .savings-bar-wrap { margin-top: 1.25rem; }
+    .savings-bar-label { display: flex; justify-content: space-between; font-size: 0.8rem; color: var(--muted); margin-bottom: 0.4rem; }
+    .savings-bar-track { height: 12px; background: var(--surface2); border-radius: 6px; overflow: hidden; }
+    .savings-bar-fill { height: 100%; border-radius: 6px; transition: width 0.5s ease; background: linear-gradient(90deg, var(--green), #2ea043); }
+    .savings-bar-annotation { font-size: 0.8rem; color: var(--muted); margin-top: 0.4rem; text-align: right; }
+
+    .myth-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1.75rem; margin: 1.5rem 0; }
+    .myth-tag { display: inline-block; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; padding: 0.2rem 0.7rem; border-radius: 4px; margin-bottom: 0.75rem; }
+    .myth-tag.myth { background: rgba(248,81,73,0.15); color: var(--red); }
+    .myth-tag.fact { background: rgba(63,185,80,0.15); color: var(--green); }
+    .myth-card h4 { font-size: 1rem; font-weight: 600; margin-bottom: 0.6rem; }
+    .myth-card.myth-card-fact { border-color: rgba(63,185,80,0.3); }
+
+    .wtw-grid { display: grid; gap: 0.75rem; margin: 1.5rem 0; }
+    .wtw-header { font-size: 0.75rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; display: grid; grid-template-columns: 200px 1fr 60px; gap: 1rem; padding-bottom: 0.5rem; border-bottom: 1px solid var(--border); }
+    .wtw-row { display: grid; grid-template-columns: 200px 1fr 60px; align-items: center; gap: 1rem; font-size: 0.88rem; }
+    @media (max-width: 520px) { .wtw-header, .wtw-row { grid-template-columns: 1fr 1fr 40px; } }
+    .wtw-label { color: var(--muted); }
+    .wtw-bar-bg { height: 22px; background: var(--surface); border-radius: 4px; overflow: hidden; border: 1px solid var(--border); }
+    .wtw-bar-fill { height: 100%; border-radius: 3px; display: flex; align-items: center; padding-left: 6px; font-size: 0.72rem; font-weight: 600; color: rgba(255,255,255,0.85); }
+    .wtw-pct { font-weight: 700; font-size: 0.9rem; }
+
+    .qa-block { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin: 1rem 0; }
+    .qa-question { display: flex; align-items: center; justify-content: space-between; padding: 1rem 1.5rem; cursor: pointer; user-select: none; gap: 1rem; }
+    .qa-question:hover { background: var(--surface2); }
+    .qa-question span { font-size: 0.9rem; font-weight: 500; color: var(--text); }
+    .qa-icon { color: var(--muted); font-size: 1.2rem; flex-shrink: 0; transition: transform 0.25s; }
+    .qa-answer { display: none; padding: 0 1.5rem 1.25rem; font-size: 0.9rem; color: #c9d1d9; border-top: 1px solid var(--border); }
+    .qa-answer p { margin-top: 1rem; }
+    .qa-block.open .qa-icon { transform: rotate(45deg); }
+    .qa-block.open .qa-answer { display: block; }
+
+    .cta-section { text-align: center; padding: 4rem 2rem 5rem; max-width: 600px; margin: 0 auto; }
+    .cta-section h2 { margin-bottom: 0.75rem; }
+    .cta-section p { color: var(--muted); margin-bottom: 2rem; }
+    .cta-btn { display: inline-flex; align-items: center; gap: 0.5rem; background: var(--green); color: #0d1117; font-weight: 700; font-size: 0.95rem; padding: 0.75rem 1.75rem; border-radius: 8px; text-decoration: none; transition: opacity 0.2s; }
+    .cta-btn:hover { opacity: 0.85; }
+    .cta-btn.disabled { background: var(--surface2); color: var(--muted); cursor: default; pointer-events: none; }
+
+    .divider { border: none; border-top: 1px solid var(--border); margin: 0 2rem; }
+
+    .sources { border-top: 1px solid var(--border); padding: 2rem; max-width: 780px; margin: 0 auto; }
+    .sources h4 { font-size: 0.75rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.75rem; }
+    .sources ul { list-style: none; display: flex; flex-direction: column; gap: 0.3rem; }
+    .sources a { font-size: 0.8rem; color: var(--muted); text-decoration: none; }
+    .sources a:hover { color: var(--accent); }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-brand" href="index.html">⚡ Power Shift</a>
+  <ul class="nav-chapters">
+    <li><a href="index.html">1. The Energy Illusion</a></li>
+    <li><a href="chapter2.html" class="active">2. The Efficiency Revolution</a></li>
+    <li><a href="#" class="coming-soon">3. The Invisible Cost of Fuel</a></li>
+    <li><a href="#" class="coming-soon">4. The Missing Battery</a></li>
+    <li><a href="#" class="coming-soon">5. Sunshine on Everything</a></li>
+    <li><a href="#" class="coming-soon">6. The Real Price Tag</a></li>
+  </ul>
+</nav>
+
+<div class="hero">
+  <div class="chapter-label">Chapter 2</div>
+  <h1>The <span>Efficiency</span> Revolution</h1>
+  <p class="subtitle">Electrification doesn't add demand to the grid — it reduces it. Here's why switching from gas to electric uses less energy, not more.</p>
+  <div class="scroll-cue">↓ scroll to find out</div>
+</div>
+
+<div class="section">
+  <h2>A Common Worry</h2>
+  <p>One of the most frequent objections to electric vehicles goes like this: <em>"If everyone switches to an EV, the grid will collapse. We can't possibly generate enough electricity for all those cars."</em></p>
+  <p>It sounds reasonable. But it misses something fundamental about how energy works — something that makes the numbers look almost backwards at first glance.</p>
+  <p>Electric motors are dramatically more efficient than combustion engines. Which means electrifying transportation doesn't add the same energy demand to the grid that gas removed from the pump. It replaces it with something <strong>much smaller</strong>.</p>
+</div>
+
+<div class="section" style="padding-top:0">
+  <div class="stat-grid">
+    <div class="stat-card red">
+      <div class="number">17–25%</div>
+      <div class="label">of fuel energy in a gas car actually reaches the wheels</div>
+    </div>
+    <div class="stat-card green">
+      <div class="number">77–85%</div>
+      <div class="label">of electricity in an EV reaches the wheels</div>
+    </div>
+    <div class="stat-card blue">
+      <div class="number">~5×</div>
+      <div class="label">more efficient — a typical EV at 130 MPGe vs the average new ICE at 27 MPG</div>
+    </div>
+    <div class="stat-card purple">
+      <div class="number">200–400%</div>
+      <div class="label">efficiency of a heat pump — 2–4 units of heat per unit of electricity</div>
+    </div>
+  </div>
+  <p style="font-size:0.8rem; color:var(--muted)">Source: EPA fueleconomy.gov; Argonne National Laboratory GREET model 2023; U.S. DOE.</p>
+</div>
+
+<div class="section" style="padding-top:0">
+  <h2>Where the Energy Actually Goes</h2>
+  <p>When you fill up a gas tank, most of that fuel never moves the car. It heats the engine block, the exhaust pipe, and the air around the vehicle. A gasoline engine converts only about <strong>20–25% of fuel energy into forward motion</strong> under typical driving — and as little as 17% averaged over a full drive cycle with stops and starts.</p>
+  <p>An electric motor converts <strong>77–85% of electricity directly into motion</strong>. The rest is small losses in charging, wiring, and the motor itself — not a fireball of heat escaping through a tailpipe.</p>
+
+  <div class="drivetrain-grid">
+    <div class="drivetrain-card ice">
+      <h4>Gas Engine — What happens to your fuel</h4>
+      <div class="energy-row">
+        <div class="energy-row-label">Engine heat loss</div>
+        <div class="energy-bar-bg"><div class="energy-bar-fill bar-heat" style="width:62%"></div></div>
+        <div class="energy-row-val" style="color:var(--red)">62%</div>
+      </div>
+      <div class="energy-row">
+        <div class="energy-row-label">Idling & accessories</div>
+        <div class="energy-bar-bg"><div class="energy-bar-fill bar-heat" style="width:8%"></div></div>
+        <div class="energy-row-val" style="color:var(--red)">8%</div>
+      </div>
+      <div class="energy-row">
+        <div class="energy-row-label">Braking (heat)</div>
+        <div class="energy-bar-bg"><div class="energy-bar-fill bar-heat" style="width:7%"></div></div>
+        <div class="energy-row-val" style="color:var(--red)">7%</div>
+      </div>
+      <div class="energy-row">
+        <div class="energy-row-label">Drivetrain friction</div>
+        <div class="energy-bar-bg"><div class="energy-bar-fill bar-heat" style="width:3%"></div></div>
+        <div class="energy-row-val" style="color:var(--red)">3%</div>
+      </div>
+      <div class="energy-row">
+        <div class="energy-row-label" style="color:var(--text);font-weight:600">→ Moves the car</div>
+        <div class="energy-bar-bg"><div class="energy-bar-fill bar-useful" style="width:20%"></div></div>
+        <div class="energy-row-val" style="color:var(--green)">20%</div>
+      </div>
+      <div class="drivetrain-total">80% of every gallon never moves you.</div>
+    </div>
+
+    <div class="drivetrain-card ev">
+      <h4>Electric Motor — What happens to your electricity</h4>
+      <div class="energy-row">
+        <div class="energy-row-label">Charging losses</div>
+        <div class="energy-bar-bg"><div class="energy-bar-fill bar-ev-loss" style="width:10%"></div></div>
+        <div class="energy-row-val" style="color:var(--accent)">10%</div>
+      </div>
+      <div class="energy-row">
+        <div class="energy-row-label">Motor & inverter</div>
+        <div class="energy-bar-bg"><div class="energy-bar-fill bar-ev-loss" style="width:5%"></div></div>
+        <div class="energy-row-val" style="color:var(--accent)">5%</div>
+      </div>
+      <div class="energy-row">
+        <div class="energy-row-label">Accessories</div>
+        <div class="energy-bar-bg"><div class="energy-bar-fill bar-ev-loss" style="width:3%"></div></div>
+        <div class="energy-row-val" style="color:var(--accent)">3%</div>
+      </div>
+      <div class="energy-row">
+        <div class="energy-row-label" style="color:var(--purple)">Regen braking saves</div>
+        <div class="energy-bar-bg"><div class="energy-bar-fill" style="width:20%;background:var(--purple);opacity:0.7"></div></div>
+        <div class="energy-row-val" style="color:var(--purple)">+20%</div>
+      </div>
+      <div class="energy-row">
+        <div class="energy-row-label" style="color:var(--text);font-weight:600">→ Moves the car</div>
+        <div class="energy-bar-bg"><div class="energy-bar-fill bar-useful" style="width:82%"></div></div>
+        <div class="energy-row-val" style="color:var(--green)">82%</div>
+      </div>
+      <div class="drivetrain-total">82% of every kWh moves you.</div>
+    </div>
+  </div>
+
+  <div class="callout blue">
+    <div class="callout-label">Why EVs also help braking</div>
+    <p>Electric motors run in reverse as generators when you slow down, recovering energy back into the battery. Gas cars turn momentum into heat in the brake pads. Regenerative braking alone recovers 10–20% of energy that would otherwise be wasted — and it's why EVs have very long-lived brakes.</p>
+  </div>
+</div>
+
+<!-- CALCULATOR -->
+<div class="section" style="padding-top:0">
+  <div class="calc-card">
+    <h3>Your Car vs. Your EV</h3>
+    <p class="calc-subtitle">Plug in your numbers and see what an electric equivalent would actually cost and use.</p>
+
+    <div class="calc-inputs">
+      <div class="calc-field">
+        <label>Your car's fuel economy</label>
+        <input type="range" id="mpgSlider" min="12" max="55" value="27" oninput="updateCalc()">
+        <div class="range-val"><span id="mpgVal">27</span> MPG</div>
+      </div>
+      <div class="calc-field">
+        <label>Miles driven per year</label>
+        <input type="range" id="milesSlider" min="5000" max="30000" step="1000" value="15000" oninput="updateCalc()">
+        <div class="range-val"><span id="milesVal">15,000</span> miles</div>
+      </div>
+      <div class="calc-field">
+        <label>Gas price ($/gallon)</label>
+        <input type="range" id="gasSlider" min="2.50" max="6.00" step="0.10" value="3.50" oninput="updateCalc()">
+        <div class="range-val">$<span id="gasVal">3.50</span>/gal</div>
+      </div>
+      <div class="calc-field">
+        <label>Electricity rate (¢/kWh)</label>
+        <input type="range" id="elecSlider" min="8" max="36" step="1" value="16" oninput="updateCalc()">
+        <div class="range-val"><span id="elecVal">16</span>¢/kWh</div>
+      </div>
+    </div>
+
+    <div class="calc-results">
+      <div class="result-cell">
+        <div class="r-label">Gas — Gallons/year</div>
+        <div class="r-val gas" id="rGallons">556</div>
+        <div class="r-sub">burned each year</div>
+      </div>
+      <div class="result-cell">
+        <div class="r-label">Gas — Annual fuel cost</div>
+        <div class="r-val gas" id="rGasCost">$1,944</div>
+        <div class="r-sub">at the pump</div>
+      </div>
+      <div class="result-cell">
+        <div class="r-label">EV — kWh needed/year</div>
+        <div class="r-val ev" id="rKwh">3,750</div>
+        <div class="r-sub" id="rKwhSub">vs 18,728 kWh equiv. in gasoline</div>
+      </div>
+      <div class="result-cell">
+        <div class="r-label">EV — Annual charge cost</div>
+        <div class="r-val ev" id="rEvCost">$600</div>
+        <div class="r-sub">at home (avg rate)</div>
+      </div>
+      <div class="result-cell highlight" style="grid-column:1/-1">
+        <div class="r-label">Annual savings switching to EV</div>
+        <div class="r-val save" id="rSavings">$1,344</div>
+        <div class="r-sub" id="rSavingsSub">69% less fuel cost · 4,100 lbs less CO₂/year</div>
+      </div>
+    </div>
+
+    <div class="savings-bar-wrap">
+      <div class="savings-bar-label">
+        <span>Energy an EV uses vs. gasoline equivalent</span>
+        <span id="rEffLabel">20% of the energy</span>
+      </div>
+      <div class="savings-bar-track">
+        <div class="savings-bar-fill" id="rEffBar" style="width:20%"></div>
+      </div>
+      <div class="savings-bar-annotation" id="rEffNote">EV uses 3,750 kWh where gas carries 18,728 kWh of chemical energy</div>
+    </div>
+  </div>
+</div>
+
+<!-- HEAT PUMPS -->
+<div class="section" style="padding-top:0">
+  <h2>The Same Logic, Your Home</h2>
+  <p>Cars aren't the only place this efficiency gap shows up. Your furnace is making the same tradeoff — and losing badly.</p>
+  <p>A gas furnace burns natural gas and converts it to heat. The best models are <strong>98% efficient</strong> — for every 100 units of gas energy, you get 98 units of heat. That sounds impressive.</p>
+  <p>An electric heat pump doesn't generate heat by burning anything. It <em>moves</em> heat — pulling it from outside air or the ground and delivering it inside. Because it's moving energy rather than creating it, a heat pump delivers <strong>200–400% of the electricity it consumes as usable heat</strong>. One unit of electricity. Four units of heat.</p>
+
+  <div class="heat-pump-grid">
+    <div class="hp-card gas">
+      <h4>Gas Furnace</h4>
+      <div class="hp-meter">
+        <svg viewBox="0 0 120 120">
+          <circle cx="60" cy="60" r="50" fill="none" stroke="var(--surface2)" stroke-width="10"/>
+          <circle cx="60" cy="60" r="50" fill="none" stroke="var(--orange)" stroke-width="10"
+            stroke-dasharray="290 314" stroke-dashoffset="79" stroke-linecap="round"/>
+          <text x="60" y="57" text-anchor="middle" font-size="22" font-weight="800" fill="#f97316">98%</text>
+          <text x="60" y="74" text-anchor="middle" font-size="11" fill="#8b949e">efficient</text>
+        </svg>
+      </div>
+      <div class="hp-label">~1×</div>
+      <div class="hp-sublabel">1 unit gas → 0.98 units heat</div>
+      <div class="hp-desc">Combustion. Can never exceed 100%. Releases CO₂ inside your home's air supply.</div>
+    </div>
+    <div class="hp-card heat-pump">
+      <h4>Electric Heat Pump</h4>
+      <div class="hp-meter">
+        <svg viewBox="0 0 120 120">
+          <circle cx="60" cy="60" r="50" fill="none" stroke="var(--surface2)" stroke-width="10"/>
+          <circle cx="60" cy="60" r="50" fill="none" stroke="var(--green)" stroke-width="10"
+            stroke-dasharray="314 314" stroke-dashoffset="79" stroke-linecap="round"/>
+          <text x="60" y="52" text-anchor="middle" font-size="19" font-weight="800" fill="#3fb950">200–</text>
+          <text x="60" y="74" text-anchor="middle" font-size="19" font-weight="800" fill="#3fb950">400%</text>
+        </svg>
+      </div>
+      <div class="hp-label">2–4×</div>
+      <div class="hp-sublabel">1 unit electricity → 2–4 units heat</div>
+      <div class="hp-desc">Moves heat instead of creating it. No combustion, no on-site emissions, doubles as AC.</div>
+    </div>
+  </div>
+
+  <div class="callout green">
+    <div class="callout-label">How is &gt;100% efficiency possible?</div>
+    <p>A heat pump isn't creating energy from nothing — it's extracting it from outdoor air (even well below freezing) and concentrating it indoors. Think of it like a refrigerator running in reverse: it takes warmth from outside and moves it in. The electricity powers the pump, not the heat itself.</p>
+  </div>
+</div>
+
+<!-- GRID MYTH -->
+<div class="section" style="padding-top:0">
+  <h2>"The Grid Can't Handle It"</h2>
+  <p>If EVs are so much more efficient, does that mean they're easy on the grid? Yes — significantly more than most people assume. Here's the actual math.</p>
+
+  <div class="myth-card">
+    <div class="myth-tag myth">The Concern</div>
+    <h4>"Adding 280 million EVs would overwhelm the grid."</h4>
+    <p style="color:var(--muted);font-size:0.9rem;margin-top:0.5rem">If every US car became an EV tomorrow, how much more electricity would we need?</p>
+  </div>
+
+  <div class="myth-card myth-card-fact">
+    <div class="myth-tag fact">The Reality</div>
+    <h4>About 25% more electricity — but far less total energy, and mostly at night.</h4>
+    <p style="color:var(--muted);font-size:0.9rem;margin-top:0.5rem">280 million EVs at 15,000 miles/year and 0.25 kWh/mile = ~1,050 TWh/year of new electricity demand. The US currently generates ~4,180 TWh/year. That's roughly a 25% increase in grid electricity.</p>
+    <p style="color:var(--muted);font-size:0.9rem;margin-top:0.75rem">But total US energy consumption drops by 60%+ — because we stop burning 500+ billion gallons of gasoline at 20% efficiency. We'd use much less energy overall, we'd just use more of it as electricity.</p>
+    <p style="color:var(--muted);font-size:0.9rem;margin-top:0.75rem">And EVs charge mostly at night, when the grid has its lowest demand and most surplus capacity. Smart chargers can time charging to the cheapest, cleanest hours — leveling out peaks that today require expensive standby power plants.</p>
+  </div>
+
+  <div class="callout blue">
+    <div class="callout-label">Grid headroom already exists</div>
+    <p>The US grid is built to handle peak demand — hot summer afternoons. The rest of the time, it has significant unused capacity. The average US power plant runs at only 40% of its nameplate capacity. EVs charging at night slot directly into that surplus.</p>
+  </div>
+</div>
+
+<!-- WELL TO WHEEL -->
+<div class="section" style="padding-top:0">
+  <h2>Even on a Dirty Grid, EVs Win</h2>
+  <p>A common challenge: <em>"Your EV is just a coal-powered car."</em> Worth taking seriously. Here's the data.</p>
+
+  <div class="wtw-grid">
+    <div class="wtw-header">
+      <span>Scenario</span><span>Well-to-wheel efficiency</span><span>Score</span>
+    </div>
+    <div class="wtw-row">
+      <div class="wtw-label">Average gasoline car</div>
+      <div class="wtw-bar-bg"><div class="wtw-bar-fill" style="width:22%;background:var(--red)">well-to-wheel</div></div>
+      <div class="wtw-pct" style="color:var(--red)">~22%</div>
+    </div>
+    <div class="wtw-row">
+      <div class="wtw-label">EV on 100% coal grid</div>
+      <div class="wtw-bar-bg"><div class="wtw-bar-fill" style="width:26%;background:var(--yellow)">efficient</div></div>
+      <div class="wtw-pct" style="color:var(--yellow)">~26%</div>
+    </div>
+    <div class="wtw-row">
+      <div class="wtw-label">EV on 2023 US avg. grid</div>
+      <div class="wtw-bar-bg"><div class="wtw-bar-fill" style="width:35%;background:var(--accent)">more efficient</div></div>
+      <div class="wtw-pct" style="color:var(--accent)">~35%</div>
+    </div>
+    <div class="wtw-row">
+      <div class="wtw-label">EV on natural gas (CC)</div>
+      <div class="wtw-bar-bg"><div class="wtw-bar-fill" style="width:40%;background:var(--green)">much better</div></div>
+      <div class="wtw-pct" style="color:var(--green)">~40%</div>
+    </div>
+    <div class="wtw-row">
+      <div class="wtw-label">EV on 100% renewable</div>
+      <div class="wtw-bar-bg"><div class="wtw-bar-fill" style="width:80%;background:var(--green)">dramatically better</div></div>
+      <div class="wtw-pct" style="color:var(--green)">~80%</div>
+    </div>
+  </div>
+  <p style="font-size:0.85rem; color:var(--muted); margin-top:1rem">Source: Argonne National Laboratory GREET model 2023. Well-to-wheel includes upstream fuel production, refining, and transport for gasoline; power plant efficiency and grid losses for electricity.</p>
+
+  <div class="callout orange">
+    <div class="callout-label">The coal argument is fading fast</div>
+    <p>In 2010, coal supplied 45% of US electricity. By 2023, it was 17% — and still falling. The grid an EV charges on today is cleaner than when most of these objections were first written. By the time a car bought today reaches middle age, the grid will be cleaner still. An EV bought now gets continuously greener without any changes to the car itself.</p>
+  </div>
+</div>
+
+<hr class="divider">
+
+<div class="section">
+  <h2>Common Objections</h2>
+
+  <div class="qa-block" onclick="toggleQA(this)">
+    <div class="qa-question">
+      <span>"What about the emissions from making the EV battery?"</span>
+      <div class="qa-icon">+</div>
+    </div>
+    <div class="qa-answer">
+      <p>Battery manufacturing does require significant energy — mostly for mining and processing lithium, cobalt, and nickel. A new EV typically starts with a carbon "debt" of 6–15 tonnes of CO₂ more than a new gas car, depending on battery size and where it was made.</p>
+      <p>On the average US grid, an EV breaks even on lifetime emissions in <strong>1–3 years</strong>, then runs cleaner for the remaining 15–20 years of the car's life. Argonne's GREET model — the peer-reviewed standard for this analysis — consistently shows EVs win on lifecycle emissions across the US even with today's grid mix.</p>
+    </div>
+  </div>
+
+  <div class="qa-block" onclick="toggleQA(this)">
+    <div class="qa-question">
+      <span>"Heat pumps don't work well in cold climates."</span>
+      <div class="qa-icon">+</div>
+    </div>
+    <div class="qa-answer">
+      <p>Modern cold-climate heat pumps operate efficiently down to -13°F (-25°C) and maintain some capacity even lower. The technology has improved dramatically in the last decade. Norway — one of the coldest inhabited countries in Europe — has the highest heat pump adoption rate in the world.</p>
+      <p>Efficiency (COP) does drop as temperatures fall, from COP 3–4 in mild weather to COP 1.5–2 in very cold conditions. At COP 1.5, a heat pump still delivers 50% more heat than a resistance electric heater — and outperforms most gas heating on a cost-per-BTU basis. For extreme cold snaps, modern systems include backup resistance heating that activates only when needed.</p>
+    </div>
+  </div>
+
+  <div class="qa-block" onclick="toggleQA(this)">
+    <div class="qa-question">
+      <span>"EVs are too expensive — this only works for wealthy people."</span>
+      <div class="qa-icon">+</div>
+    </div>
+    <div class="qa-answer">
+      <p>Upfront cost is a real barrier, and it's worth being honest about. New EVs still carry a premium over comparable gas vehicles, though the gap has narrowed substantially and federal tax credits (up to $7,500 for new EVs, $4,000 for used) reduce the effective price significantly.</p>
+      <p>The economics shift when you look at total cost of ownership. EVs have roughly half the maintenance cost of gas cars — no oil changes, fewer brake jobs due to regenerative braking, fewer moving parts. The calculator above shows the fuel savings. Over 5 years, most EVs are cheaper to own than comparable gas vehicles even at a higher purchase price. The used EV market is also expanding rapidly.</p>
+    </div>
+  </div>
+</div>
+
+<hr class="divider">
+
+<div class="cta-section">
+  <h2>Next: The Invisible Cost of Fuel</h2>
+  <p>We've seen how electrification wins at the wheel and in the home. But what about everything that happens before fuel ever reaches your tank — the rigs, the pipelines, the refineries, the tankers? That's Chapter 3.</p>
+  <a href="#" class="cta-btn disabled">Chapter 3 — Coming Soon →</a>
+</div>
+
+<div class="sources">
+  <h4>Sources</h4>
+  <ul>
+    <li><a href="https://www.fueleconomy.gov/feg/atv.do" target="_blank">EPA fueleconomy.gov — EV & ICE efficiency data (MPGe)</a></li>
+    <li><a href="https://www.energy.gov/sites/default/files/2025-01/EERE_DAS-T_Record_GREET_LDV_Fact_Sheet_FINAL.pdf" target="_blank">Argonne National Laboratory — GREET 2023 LDV Lifecycle Emissions Fact Sheet</a></li>
+    <li><a href="https://afdc.energy.gov/vehicles/electric-emissions-sources" target="_blank">Alternative Fuels Data Center — EV Emissions by Grid Source</a></li>
+    <li><a href="https://www.recurrentauto.com/research/coal-powered-electric-cars-still-cleaner" target="_blank">Recurrent Auto — Coal-powered EVs still cleaner than average ICE</a></li>
+    <li><a href="https://www.energy.gov/energysaver/heat-pump-systems" target="_blank">U.S. DOE — Heat Pump Systems</a></li>
+  </ul>
+</div>
+
+<script>
+  function updateCalc() {
+    const mpg = +document.getElementById('mpgSlider').value;
+    const miles = +document.getElementById('milesSlider').value;
+    const gasPrice = +document.getElementById('gasSlider').value;
+    const elecCents = +document.getElementById('elecSlider').value;
+
+    document.getElementById('mpgVal').textContent = mpg;
+    document.getElementById('milesVal').textContent = miles.toLocaleString();
+    document.getElementById('gasVal').textContent = gasPrice.toFixed(2);
+    document.getElementById('elecVal').textContent = elecCents;
+
+    const gallons = miles / mpg;
+    const gasCost = gallons * gasPrice;
+    const gasEnergyKwh = gallons * 33.7;
+
+    const evKwh = miles * 0.25;
+    const evCost = evKwh * (elecCents / 100);
+    const savings = gasCost - evCost;
+    const savingsPct = Math.round((savings / gasCost) * 100);
+    const effPct = Math.round((evKwh / gasEnergyKwh) * 100);
+
+    // CO2: gas = 19.6 lbs/gal; grid avg = 0.852 lbs/kWh (EPA eGRID 2022)
+    const co2Saved = Math.round(gallons * 19.6 - evKwh * 0.852);
+
+    document.getElementById('rGallons').textContent = Math.round(gallons).toLocaleString();
+    document.getElementById('rGasCost').textContent = '$' + Math.round(gasCost).toLocaleString();
+    document.getElementById('rKwh').textContent = Math.round(evKwh).toLocaleString();
+    document.getElementById('rKwhSub').textContent = `vs ${Math.round(gasEnergyKwh).toLocaleString()} kWh equiv. in gasoline`;
+    document.getElementById('rEvCost').textContent = '$' + Math.round(evCost).toLocaleString();
+    document.getElementById('rSavings').textContent = '$' + Math.round(savings).toLocaleString();
+    document.getElementById('rSavingsSub').textContent = `${savingsPct}% less fuel cost · ${co2Saved.toLocaleString()} lbs less CO₂/year`;
+    document.getElementById('rEffLabel').textContent = `${effPct}% of the energy`;
+    document.getElementById('rEffBar').style.width = effPct + '%';
+    document.getElementById('rEffNote').textContent = `EV uses ${Math.round(evKwh).toLocaleString()} kWh where gas carries ${Math.round(gasEnergyKwh).toLocaleString()} kWh of chemical energy`;
+  }
+
+  function toggleQA(el) { el.classList.toggle('open'); }
+
+  updateCalc();
+</script>
+</body>
+</html>
