@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chapter 3: The Invisible Cost of Fuel — Power Shift</title>
+  <style>
+    :root {
+      --bg: #0d1117;
+      --surface: #161b22;
+      --surface2: #1f2937;
+      --border: #30363d;
+      --text: #e6edf3;
+      --muted: #8b949e;
+      --accent: #58a6ff;
+      --green: #3fb950;
+      --orange: #f97316;
+      --red: #f85149;
+      --yellow: #d29922;
+      --purple: #a371f7;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif; line-height: 1.7; }
+
+    nav { position: sticky; top: 0; z-index: 100; background: rgba(13,17,23,0.92); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); padding: 0 2rem; display: flex; align-items: center; gap: 2rem; height: 56px; }
+    .nav-brand { font-weight: 700; font-size: 1rem; color: var(--accent); text-decoration: none; letter-spacing: -0.02em; white-space: nowrap; }
+    .nav-chapters { display: flex; gap: 0.25rem; list-style: none; overflow-x: auto; }
+    .nav-chapters a { color: var(--muted); text-decoration: none; font-size: 0.85rem; padding: 0.35rem 0.75rem; border-radius: 6px; transition: color 0.2s, background 0.2s; white-space: nowrap; }
+    .nav-chapters a:hover { color: var(--text); background: var(--surface); }
+    .nav-chapters a.active { color: var(--accent); background: var(--surface); }
+    .nav-chapters .coming-soon { opacity: 0.4; cursor: default; pointer-events: none; }
+
+    .hero { padding: 5rem 2rem 4rem; text-align: center; max-width: 800px; margin: 0 auto; }
+    .chapter-label { display: inline-block; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--orange); background: rgba(249,115,22,0.1); border: 1px solid rgba(249,115,22,0.2); border-radius: 20px; padding: 0.3rem 0.9rem; margin-bottom: 1.5rem; }
+    .hero h1 { font-size: clamp(2rem,5vw,3.5rem); font-weight: 800; letter-spacing: -0.03em; line-height: 1.15; margin-bottom: 1rem; }
+    .hero h1 span { color: var(--orange); }
+    .hero .subtitle { font-size: 1.15rem; color: var(--muted); max-width: 560px; margin: 0 auto 2.5rem; }
+    .scroll-cue { display: flex; align-items: center; justify-content: center; gap: 0.5rem; color: var(--muted); font-size: 0.85rem; animation: bounce 2s ease-in-out infinite; }
+    @keyframes bounce { 0%,100%{transform:translateY(0)}50%{transform:translateY(6px)} }
+
+    .section { max-width: 780px; margin: 0 auto; padding: 3rem 2rem; }
+    .section + .section { padding-top: 0; }
+    h2 { font-size: 1.75rem; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 1rem; }
+    h3 { font-size: 1.1rem; font-weight: 600; margin: 2rem 0 0.5rem; }
+    p { color: #c9d1d9; margin-bottom: 1rem; }
+    p:last-child { margin-bottom: 0; }
+    strong { color: var(--text); }
+
+    .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; margin: 2rem 0; }
+    .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; text-align: center; }
+    .stat-card .number { font-size: 2.25rem; font-weight: 800; letter-spacing: -0.03em; line-height: 1; margin-bottom: 0.5rem; }
+    .stat-card .label { font-size: 0.85rem; color: var(--muted); line-height: 1.4; }
+    .stat-card.red .number { color: var(--red); }
+    .stat-card.green .number { color: var(--green); }
+    .stat-card.orange .number { color: var(--orange); }
+    .stat-card.yellow .number { color: var(--yellow); }
+
+    .callout { border-radius: 12px; padding: 1.5rem 2rem; margin: 2rem 0; background: var(--surface); border: 1px solid var(--border); }
+    .callout.orange { border-left: 4px solid var(--orange); border-radius: 0 12px 12px 0; }
+    .callout.green  { border-left: 4px solid var(--green);  border-radius: 0 12px 12px 0; }
+    .callout.red    { border-left: 4px solid var(--red);    border-radius: 0 12px 12px 0; }
+    .callout.blue   { border-left: 4px solid var(--accent); border-radius: 0 12px 12px 0; }
+    .callout-label { font-size: 0.7rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 0.5rem; }
+    .callout.orange .callout-label { color: var(--orange); }
+    .callout.green  .callout-label { color: var(--green); }
+    .callout.red    .callout-label { color: var(--red); }
+    .callout.blue   .callout-label { color: var(--accent); }
+    .callout p { color: var(--text); font-style: italic; }
+
+    /* ── ENERGY CASCADE INTERACTIVE ── */
+    .cascade-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 2rem;
+      margin: 2rem 0;
+    }
+    .cascade-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-bottom: 1.75rem;
+    }
+    .cascade-header h3 { margin: 0; font-size: 1.05rem; }
+    .cascade-header p { color: var(--muted); font-size: 0.85rem; margin: 0.25rem 0 0; font-style: normal; }
+
+    .cascade-stages {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+    .cascade-stage {
+      display: grid;
+      grid-template-columns: 160px 1fr 80px;
+      align-items: center;
+      gap: 1rem;
+      padding: 0.6rem 0;
+      border-bottom: 1px solid var(--border);
+      opacity: 0;
+      transform: translateX(-8px);
+      transition: opacity 0.4s ease, transform 0.4s ease;
+    }
+    .cascade-stage.visible { opacity: 1; transform: translateX(0); }
+    .cascade-stage:last-child { border-bottom: none; }
+    .stage-label { font-size: 0.8rem; color: var(--muted); }
+    .stage-label strong { color: var(--text); display: block; font-size: 0.85rem; }
+    .stage-bar-wrap { position: relative; height: 28px; background: var(--surface2); border-radius: 4px; overflow: hidden; border: 1px solid var(--border); }
+    .stage-bar-remaining {
+      position: absolute; left: 0; top: 0; height: 100%;
+      border-radius: 3px 0 0 3px;
+      display: flex; align-items: center; padding-left: 8px;
+      font-size: 0.75rem; font-weight: 600; color: rgba(255,255,255,0.9);
+      transition: width 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+    .stage-bar-lost {
+      position: absolute; right: 0; top: 0; height: 100%;
+      display: flex; align-items: center; justify-content: flex-end;
+      padding-right: 8px;
+      font-size: 0.72rem; color: rgba(255,255,255,0.6);
+      transition: width 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+    .stage-pct { font-size: 0.9rem; font-weight: 700; text-align: right; }
+
+    .cascade-footer {
+      margin-top: 1.5rem;
+      padding: 1rem 1.25rem;
+      background: var(--bg);
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      font-size: 0.88rem;
+    }
+    .cascade-compare {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1px;
+      background: var(--border);
+      border-radius: 6px;
+      overflow: hidden;
+      margin-top: 0.75rem;
+    }
+    .cascade-cell {
+      background: var(--surface2);
+      padding: 0.75rem 1rem;
+    }
+    .cascade-cell .cc-label { font-size: 0.72rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.25rem; }
+    .cascade-cell .cc-val { font-size: 1.25rem; font-weight: 800; }
+
+    /* ── PIPELINE VIZ ── */
+    .pipeline-steps {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      margin: 2rem 0;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    .pipe-step {
+      display: grid;
+      grid-template-columns: 48px 1fr auto;
+      align-items: start;
+      gap: 1rem;
+      padding: 1.25rem 1.5rem;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface);
+    }
+    .pipe-step:last-child { border-bottom: none; }
+    .pipe-step:hover { background: var(--surface2); }
+    .pipe-icon {
+      width: 42px; height: 42px;
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.3rem;
+      flex-shrink: 0;
+    }
+    .pipe-step-body h4 { font-size: 0.95rem; font-weight: 600; margin-bottom: 0.25rem; }
+    .pipe-step-body p { font-size: 0.85rem; color: var(--muted); margin: 0; font-style: normal; }
+    .pipe-loss {
+      text-align: right;
+      flex-shrink: 0;
+    }
+    .pipe-loss .pl-num { font-size: 1.1rem; font-weight: 800; }
+    .pipe-loss .pl-label { font-size: 0.72rem; color: var(--muted); }
+
+    /* ── COMPARISON TABLE ── */
+    .eff-table { width: 100%; border-collapse: collapse; margin: 1.5rem 0; font-size: 0.9rem; }
+    .eff-table th { text-align: left; padding: 0.6rem 1rem; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); border-bottom: 1px solid var(--border); }
+    .eff-table td { padding: 0.75rem 1rem; border-bottom: 1px solid var(--border); color: #c9d1d9; }
+    .eff-table tr:last-child td { border-bottom: none; }
+    .eff-table .highlight td { color: var(--text); font-weight: 500; }
+    .good { color: var(--green) !important; font-weight: 600; }
+    .bad  { color: var(--red)   !important; }
+    .mid  { color: var(--yellow)!important; }
+
+    /* ── EROI ── */
+    .eroi-bar-wrap { margin: 2rem 0; }
+    .eroi-row { display: grid; grid-template-columns: 180px 1fr 80px; align-items: center; gap: 1rem; margin-bottom: 0.75rem; font-size: 0.85rem; }
+    @media(max-width:520px){ .eroi-row { grid-template-columns: 1fr 1fr 50px; } }
+    .eroi-label { color: var(--muted); font-size: 0.82rem; }
+    .eroi-track { height: 20px; background: var(--surface); border-radius: 4px; overflow: hidden; border: 1px solid var(--border); }
+    .eroi-fill { height: 100%; border-radius: 3px; display: flex; align-items: center; padding-left: 6px; font-size: 0.7rem; font-weight: 600; color: rgba(255,255,255,0.8); }
+    .eroi-val { font-weight: 700; font-size: 0.88rem; text-align: right; }
+
+    /* ── FAQ ── */
+    .qa-block { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin: 1rem 0; }
+    .qa-question { display: flex; align-items: center; justify-content: space-between; padding: 1rem 1.5rem; cursor: pointer; user-select: none; gap: 1rem; }
+    .qa-question:hover { background: var(--surface2); }
+    .qa-question span { font-size: 0.9rem; font-weight: 500; color: var(--text); }
+    .qa-icon { color: var(--muted); font-size: 1.2rem; flex-shrink: 0; transition: transform 0.25s; }
+    .qa-answer { display: none; padding: 0 1.5rem 1.25rem; font-size: 0.9rem; color: #c9d1d9; border-top: 1px solid var(--border); }
+    .qa-answer p { margin-top: 1rem; }
+    .qa-block.open .qa-icon { transform: rotate(45deg); }
+    .qa-block.open .qa-answer { display: block; }
+
+    .divider { border: none; border-top: 1px solid var(--border); margin: 0 2rem; }
+
+    .cta-section { text-align: center; padding: 4rem 2rem 5rem; max-width: 600px; margin: 0 auto; }
+    .cta-section h2 { margin-bottom: 0.75rem; }
+    .cta-section p { color: var(--muted); margin-bottom: 2rem; }
+    .cta-btn { display: inline-flex; align-items: center; gap: 0.5rem; background: var(--orange); color: #0d1117; font-weight: 700; font-size: 0.95rem; padding: 0.75rem 1.75rem; border-radius: 8px; text-decoration: none; transition: opacity 0.2s; }
+    .cta-btn:hover { opacity: 0.85; }
+    .cta-btn.disabled { background: var(--surface2); color: var(--muted); cursor: default; pointer-events: none; }
+
+    .sources { border-top: 1px solid var(--border); padding: 2rem; max-width: 780px; margin: 0 auto; }
+    .sources h4 { font-size: 0.75rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.75rem; }
+    .sources ul { list-style: none; display: flex; flex-direction: column; gap: 0.3rem; }
+    .sources a { font-size: 0.8rem; color: var(--muted); text-decoration: none; }
+    .sources a:hover { color: var(--accent); }
+
+    @media(max-width:600px){
+      .cascade-stage { grid-template-columns: 110px 1fr 60px; }
+      .pipe-step { grid-template-columns: 42px 1fr; }
+      .pipe-loss { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-brand" href="index.html">⚡ Power Shift</a>
+  <ul class="nav-chapters">
+    <li><a href="index.html">1. The Energy Illusion</a></li>
+    <li><a href="chapter2.html">2. The Efficiency Revolution</a></li>
+    <li><a href="chapter3.html" class="active">3. The Invisible Cost of Fuel</a></li>
+    <li><a href="#" class="coming-soon">4. The Missing Battery</a></li>
+    <li><a href="#" class="coming-soon">5. Sunshine on Everything</a></li>
+    <li><a href="#" class="coming-soon">6. The Real Price Tag</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="chapter-label">Chapter 3</div>
+  <h1>The <span>Invisible</span> Cost of Fuel</h1>
+  <p class="subtitle">Before gasoline reaches your tank, it's already consumed enormous amounts of energy — on rigs, in refineries, in pipelines, and on tankers. That cost never shows up on the pump.</p>
+  <div class="scroll-cue">↓ scroll to find out</div>
+</div>
+
+<!-- HOOK -->
+<div class="section">
+  <h2>A Price You're Already Paying</h2>
+  <p>In Chapter 2, we saw that a gasoline engine converts only about 20% of fuel energy into motion. But that's the <em>optimistic</em> version of the story — it starts measuring at the pump, as if the gasoline just appeared there for free.</p>
+  <p>It didn't. Getting a gallon of gasoline to your tank requires drilling wells, running enormous pumps, shipping crude oil across the ocean, feeding it through one of the most energy-intensive industrial processes on earth, and then trucking the finished product to tens of thousands of stations across the country.</p>
+  <p>Every one of those steps burns energy. <strong>None of it shows up in your mpg rating.</strong></p>
+</div>
+
+<!-- STAT CARDS -->
+<div class="section" style="padding-top:0">
+  <div class="stat-grid">
+    <div class="stat-card orange">
+      <div class="number">6–12%</div>
+      <div class="label">of crude oil's energy content is consumed just extracting it from the ground</div>
+    </div>
+    <div class="stat-card red">
+      <div class="number">~15%</div>
+      <div class="label">more lost in refining, pipelines, and transport before the pump</div>
+    </div>
+    <div class="stat-card yellow">
+      <div class="number">~11%</div>
+      <div class="label">of a barrel's energy actually reaches your wheels via a gas car</div>
+    </div>
+    <div class="stat-card green">
+      <div class="number">7–8×</div>
+      <div class="label">more of a barrel's energy reaches EV wheels vs. gas car wheels, well-to-wheel</div>
+    </div>
+  </div>
+  <p style="font-size:0.8rem;color:var(--muted)">Source: EROI literature (SPE Journal); DOE Bandwidth Study on Petroleum Refining; Argonne GREET 2023. See methodology notes in FAQ.</p>
+</div>
+
+<!-- PIPELINE STEPS -->
+<div class="section" style="padding-top:0">
+  <h2>The Journey of a Gallon</h2>
+  <p>Here's what happens before the gasoline hits your tank — and what it costs at each step.</p>
+
+  <div class="pipeline-steps">
+    <div class="pipe-step">
+      <div class="pipe-icon" style="background:rgba(249,115,22,0.15)">🛢️</div>
+      <div class="pipe-step-body">
+        <h4>1. Extraction — The Well</h4>
+        <p>Pumping oil from the ground requires energy: electric motors running pumpjacks, high-pressure water injection to push oil to the surface, natural gas burned on-site for heat and power. US onshore oil production alone consumes tens of billions of kWh per year in electricity. Modern shale oil requires significantly more energy per barrel than conventional oil from decades past — the easy oil is mostly gone.</p>
+      </div>
+      <div class="pipe-loss">
+        <div class="pl-num" style="color:var(--orange)">6–12%</div>
+        <div class="pl-label">energy lost</div>
+      </div>
+    </div>
+
+    <div class="pipe-step">
+      <div class="pipe-icon" style="background:rgba(248,81,73,0.15)">🚢</div>
+      <div class="pipe-step-body">
+        <h4>2. Transport — Pipelines &amp; Tankers</h4>
+        <p>About half of US crude oil is imported. Moving it requires supertankers that burn heavy bunker fuel — one of the dirtiest fuels on earth — for weeks at sea. Domestically, crude and refined products travel thousands of miles through pipelines that require pumping stations, then load onto trucks for final-mile delivery to stations. This transport leg is a smaller share of the total, but it's energy burned for no one's benefit except logistics.</p>
+      </div>
+      <div class="pipe-loss">
+        <div class="pl-num" style="color:var(--red)">~2%</div>
+        <div class="pl-label">energy lost</div>
+      </div>
+    </div>
+
+    <div class="pipe-step">
+      <div class="pipe-icon" style="background:rgba(210,153,34,0.15)">🏭</div>
+      <div class="pipe-step-body">
+        <h4>3. Refining — The Hidden Factory</h4>
+        <p>This is the big one. US oil refineries collectively process about 17–18 million barrels of crude every single day. Refining is an energy-intensive industrial process: cracking heavy hydrocarbons into lighter fuels requires extreme heat, pressure, and catalytic reactions running continuously. US refineries are among the largest industrial energy consumers in the country, operating 24 hours a day, 365 days a year.</p>
+        <p style="margin-top:0.5rem">The energy to run these facilities has to come from somewhere — and much of it comes from burning a portion of the crude itself, or from purchased natural gas and electricity. Roughly <strong>one in every seven to ten barrels processed goes into powering the refinery</strong> that processes the other six to nine.</p>
+      </div>
+      <div class="pipe-loss">
+        <div class="pl-num" style="color:var(--yellow)">~12%</div>
+        <div class="pl-label">energy lost</div>
+      </div>
+    </div>
+
+    <div class="pipe-step">
+      <div class="pipe-icon" style="background:rgba(63,185,80,0.15)">⛽</div>
+      <div class="pipe-step-body">
+        <h4>4. The Pump — What You're Actually Buying</h4>
+        <p>After extraction, transport, and refining, the fuel that reaches your tank contains roughly <strong>75–80%</strong> of the original barrel's energy content. The rest has already been spent getting it to you.</p>
+      </div>
+      <div class="pipe-loss">
+        <div class="pl-num" style="color:var(--green)">~78%</div>
+        <div class="pl-label">remaining</div>
+      </div>
+    </div>
+
+    <div class="pipe-step" style="background:var(--surface2)">
+      <div class="pipe-icon" style="background:rgba(248,81,73,0.2)">🚗</div>
+      <div class="pipe-step-body">
+        <h4>5. The Engine — The Final Inefficiency</h4>
+        <p>Then the 78% that made it to your tank gets burned in an engine that converts roughly 20% of it into motion. The other 80% leaves through the tailpipe and the radiator as heat.</p>
+        <p style="margin-top:0.5rem">78% × 20% = <strong>~15.6% of the original barrel's energy actually moves your car.</strong></p>
+      </div>
+      <div class="pipe-loss">
+        <div class="pl-num" style="color:var(--red)">~84%</div>
+        <div class="pl-label">wasted here</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- INTERACTIVE CASCADE -->
+<div class="section" style="padding-top:0">
+  <div class="cascade-card">
+    <div class="cascade-header">
+      <div>
+        <h3>Energy Cascade: 100 Units at the Wellhead</h3>
+        <p>Watch how much disappears at each stage before reaching your wheels.</p>
+      </div>
+      <button onclick="runCascade()" id="cascadeBtn"
+        style="background:var(--orange);color:#0d1117;border:none;border-radius:8px;padding:0.5rem 1.1rem;font-weight:700;font-size:0.85rem;cursor:pointer;flex-shrink:0">
+        ▶ Play
+      </button>
+    </div>
+
+    <div class="cascade-stages" id="cascadeStages">
+      <!-- stages injected by JS -->
+    </div>
+
+    <div class="cascade-footer">
+      <div style="font-size:0.82rem;color:var(--muted);margin-bottom:0.5rem">Final result: units of energy that actually move your car per 100 units at the wellhead</div>
+      <div class="cascade-compare">
+        <div class="cascade-cell">
+          <div class="cc-label">Gasoline well-to-wheel</div>
+          <div class="cc-val" style="color:var(--red)">~11–15 units</div>
+        </div>
+        <div class="cascade-cell">
+          <div class="cc-label">EV on avg US grid well-to-wheel</div>
+          <div class="cc-val" style="color:var(--green)">~80–110 units*</div>
+        </div>
+      </div>
+      <div style="font-size:0.72rem;color:var(--muted);margin-top:0.6rem">*EV comparison uses equivalent primary energy input (natural gas for grid). On renewables, input-to-wheel efficiency exceeds 75%. See Chapter 2 for grid mix breakdown.</div>
+    </div>
+  </div>
+</div>
+
+<!-- THE SHORTCUT -->
+<div class="section" style="padding-top:0">
+  <h2>The EV Shortcut</h2>
+  <p>An electric vehicle skips almost the entire supply chain.</p>
+  <p>Electricity can be generated right where it's needed — on a rooftop, in a field, offshore — and transmitted directly to a car. There's no refinery. No tanker. No pipeline. No truck delivery to a station. The energy goes from generation to wheels in one short hop, with losses only in the wire and the motor.</p>
+
+  <table class="eff-table">
+    <thead>
+      <tr>
+        <th>Stage</th>
+        <th>Gas car energy remaining</th>
+        <th>EV on renewables remaining</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>At primary source</td>
+        <td>100%</td>
+        <td>100%</td>
+      </tr>
+      <tr>
+        <td>After extraction</td>
+        <td class="mid">88–94%</td>
+        <td class="good">100% (no extraction)</td>
+      </tr>
+      <tr>
+        <td>After transport</td>
+        <td class="mid">86–92%</td>
+        <td class="good">100% (no transport)</td>
+      </tr>
+      <tr>
+        <td>After refining / generation</td>
+        <td class="mid">~75–80%</td>
+        <td class="mid">~90–95% (grid generation)</td>
+      </tr>
+      <tr>
+        <td>After transmission losses</td>
+        <td class="mid">~75–80%</td>
+        <td class="mid">~83–88%</td>
+      </tr>
+      <tr>
+        <td>After drivetrain conversion</td>
+        <td class="bad">~11–16%</td>
+        <td class="good">~68–76%</td>
+      </tr>
+      <tr class="highlight">
+        <td><strong>Wellhead/source to wheels</strong></td>
+        <td class="bad"><strong>~11–16%</strong></td>
+        <td class="good"><strong>~68–76%</strong></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="callout green">
+    <div class="callout-label">The punchline</div>
+    <p>An EV on renewable electricity delivers 5–7 times more of the original energy source to the wheels than a gas car — counting every step from the primary source all the way through. The supply chain inefficiency isn't a minor footnote. It roughly doubles the gap we saw in Chapter 2.</p>
+  </div>
+</div>
+
+<!-- EROI -->
+<div class="section" style="padding-top:0">
+  <h2>The Shrinking Return on Oil</h2>
+  <p>There's a concept called <strong>EROI — Energy Return on Energy Invested</strong>. It measures how much usable energy you get back for every unit of energy you put into extraction.</p>
+  <p>In the early 20th century, US oil had an EROI of roughly 100:1 — you invested 1 barrel of energy and got 100 back. Those were the easy fields, the shallow wells, the gushers. That oil is long gone.</p>
+  <p>Today, US shale oil — the source of America's recent production boom — has an EROI of roughly <strong>8:1 to 15:1</strong>. You invest 1 unit of energy to extract 8–15. That sounds reasonable until you remember that refining, transport, and end-use inefficiency eat into the remainder. By the time that energy moves a car, you've extracted 15 but only used 2.</p>
+  <p>The trend is moving in the wrong direction. As easy-to-reach reserves deplete, EROI continues to decline — meaning we burn more and more energy just to get the energy we use.</p>
+
+  <div class="eroi-bar-wrap">
+    <div style="font-size:0.75rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.05em;display:grid;grid-template-columns:180px 1fr 80px;gap:1rem;padding-bottom:0.5rem;border-bottom:1px solid var(--border)">
+      <span>Era / Source</span><span>EROI (energy returned per unit invested)</span><span>Ratio</span>
+    </div>
+    <div style="margin-top:0.75rem;display:flex;flex-direction:column;gap:0.65rem">
+      <div class="eroi-row">
+        <div class="eroi-label">US oil, early 1900s</div>
+        <div class="eroi-track"><div class="eroi-fill" style="width:100%;background:var(--green)">100:1</div></div>
+        <div class="eroi-val" style="color:var(--green)">100:1</div>
+      </div>
+      <div class="eroi-row">
+        <div class="eroi-label">US conventional oil, 1970</div>
+        <div class="eroi-track"><div class="eroi-fill" style="width:30%;background:var(--green)">30:1</div></div>
+        <div class="eroi-val" style="color:var(--green)">~30:1</div>
+      </div>
+      <div class="eroi-row">
+        <div class="eroi-label">US avg. oil &amp; gas, 2000s</div>
+        <div class="eroi-track"><div class="eroi-fill" style="width:18%;background:var(--yellow)">18:1</div></div>
+        <div class="eroi-val" style="color:var(--yellow)">~18:1</div>
+      </div>
+      <div class="eroi-row">
+        <div class="eroi-label">US shale oil today</div>
+        <div class="eroi-track"><div class="eroi-fill" style="width:11%;background:var(--orange)">8–15:1</div></div>
+        <div class="eroi-val" style="color:var(--orange)">8–15:1</div>
+      </div>
+      <div class="eroi-row">
+        <div class="eroi-label">Oil sands (tar sands)</div>
+        <div class="eroi-track"><div class="eroi-fill" style="width:5%;background:var(--red)">3–5:1</div></div>
+        <div class="eroi-val" style="color:var(--red)">3–5:1</div>
+      </div>
+      <div class="eroi-row">
+        <div class="eroi-label" style="color:var(--green);font-weight:600">Solar PV (utility scale)</div>
+        <div class="eroi-track"><div class="eroi-fill" style="width:30%;background:var(--green)">~30:1</div></div>
+        <div class="eroi-val" style="color:var(--green)">~30:1</div>
+      </div>
+      <div class="eroi-row">
+        <div class="eroi-label" style="color:var(--green);font-weight:600">Wind (onshore)</div>
+        <div class="eroi-track"><div class="eroi-fill" style="width:40%;background:var(--green)">~40:1</div></div>
+        <div class="eroi-val" style="color:var(--green)">~40:1</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout orange">
+    <div class="callout-label">What this means long-term</div>
+    <p>As oil EROI continues to decline, we burn more and more energy just to maintain current production levels. Solar and wind, by contrast, have EROI that is already competitive with or exceeding today's oil — and it improves as manufacturing scales. The economics of oil get worse over time. The economics of renewables get better.</p>
+  </div>
+</div>
+
+<!-- THE INFRASTRUCTURE ARGUMENT -->
+<div class="section" style="padding-top:0">
+  <h2>Infrastructure Already Paying the Bill</h2>
+  <p>The US oil industry runs on enormous amounts of electricity — electricity that the industry itself often frames as a necessary cost of keeping the fuel supply running. But look at the scale of that consumption from a different angle.</p>
+  <p>US onshore oil extraction uses electricity to run an estimated 350,000–450,000 pumpjacks, along with water injection systems, gas compression, and processing equipment. Estimates of this consumption suggest the electricity alone could power roughly <strong>8–15 million electric vehicles</strong> for a year — before counting refinery consumption, pipeline pumping stations, or terminal operations.</p>
+  <p>US oil refineries collectively process 17–18 million barrels per day and are among the most energy-intensive industries in the country. A meaningful fraction of the crude they receive never leaves as refined product — it's consumed powering the refinery that processes the rest.</p>
+
+  <div class="callout blue">
+    <div class="callout-label">The key insight</div>
+    <p>We are spending electricity, natural gas, and diesel — right now, today — to deliver a fuel that will then be burned at 20% efficiency. An EV plugged into that same electricity skips the entire middle of that chain. The infrastructure cost doesn't go away by choosing gas. You're paying it either way. With an EV, you skip the inefficient end of the chain too.</p>
+  </div>
+
+  <div class="callout red" style="margin-top:1rem">
+    <div class="callout-label">A note on these numbers</div>
+    <p>Precise, audited electricity-consumption figures for the full US oil supply chain are not publicly published in a single place. The estimates above for pumpjack electricity are derived from industry surveys and are in the right order of magnitude but should be treated as indicative, not precise. The EROI figures are well-sourced from peer-reviewed literature. We flag this rather than obscure it.</p>
+  </div>
+</div>
+
+<hr class="divider">
+
+<!-- FAQ -->
+<div class="section">
+  <h2>Common Objections</h2>
+
+  <div class="qa-block" onclick="toggleQA(this)">
+    <div class="qa-question">
+      <span>"We still need oil for plastics, chemicals, and aviation — this doesn't argue for eliminating oil."</span>
+      <div class="qa-icon">+</div>
+    </div>
+    <div class="qa-answer">
+      <p>Correct — and this series doesn't argue for eliminating oil. About 70% of US petroleum goes to transportation fuels (gasoline, diesel, jet fuel). Plastics, chemicals, lubricants, and other non-fuel uses make up the remaining 30% and have no near-term electric substitute at scale.</p>
+      <p>The argument here is narrower: <em>for the transportation fuel use case specifically</em>, electricity is dramatically more efficient from source to wheels, and the supply chain overhead for petroleum transportation fuel is a large hidden cost. Reducing petroleum's role in transportation doesn't require eliminating it everywhere.</p>
+    </div>
+  </div>
+
+  <div class="qa-block" onclick="toggleQA(this)">
+    <div class="qa-question">
+      <span>"The electricity grid has its own supply chain losses — transmission, generation, etc."</span>
+      <div class="qa-icon">+</div>
+    </div>
+    <div class="qa-answer">
+      <p>Yes, and those are included in the well-to-wheel figures shown above. US grid transmission and distribution losses average about 5–6%. Generation losses depend on the source: natural gas combined cycle runs at ~49% efficiency; renewables have near-zero conversion losses.</p>
+      <p>Even accounting for all grid losses, the EV pathway from primary source to wheels is 4–7 times more efficient than the gasoline pathway — because the gasoline pathway stacks extraction, refining, transport, <em>and</em> engine inefficiency on top of each other. Each loss multiplies the previous ones. The EV pathway has far fewer multiplied losses.</p>
+    </div>
+  </div>
+
+  <div class="qa-block" onclick="toggleQA(this)">
+    <div class="qa-question">
+      <span>"EROI for renewables seems suspiciously high. Is that accurate?"</span>
+      <div class="qa-icon">+</div>
+    </div>
+    <div class="qa-answer">
+      <p>EROI numbers for renewables vary significantly by study methodology, location, and system boundary. Some studies focused on grid-level integration (including storage and backup) produce lower EROI figures for renewables; others measuring only the panel/turbine itself produce higher ones. The figures shown (solar ~30:1, wind ~40:1) are from harmonized meta-analyses of peer-reviewed literature and are considered conservative mid-range estimates.</p>
+      <p>The key comparison isn't an exact ratio — it's the direction of the trend. Oil EROI is declining as reserves become harder to access. Renewable EROI is improving as manufacturing scales and technology matures. The crossover is not theoretical — it's already happened for solar and wind against unconventional oil sources like tar sands.</p>
+    </div>
+  </div>
+
+  <div class="qa-block" onclick="toggleQA(this)">
+    <div class="qa-question">
+      <span>"What about hydrogen as a fuel? Couldn't that avoid these supply chain losses?"</span>
+      <div class="qa-icon">+</div>
+    </div>
+    <div class="qa-answer">
+      <p>Hydrogen faces its own efficiency chain problem, though it's better than petroleum for transportation. Electrolysis (splitting water with electricity) is about 60–80% efficient. Compressing or liquefying hydrogen loses another 10–15%. A fuel cell converts hydrogen back to electricity at about 60% efficiency. Combined: roughly 35–45% of the original electricity reaches the wheels.</p>
+      <p>Compare that to a battery EV, which retains about 77–85% of electricity at the wheels. Hydrogen fuel cell vehicles are about 2–2.5× less efficient than battery EVs on a well-to-wheel basis. Hydrogen does have compelling use cases where batteries don't work well — heavy freight, aviation, shipping, industrial processes. For light-duty passenger vehicles, battery EVs are significantly more efficient.</p>
+    </div>
+  </div>
+</div>
+
+<hr class="divider">
+
+<div class="cta-section">
+  <h2>Next: The Missing Battery</h2>
+  <p>We've seen that electrification dramatically reduces energy demand. But what about reliability and grid stability? Chapter 4 looks at how grid-scale batteries could transform how we generate and deliver power — and why we may already have more generation capacity than we think.</p>
+  <a href="#" class="cta-btn disabled">Chapter 4 — Coming Soon →</a>
+</div>
+
+<div class="sources">
+  <h4>Sources</h4>
+  <ul>
+    <li><a href="https://www.energy.gov/sites/default/files/2015/08/f25/petroleum_refining_bandwidth_report.pdf" target="_blank">DOE Bandwidth Study — US Petroleum Refining Energy Use</a></li>
+    <li><a href="https://www.energy.gov/sites/default/files/2025-01/EERE_DAS-T_Record_GREET_LDV_Fact_Sheet_FINAL.pdf" target="_blank">Argonne GREET 2023 — Well-to-Wheel Lifecycle Analysis</a></li>
+    <li><a href="https://www.eia.gov/dnav/pet/pet_pnp_inpt2_dc_nus_mbbl_a.htm" target="_blank">EIA — US Petroleum Refinery Inputs and Outputs</a></li>
+    <li><a href="https://www.eia.gov/totalenergy/data/monthly/" target="_blank">EIA — Monthly Energy Review (US petroleum production data)</a></li>
+    <li><a href="https://www.mdpi.com/1996-1073/12/8/1569" target="_blank">MDPI Energies — EROI Harmonization Review (Lambert et al.)</a></li>
+  </ul>
+</div>
+
+<script>
+  /* ── CASCADE ANIMATION ── */
+  const stages = [
+    { label: 'Wellhead', sub: 'Crude oil at source', remaining: 100, lost: 0,   color: '#58a6ff' },
+    { label: 'Extraction', sub: 'Pumping & processing energy', remaining: 91,  lost: 9,   color: '#f97316' },
+    { label: 'Transport', sub: 'Tankers, pipelines, trucks', remaining: 89,  lost: 2,   color: '#d29922' },
+    { label: 'Refining',  sub: 'Cracking crude into gasoline', remaining: 78,  lost: 11,  color: '#f85149' },
+    { label: 'In your tank', sub: 'Energy content of gasoline', remaining: 78,  lost: 0,   color: '#3fb950' },
+    { label: 'Engine',    sub: 'Combustion & heat loss',       remaining: 14,  lost: 64,  color: '#f85149' },
+    { label: 'At the wheels', sub: 'Actual motion energy',    remaining: 14,  lost: 0,   color: '#3fb950' },
+  ];
+
+  function buildCascade() {
+    const container = document.getElementById('cascadeStages');
+    container.innerHTML = '';
+    stages.forEach((s, i) => {
+      const row = document.createElement('div');
+      row.className = 'cascade-stage';
+      row.id = `stage-${i}`;
+
+      const lostWidth  = Math.max(0, s.lost);
+      const keepWidth  = s.remaining;
+
+      row.innerHTML = `
+        <div class="stage-label"><strong>${s.label}</strong>${s.sub}</div>
+        <div class="stage-bar-wrap">
+          <div class="stage-bar-remaining" id="bar-keep-${i}"
+            style="width:0%;background:${s.color}">
+            ${keepWidth}%
+          </div>
+          <div class="stage-bar-lost" id="bar-lost-${i}"
+            style="width:0%;background:rgba(248,81,73,0.35)">
+            ${lostWidth > 0 ? '−' + lostWidth + '%' : ''}
+          </div>
+        </div>
+        <div class="stage-pct" style="color:${s.color}">${keepWidth}%</div>
+      `;
+      container.appendChild(row);
+    });
+  }
+
+  let cascadeRunning = false;
+
+  async function runCascade() {
+    if (cascadeRunning) return;
+    cascadeRunning = true;
+    const btn = document.getElementById('cascadeBtn');
+    btn.disabled = true;
+    btn.textContent = '▶ Running…';
+
+    // reset
+    stages.forEach((_, i) => {
+      const el = document.getElementById(`stage-${i}`);
+      el.classList.remove('visible');
+      document.getElementById(`bar-keep-${i}`).style.width = '0%';
+      document.getElementById(`bar-lost-${i}`).style.width = '0%';
+    });
+
+    await delay(200);
+
+    for (let i = 0; i < stages.length; i++) {
+      const s = stages[i];
+      const el = document.getElementById(`stage-${i}`);
+      el.classList.add('visible');
+      await delay(80);
+      document.getElementById(`bar-keep-${i}`).style.width = s.remaining + '%';
+      if (s.lost > 0) {
+        await delay(200);
+        document.getElementById(`bar-lost-${i}`).style.width = s.lost + '%';
+      }
+      await delay(420);
+    }
+
+    btn.disabled = false;
+    btn.textContent = '↺ Replay';
+    cascadeRunning = false;
+  }
+
+  function delay(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+  function toggleQA(el) { el.classList.toggle('open'); }
+
+  buildCascade();
+  // auto-play on load after short delay
+  setTimeout(runCascade, 600);
+</script>
+</body>
+</html>
