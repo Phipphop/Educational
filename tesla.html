@@ -1,0 +1,897 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Tesla Case: An Owner's Field Guide</title>
+  <style>
+    :root {
+      --bg: #0d1117;
+      --surface: #161b22;
+      --surface2: #1f2937;
+      --border: #30363d;
+      --text: #e6edf3;
+      --muted: #8b949e;
+      --accent: #58a6ff;
+      --green: #3fb950;
+      --orange: #f97316;
+      --red: #f85149;
+      --yellow: #d29922;
+      --purple: #a371f7;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      line-height: 1.7;
+    }
+
+    /* NAV */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(13, 17, 23, 0.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 2rem;
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+      height: 56px;
+    }
+    .nav-brand {
+      font-weight: 700;
+      font-size: 1rem;
+      color: var(--accent);
+      text-decoration: none;
+      letter-spacing: -0.02em;
+      white-space: nowrap;
+    }
+    .nav-chapters {
+      display: flex;
+      gap: 0.25rem;
+      list-style: none;
+      overflow-x: auto;
+    }
+    .nav-chapters a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.85rem;
+      padding: 0.35rem 0.75rem;
+      border-radius: 6px;
+      transition: color 0.2s, background 0.2s;
+      white-space: nowrap;
+    }
+    .nav-chapters a:hover { color: var(--text); background: var(--surface); }
+    .nav-chapters a.active { color: var(--accent); background: var(--surface); }
+
+    /* HERO */
+    .hero {
+      padding: 5rem 2rem 3.5rem;
+      text-align: center;
+      max-width: 820px;
+      margin: 0 auto;
+    }
+    .chapter-label {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--accent);
+      background: rgba(88, 166, 255, 0.1);
+      border: 1px solid rgba(88, 166, 255, 0.2);
+      border-radius: 20px;
+      padding: 0.3rem 0.9rem;
+      margin-bottom: 1.5rem;
+    }
+    .hero h1 {
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      line-height: 1.15;
+      margin-bottom: 1rem;
+    }
+    .hero h1 span { color: var(--accent); }
+    .hero .subtitle {
+      font-size: 1.15rem;
+      color: var(--muted);
+      max-width: 600px;
+      margin: 0 auto 2.5rem;
+    }
+    .scroll-cue {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      color: var(--muted);
+      font-size: 0.85rem;
+      animation: bounce 2s ease-in-out infinite;
+    }
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(6px); }
+    }
+
+    /* SECTIONS */
+    .section {
+      max-width: 780px;
+      margin: 0 auto;
+      padding: 3rem 2rem;
+    }
+    .section + .section { padding-top: 0; }
+    .section-anchor { scroll-margin-top: 70px; }
+
+    .eyebrow {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 0.6rem;
+    }
+    h2 {
+      font-size: 1.75rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 1rem;
+    }
+    h3 {
+      font-size: 1.15rem;
+      font-weight: 600;
+      margin: 2rem 0 0.5rem;
+      color: var(--text);
+    }
+    p { color: #c9d1d9; margin-bottom: 1rem; }
+    p:last-child { margin-bottom: 0; }
+    strong { color: var(--text); }
+    .muted-note { font-size: 0.8rem; color: var(--muted); }
+
+    /* STAT CARDS */
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1rem;
+      margin: 2rem 0;
+    }
+    .stat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      text-align: center;
+    }
+    .stat-card .number {
+      font-size: 2.5rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      line-height: 1;
+      margin-bottom: 0.5rem;
+    }
+    .stat-card .label {
+      font-size: 0.85rem;
+      color: var(--muted);
+      line-height: 1.4;
+    }
+    .stat-card.red .number { color: var(--red); }
+    .stat-card.green .number { color: var(--green); }
+    .stat-card.blue .number { color: var(--accent); }
+    .stat-card.orange .number { color: var(--orange); }
+    .stat-card.purple .number { color: var(--purple); }
+
+    /* CALLOUT / ANALOGY */
+    .callout { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem 2rem; margin: 2rem 0; }
+    .callout.green { border-left: 4px solid var(--green); border-radius: 0 12px 12px 0; }
+    .callout.orange { border-left: 4px solid var(--orange); border-radius: 0 12px 12px 0; }
+    .callout.blue { border-left: 4px solid var(--accent); border-radius: 0 12px 12px 0; }
+    .callout.red { border-left: 4px solid var(--red); border-radius: 0 12px 12px 0; }
+    .callout-label { font-size: 0.7rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 0.5rem; }
+    .callout.green .callout-label { color: var(--green); }
+    .callout.orange .callout-label { color: var(--orange); }
+    .callout.blue .callout-label { color: var(--accent); }
+    .callout.red .callout-label { color: var(--red); }
+    .callout p { color: var(--text); }
+    .callout p.italic { font-style: italic; }
+
+    /* TABLES */
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.5rem 0;
+      font-size: 0.9rem;
+    }
+    .data-table th {
+      text-align: left;
+      padding: 0.6rem 1rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--muted);
+      border-bottom: 1px solid var(--border);
+    }
+    .data-table td {
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid var(--border);
+      color: #c9d1d9;
+    }
+    .data-table tr:last-child td { border-bottom: none; }
+    .data-table .highlight td { color: var(--text); font-weight: 600; background: rgba(63,185,80,0.06); }
+    .good { color: var(--green) !important; font-weight: 600; }
+    .bad { color: var(--red) !important; }
+
+    /* COMPARISON BARS */
+    .cmp-block { margin: 1.75rem 0; }
+    .cmp-row { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.6rem; }
+    .cmp-label { width: 160px; flex-shrink: 0; color: var(--muted); font-size: 0.82rem; }
+    .cmp-bar-bg { flex: 1; height: 24px; background: var(--surface2); border-radius: 5px; overflow: hidden; }
+    .cmp-bar-fill { height: 100%; border-radius: 5px; display: flex; align-items: center; padding-left: 9px; font-size: 0.72rem; font-weight: 700; color: #0d1117; white-space: nowrap; transition: width 0.5s ease; }
+    .cmp-val { width: 78px; text-align: right; flex-shrink: 0; font-weight: 700; font-size: 0.85rem; }
+    @media (max-width: 560px) { .cmp-label { width: 110px; } }
+
+    /* TOGGLE GROUP (shared) */
+    .toggle-group {
+      display: inline-flex;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 3px;
+      gap: 2px;
+      margin-bottom: 1.25rem;
+    }
+    .toggle-btn {
+      padding: 0.4rem 1rem;
+      border: none;
+      background: transparent;
+      color: var(--muted);
+      font-size: 0.85rem;
+      font-weight: 500;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .toggle-btn.active { background: var(--surface2); color: var(--text); }
+    .toggle-summary {
+      padding: 1.1rem 1.35rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      font-size: 0.92rem;
+      color: #c9d1d9;
+    }
+    .toggle-summary strong { color: var(--text); }
+
+    /* CALCULATOR */
+    .calc-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 2rem; margin: 2rem 0; }
+    .calc-card h3 { margin: 0 0 0.35rem; font-size: 1.05rem; }
+    .calc-subtitle { font-size: 0.85rem; color: var(--muted); margin-bottom: 1.75rem; }
+    .calc-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; margin-bottom: 1.75rem; }
+    @media (max-width: 520px) { .calc-inputs { grid-template-columns: 1fr; } }
+    .calc-field label { display: block; font-size: 0.78rem; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem; }
+    .calc-field input[type=range] { width: 100%; padding: 0; border: none; background: transparent; cursor: pointer; accent-color: var(--green); }
+    .range-val { font-size: 1.1rem; font-weight: 700; color: var(--green); margin-top: 0.2rem; }
+    .calc-results { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--border); border-radius: 10px; overflow: hidden; }
+    @media (max-width: 520px) { .calc-results { grid-template-columns: 1fr; } }
+    .result-cell { background: var(--bg); padding: 1rem 1.25rem; }
+    .result-cell .r-label { font-size: 0.75rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.3rem; }
+    .result-cell .r-val { font-size: 1.4rem; font-weight: 800; letter-spacing: -0.02em; }
+    .result-cell .r-sub { font-size: 0.78rem; color: var(--muted); margin-top: 0.15rem; }
+    .result-cell.highlight { background: var(--surface); }
+    .r-val.gas { color: var(--orange); }
+    .r-val.ev { color: var(--green); }
+    .r-val.save { color: var(--accent); }
+
+    /* FEATURE STACKER */
+    .stacker-options { display: flex; flex-wrap: wrap; gap: 0.6rem; margin-bottom: 1.5rem; }
+    .stack-chip {
+      border: 1px solid var(--border);
+      background: var(--bg);
+      color: var(--muted);
+      border-radius: 22px;
+      padding: 0.5rem 1rem;
+      cursor: pointer;
+      font-size: 0.85rem;
+      user-select: none;
+      transition: all 0.15s;
+    }
+    .stack-chip:hover { border-color: var(--muted); }
+    .stack-chip.active { background: rgba(88,166,255,0.12); border-color: var(--accent); color: var(--text); }
+    .stack-chip .chip-cost { color: var(--accent); font-weight: 600; }
+    .stack-readout { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--border); border-radius: 10px; overflow: hidden; }
+    @media (max-width: 520px) { .stack-readout { grid-template-columns: 1fr; } }
+
+    /* NICE-TO-HAVE GRID */
+    .nh-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; margin: 2rem 0; }
+    .nh-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1.4rem 1.5rem; }
+    .nh-card .nh-icon { font-size: 1.5rem; margin-bottom: 0.6rem; }
+    .nh-card h4 { font-size: 0.98rem; font-weight: 700; margin-bottom: 0.4rem; color: var(--text); }
+    .nh-card p { font-size: 0.85rem; color: var(--muted); margin: 0; }
+    .nh-card .nh-stat { color: var(--accent); font-weight: 600; }
+
+    /* COUNTERARGUMENT */
+    .qa-block { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin: 1rem 0; }
+    .qa-question { display: flex; align-items: center; justify-content: space-between; padding: 1rem 1.5rem; cursor: pointer; user-select: none; gap: 1rem; }
+    .qa-question:hover { background: var(--surface2); }
+    .qa-question span { font-size: 0.9rem; font-weight: 500; color: var(--text); }
+    .qa-icon { color: var(--muted); font-size: 1.2rem; flex-shrink: 0; transition: transform 0.25s; }
+    .qa-answer { display: none; padding: 0 1.5rem 1.25rem; font-size: 0.9rem; color: #c9d1d9; border-top: 1px solid var(--border); }
+    .qa-answer p { margin-top: 1rem; }
+    .qa-block.open .qa-icon { transform: rotate(45deg); }
+    .qa-block.open .qa-answer { display: block; }
+
+    /* CTA */
+    .cta-section { text-align: center; padding: 4rem 2rem 5rem; max-width: 620px; margin: 0 auto; }
+    .cta-section h2 { margin-bottom: 0.75rem; }
+    .cta-section p { color: var(--muted); margin-bottom: 2rem; }
+    .cta-btn {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      background: var(--accent); color: #0d1117; font-weight: 700; font-size: 0.95rem;
+      padding: 0.75rem 1.75rem; border-radius: 8px; text-decoration: none; transition: opacity 0.2s;
+    }
+    .cta-btn:hover { opacity: 0.85; }
+
+    /* SOURCES */
+    .sources { border-top: 1px solid var(--border); padding: 2rem; max-width: 780px; margin: 0 auto; }
+    .sources h4 { font-size: 0.75rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.75rem; }
+    .sources ul { list-style: none; display: flex; flex-direction: column; gap: 0.3rem; }
+    .sources a { font-size: 0.8rem; color: var(--muted); text-decoration: none; }
+    .sources a:hover { color: var(--accent); }
+    .disclaimer { max-width: 780px; margin: 0 auto; padding: 0 2rem 2rem; font-size: 0.78rem; color: var(--muted); }
+
+    .divider { border: none; border-top: 1px solid var(--border); margin: 0 2rem; }
+
+    @media (max-width: 600px) {
+      .stat-grid { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-brand" href="#top">⚡ The Tesla Case</a>
+  <ul class="nav-chapters">
+    <li><a href="#safety">Safety</a></li>
+    <li><a href="#efficiency">Efficiency</a></li>
+    <li><a href="#storage">Storage</a></li>
+    <li><a href="#value">Value</a></li>
+    <li><a href="#performance">Performance</a></li>
+    <li><a href="#extras">Extras</a></li>
+    <li><a href="#faq">Objections</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<div class="hero" id="top">
+  <div class="chapter-label">An Owner's Field Guide</div>
+  <h1>The Honest Case for <span>Owning a Tesla</span></h1>
+  <p class="subtitle">When I show people my Model Y, I can talk for half an hour and still leave things out. This is that conversation — written down, backed by the actual numbers, with the caveats left in. Because the truth is convincing enough.</p>
+  <div class="scroll-cue">↓ start with safety</div>
+</div>
+
+<!-- INTRO -->
+<div class="section">
+  <p>I drive a <strong>Tesla Model Y</strong>, so that's the car this page is built around. Where the <strong>Model 3</strong> meaningfully differs — usually on price or straight-line speed — I'll say so.</p>
+  <p>Every headline figure here links to a primary source: Tesla's own safety report, NHTSA, IIHS, the EPA, the EIA. Where a popular claim doesn't survive scrutiny, I've corrected it rather than repeat it. A few numbers (prices, software versions) move month to month — those are flagged as current to mid-2026.</p>
+</div>
+
+<hr class="divider">
+
+<!-- ============ SAFETY ============ -->
+<div class="section section-anchor" id="safety">
+  <div class="eyebrow">01 — Safety</div>
+  <h2>Two kinds of safety: avoiding the crash, and surviving it</h2>
+  <p>A Tesla is trying to keep you out of a collision in the first place — and then, if one happens anyway, to protect you better than almost anything else on the road. Both halves have hard data behind them.</p>
+
+  <div class="stat-grid">
+    <div class="stat-card green">
+      <div class="number">~9×</div>
+      <div class="label">fewer crashes per mile with Autopilot engaged vs. the US average — by Tesla's accounting*</div>
+    </div>
+    <div class="stat-card blue">
+      <div class="number">5★</div>
+      <div class="label">NHTSA overall rating — and 5 stars in every individual category</div>
+    </div>
+    <div class="stat-card purple">
+      <div class="number">4.2×</div>
+      <div class="label">the car's own weight in roof strength (IIHS "Good" threshold is 4×)</div>
+    </div>
+    <div class="stat-card orange">
+      <div class="number">1st</div>
+      <div class="label">vehicle ever to pass NHTSA's new advanced driver-assistance test battery (2026)</div>
+    </div>
+  </div>
+</div>
+
+<!-- BEFORE THE CRASH -->
+<div class="section section-anchor" style="padding-top:0">
+  <h3>Before the crash — the part you never see</h3>
+  <p>Tesla's Vehicle Safety Report tracks how far its cars travel between crashes. In its most recent report (Q3 2025), cars with <strong>Autopilot engaged went 6.36 million miles between crashes</strong>, versus roughly <strong>702,000 miles for the average US vehicle</strong> — about <strong>9× farther</strong>. That's a real number. But it isn't a clean apples-to-apples comparison, and an honest page should say why.</p>
+
+  <div class="toggle-group">
+    <button class="toggle-btn active" id="sb-tesla" onclick="setSafety('tesla')">What Tesla reports</button>
+    <button class="toggle-btn" id="sb-fair" onclick="setSafety('fair')">Is it apples-to-apples?</button>
+  </div>
+  <div class="toggle-summary" id="safetySummary">
+    <strong>Tesla's headline:</strong> one crash per 6.36 million miles with Autopilot on, vs. ~702,000 miles for the US fleet average (Tesla Q3 2025 Vehicle Safety Report) — roughly <strong>9× fewer crashes per mile</strong>.
+  </div>
+
+  <p style="margin-top:1.5rem">The takeaway isn't "Autopilot is 9× safer, full stop." It's that <strong>active safety features built into every Tesla</strong> — automatic emergency braking, lane keeping, blind-spot warning, forward-collision warning, all standard at no extra cost — measurably reduce crashes, and the more advanced assistance reduces them further on the roads where it's used most.</p>
+
+  <div class="callout blue">
+    <div class="callout-label">One important distinction</div>
+    <p>Standard <strong>Autopilot</strong> (traffic-aware cruise + lane centering) and the full active-safety suite come free on every car. <strong>Full Self-Driving (Supervised)</strong> is a separate paid option, and despite the name it's a Level 2 system that requires an attentive driver. Don't buy a Tesla expecting it to drive itself.</p>
+  </div>
+</div>
+
+<!-- DURING THE CRASH -->
+<div class="section section-anchor" style="padding-top:0">
+  <h3>During the crash — built to protect</h3>
+  <p>If a collision is unavoidable, the Model Y is one of the most thoroughly validated vehicles on the road:</p>
+
+  <table class="data-table">
+    <thead>
+      <tr><th>Rating body</th><th>Result</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>NHTSA (US)</td><td class="good">5-star overall — 5 stars frontal, side &amp; rollover</td></tr>
+      <tr><td>IIHS (US)</td><td class="good">Top Safety Pick+ — 5 years running</td></tr>
+      <tr><td>Euro NCAP (2025)</td><td class="good">5 stars — 91% adult / 93% child occupant protection</td></tr>
+      <tr class="highlight"><td>NHTSA ADAS battery (2026)</td><td>First vehicle ever to pass the new test suite</td></tr>
+    </tbody>
+  </table>
+
+  <p>Two engineering reasons it does so well:</p>
+  <p><strong>A floor full of battery.</strong> The heavy pack sits low and flat, giving the car a very low center of gravity — NHTSA recorded a <strong>7.9% rollover risk</strong>, among the lowest of any SUV. There's also no engine block to intrude into the cabin, leaving a large front crumple zone. The roof withstands roughly <strong>4.2× the vehicle's weight</strong> (about 19,000 lbs), clearing the IIHS "Good" bar of 4× and well past the federal minimum of 3×.</p>
+  <p><strong>Cameras that brace you for impact.</strong> A 2025 software update lets Tesla's Vision system <em>anticipate</em> some frontal collisions up to <strong>~70 milliseconds before impact</strong> — beginning to tighten the seatbelts and prepare the airbags before traditional crash sensors would even register the hit. Tesla presents this as a supplement to conventional sensors, not a replacement.</p>
+
+  <p class="muted-note">A note on superlatives: NHTSA doesn't rank cars beyond the 5-star tier, so "the safest car you can buy" isn't a claim the data supports (and it's one NHTSA has explicitly asked Tesla not to make). The narrower, true statement: the Model Y earns top marks from every body that tests it. The record for <em>lowest injury probability</em> in NHTSA testing actually belongs to the Tesla Model 3 (5.7%), not the Model Y (6.3%).</p>
+</div>
+
+<!-- WINTER -->
+<div class="section section-anchor" style="padding-top:0">
+  <h3>Winter, specifically</h3>
+  <p>Cold-weather driving is where a lot of buyers worry about EVs, and where the Model Y quietly shines — for reasons of hardware, not hype:</p>
+  <div class="nh-grid">
+    <div class="nh-card">
+      <div class="nh-icon">🔥</div>
+      <h4>Standard heat pump</h4>
+      <p>Every Model Y has one. It heats the cabin and battery far more efficiently than resistance heat, protecting range in the cold.</p>
+    </div>
+    <div class="nh-card">
+      <div class="nh-icon">❄️</div>
+      <h4>Available all-wheel drive</h4>
+      <p>Dual-motor AWD with instant, independent torque control front and rear — traction management faster than any mechanical system.</p>
+    </div>
+    <div class="nh-card">
+      <div class="nh-icon">🔋</div>
+      <h4>~80–86% range retention</h4>
+      <p>In independent cold-weather testing, a preconditioned Model Y holds most of its range — and you start every cold morning warm.</p>
+    </div>
+    <div class="nh-card">
+      <div class="nh-icon">📱</div>
+      <h4>Preheat from your phone</h4>
+      <p>Defrost the glass and warm the seats before you leave the house. No idling in the driveway, no scraping in the cold.</p>
+    </div>
+  </div>
+  <p class="muted-note">The low, central battery mass also helps stability on slick roads. (Driver-assistance features like Autopilot are degraded by snow, ice, and glare — Tesla's own manual says so — so treat winter as a place the <em>car</em> excels and <em>you</em> stay in command.)</p>
+</div>
+
+<hr class="divider">
+
+<!-- ============ EFFICIENCY ============ -->
+<div class="section section-anchor" id="efficiency">
+  <div class="eyebrow">02 — Efficiency</div>
+  <h2>Every place you park is a place you can fuel</h2>
+  <p>The real question isn't "is charging cheaper than gas?" — it almost always is. It's <strong>how far gas would have to fall to even break even</strong> with charging at home. Plug in numbers below and find out.</p>
+
+  <div class="calc-card">
+    <h3>⚡ The break-even gas price</h3>
+    <p class="calc-subtitle">A Model Y uses about 28.8 kWh per 100 miles (EPA). Set your home electricity rate, the gas car you'd compare against, and today's pump price.</p>
+
+    <div class="calc-inputs">
+      <div class="calc-field">
+        <label>Your electricity rate</label>
+        <input type="range" id="rate" min="6" max="35" step="0.5" value="13.5" oninput="updateBreakeven()">
+        <div class="range-val"><span id="rateVal">13.5</span>¢/kWh</div>
+      </div>
+      <div class="calc-field">
+        <label>Gas car you'd compare</label>
+        <input type="range" id="mpg" min="15" max="55" step="1" value="27" oninput="updateBreakeven()">
+        <div class="range-val"><span id="mpgVal">27</span> MPG</div>
+      </div>
+      <div class="calc-field">
+        <label>Today's gas price</label>
+        <input type="range" id="gas" min="1.50" max="6.00" step="0.10" value="3.00" oninput="updateBreakeven()">
+        <div class="range-val">$<span id="gasVal">3.00</span>/gal</div>
+      </div>
+      <div class="calc-field">
+        <label>Miles you drive a year</label>
+        <input type="range" id="miles" min="5000" max="30000" step="1000" value="12000" oninput="updateBreakeven()">
+        <div class="range-val"><span id="milesVal">12,000</span> mi</div>
+      </div>
+    </div>
+
+    <div class="calc-results">
+      <div class="result-cell">
+        <div class="r-label">Charging at home</div>
+        <div class="r-val ev" id="rEv">3.9¢</div>
+        <div class="r-sub">per mile</div>
+      </div>
+      <div class="result-cell">
+        <div class="r-label">The gas car</div>
+        <div class="r-val gas" id="rGas">11.1¢</div>
+        <div class="r-sub">per mile</div>
+      </div>
+      <div class="result-cell highlight" style="grid-column:1/-1">
+        <div class="r-label">Gas would have to fall to</div>
+        <div class="r-val save" id="rBreakeven">$1.05/gal</div>
+        <div class="r-sub" id="rSavings">to break even — below that gas wins, above it your Tesla does. You'd save about $864/year.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout green">
+    <div class="callout-label">The Iowa reality</div>
+    <p>At Iowa's residential rate (~13–16¢/kWh, EIA), home charging runs about <strong>4–5¢ a mile</strong>. Against a typical 25–30 MPG gas SUV, gas would have to crater to roughly <strong>$1.00–$1.55 a gallon</strong> to compete — a price not seen in years. If you compare against a fuel-sipping 40–50 MPG hybrid instead, the break-even rises to around $1.90. Either way, at any realistic 2026 pump price, charging at home wins comfortably.</p>
+  </div>
+</div>
+
+<!-- CHARGING CONVENIENCE -->
+<div class="section section-anchor" style="padding-top:0">
+  <h3>And the time you get back</h3>
+  <p>Gas means a recurring errand — a few minutes, a few times a month, always slightly off your route. Charging inverts that. You plug in at home and <strong>wake up full every morning</strong>. A Tesla Wall Connector adds up to <strong>44 miles of range per hour</strong>; even a standard 120V wall outlet adds ~3 mi/hr, which quietly keeps pace with the average 37-mile day.</p>
+  <p>Away from home, nearly everywhere you park becomes a place to top up: Tesla's <strong>Destination Charging network puts 50,000+ chargers</strong> at hotels, restaurants, and friends' houses — often free, while you'd be parked anyway. The road trip is the only time you think about fueling at all.</p>
+
+  <div class="callout blue">
+    <div class="callout-label">The part that's hard to put a number on</div>
+    <p>Maybe the biggest day-to-day benefit: I just <em>don't think about the car</em>. I don't turn it on or off. I don't lock or unlock it. I don't plan charging. I walk up, it opens; I walk away, it locks; I plug in at night and it's full by morning. The car drops out of my mental load entirely — and that's worth more than any spec.</p>
+  </div>
+</div>
+
+<!-- MAINTENANCE -->
+<div class="section section-anchor" style="padding-top:0">
+  <h3>Maintenance you mostly don't do</h3>
+  <p>An electric drivetrain has a fraction of the moving parts. No oil changes, no spark plugs, no timing belts, no transmission service. Regenerative braking does most of your slowing with the motor, so brake pads and rotors last far longer than on a gas car.</p>
+  <p>Consumer Reports' analysis of hundreds of thousands of owners found EV drivers pay <strong>about half as much</strong> to maintain and repair their cars — an average <strong>~$4,600 saved over the life of the vehicle</strong> (CR, 2020).</p>
+  <p class="muted-note">The honest trade-off: heavier, instant-torque EVs go through <strong>tires roughly 15–30% faster</strong>, and EV-rated tires cost a bit more — so budget slightly more there. It offsets some, but nowhere near all, of the savings.</p>
+</div>
+
+<hr class="divider">
+
+<!-- ============ STORAGE ============ -->
+<div class="section section-anchor" id="storage">
+  <div class="eyebrow">03 — Storage</div>
+  <h2>More room than the footprint suggests</h2>
+  <p>Skipping the engine and transmission frees up space a gas car can't reach. The Model Y carries about <strong>30 cu ft behind the back seats</strong>, expanding to roughly <strong>76 cu ft folded flat</strong> — plus a sealed front trunk where an engine used to be.</p>
+
+  <div class="cmp-block">
+    <div class="cmp-row">
+      <div class="cmp-label">Behind 2nd row</div>
+      <div class="cmp-bar-bg"><div class="cmp-bar-fill" style="width:79%;background:var(--green)">Model Y · 30 cu ft</div></div>
+      <div class="cmp-val">30</div>
+    </div>
+    <div class="cmp-row">
+      <div class="cmp-label">Toyota RAV4</div>
+      <div class="cmp-bar-bg"><div class="cmp-bar-fill" style="width:99%;background:var(--surface2);color:var(--text)">37.5 cu ft</div></div>
+      <div class="cmp-val">37.5</div>
+    </div>
+    <div class="cmp-row">
+      <div class="cmp-label">Toyota Highlander*</div>
+      <div class="cmp-bar-bg"><div class="cmp-bar-fill" style="width:42%;background:var(--surface2);color:var(--text)">16 cu ft</div></div>
+      <div class="cmp-val">16</div>
+    </div>
+  </div>
+  <p class="muted-note">*The Highlander is a much larger three-row SUV — yet behind its second row it holds <em>less</em> than the Model Y. That's the EV-packaging advantage in everyday use.</p>
+
+  <p>The honest caveat: a genuinely bigger SUV folded completely flat can still beat the Model Y on maximum volume (a Highlander hits ~84 cu ft). And Tesla measures generously, to the roofline. So the fair claim isn't "biggest cargo, period" — it's "<strong>more usable space than its footprint implies, and more than larger SUVs in the configurations you actually use.</strong>"</p>
+
+  <div class="callout green">
+    <div class="callout-label">The frunk</div>
+    <p>A sealed <strong>4.1 cu ft front trunk</strong> sits completely outside the cabin — perfect for groceries, muddy boots, or anything you don't want stinking up the interior. It even has a <strong>drain plug</strong>, so you can hose it out or pack it with ice and use it as a cooler. No gas SUV has anything like it.</p>
+  </div>
+</div>
+
+<hr class="divider">
+
+<!-- ============ VALUE ============ -->
+<div class="section section-anchor" id="value">
+  <div class="eyebrow">04 — Bang for the buck</div>
+  <h2>What's standard here costs extra elsewhere</h2>
+  <p>A lot of what feels premium in a Tesla is just included. Ventilated front seats, a 15-speaker audio system, a big central touchscreen, the full active-safety suite, and free over-the-air map updates all come standard on the mainstream (Premium and Performance) trims. On rival SUVs, those are top-trim-only or cost-extra options. Try building one up to match:</p>
+
+  <div class="calc-card">
+    <h3>🧱 Build a rival to match a Model Y</h3>
+    <p class="calc-subtitle">Start with a typical compact SUV at a base price, then add the features a mid-trim Model Y already includes. Watch the gap close. (Figures illustrative — option prices vary by brand and year.)</p>
+
+    <div class="stacker-options" id="stackOptions">
+      <div class="stack-chip" data-cost="3000" onclick="toggleChip(this)">+ Ventilated front seats <span class="chip-cost">$3,000</span></div>
+      <div class="stack-chip" data-cost="1000" onclick="toggleChip(this)">+ Premium audio <span class="chip-cost">$1,000</span></div>
+      <div class="stack-chip" data-cost="2495" onclick="toggleChip(this)">+ Hands-free / adaptive driver assist <span class="chip-cost">$2,495</span></div>
+      <div class="stack-chip" data-cost="1200" onclick="toggleChip(this)">+ Large touchscreen + connected nav <span class="chip-cost">$1,200</span></div>
+      <div class="stack-chip" data-cost="1500" onclick="toggleChip(this)">+ Panoramic glass roof <span class="chip-cost">$1,500</span></div>
+      <div class="stack-chip" data-cost="800" onclick="toggleChip(this)">+ Power liftgate + extras <span class="chip-cost">$800</span></div>
+    </div>
+
+    <div class="stack-readout">
+      <div class="result-cell">
+        <div class="r-label">Your equipped rival</div>
+        <div class="r-val gas" id="rivalTotal">$32,000</div>
+        <div class="r-sub" id="rivalSub">base + $0 in options</div>
+      </div>
+      <div class="result-cell highlight">
+        <div class="r-label">Comparable Model Y (Premium RWD)</div>
+        <div class="r-val ev">$44,990</div>
+        <div class="r-sub" id="gapSub">gap: $12,990 — and you'd still be missing Tesla-only features</div>
+      </div>
+    </div>
+    <p class="muted-note" style="margin-top:1rem">…and even fully loaded, the rival still has no frunk, no Supercharger access, no over-the-air improvements, and nowhere near the acceleration. The point isn't that Tesla is always cheapest — it's that once you equip a rival to match, the price gap shrinks fast.</p>
+  </div>
+
+  <h3>Connectivity for about the price of one streaming service</h3>
+  <p>Tesla's <strong>Premium Connectivity is $9.99/month or $99/year</strong> (US) — it adds live traffic visualization, satellite-view maps, in-car video and music streaming, a web browser, and Caraoke. Even without it, you still get maps, turn-by-turn navigation with traffic-based routing, and live Supercharger availability over the built-in cellular connection. Many cars charge several times that for connected services, often as a bundled subscription you can't opt out of.</p>
+
+  <h3>Current pricing (mid-2026)</h3>
+  <table class="data-table">
+    <thead>
+      <tr><th>Trim</th><th>Model Y</th><th>Model 3</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Standard (RWD)</td><td>~$39,990</td><td>~$36,990</td></tr>
+      <tr><td>Premium (Long Range AWD)</td><td>~$48,990</td><td>~$47,490</td></tr>
+      <tr><td>Performance</td><td>~$57,490</td><td>~$54,990</td></tr>
+    </tbody>
+  </table>
+  <p class="muted-note">Add ~$1,640 destination. Tesla renamed the lineup to Standard / Premium / Performance ("Premium" is the old Long Range), and adjusts prices often — confirm live before relying on a figure.</p>
+
+  <div class="callout red">
+    <div class="callout-label">Don't expect a federal tax credit</div>
+    <p>The federal $7,500 new-EV tax credit <strong>ended for vehicles purchased after September 30, 2025</strong> and is <strong>not available in 2026</strong>. Any pitch built around "minus $7,500" is out of date. Check current state and local incentives instead — those still vary widely.</p>
+  </div>
+</div>
+
+<hr class="divider">
+
+<!-- ============ PERFORMANCE ============ -->
+<div class="section section-anchor" id="performance">
+  <div class="eyebrow">05 — Performance</div>
+  <h2>Supercar acceleration, mainstream money</h2>
+  <p>Instant electric torque makes even the everyday trims feel quick. But the genuine showstopper is the <strong>Model 3 Performance</strong>: Tesla claims 0–60 in 2.9 seconds, and <em>Edmunds independently tested 3.0 seconds</em> — matching the launch of six-figure sports cars, for <strong>$54,990</strong>.</p>
+
+  <div class="cmp-block">
+    <div class="cmp-row">
+      <div class="cmp-label">Model 3 Performance</div>
+      <div class="cmp-bar-bg"><div class="cmp-bar-fill" style="width:100%;background:var(--green)">3.0s · $54,990</div></div>
+      <div class="cmp-val">3.0s</div>
+    </div>
+    <div class="cmp-row">
+      <div class="cmp-label">Model Y Performance</div>
+      <div class="cmp-bar-bg"><div class="cmp-bar-fill" style="width:91%;background:var(--green)">3.3s · ~$57,490</div></div>
+      <div class="cmp-val">3.3s</div>
+    </div>
+    <div class="cmp-row">
+      <div class="cmp-label">BMW M3</div>
+      <div class="cmp-bar-bg"><div class="cmp-bar-fill" style="width:88%;background:var(--surface2);color:var(--text)">~3.4s · $76,700</div></div>
+      <div class="cmp-val">3.4s</div>
+    </div>
+    <div class="cmp-row">
+      <div class="cmp-label">Model Y Premium AWD</div>
+      <div class="cmp-bar-bg"><div class="cmp-bar-fill" style="width:72%;background:var(--accent)">4.6s · ~$48,990</div></div>
+      <div class="cmp-val">4.6s</div>
+    </div>
+    <div class="cmp-row">
+      <div class="cmp-label">BMW X3 (gas SUV)</div>
+      <div class="cmp-bar-bg"><div class="cmp-bar-fill" style="width:50%;background:var(--surface2);color:var(--text)">~6.0s · $49,950</div></div>
+      <div class="cmp-val">6.0s</div>
+    </div>
+  </div>
+
+  <p>A Model 3 Performance is <strong>~$22,000 cheaper than a BMW M3</strong> and just as quick to 60. A Model Y Performance is <strong>roughly twice as quick</strong> to 60 as the gas luxury SUVs it's cross-shopped against. And there's no warm-up, no downshift, no drama — just immediate, repeatable thrust.</p>
+  <p class="muted-note">Keep it honest: this is <em>straight-line</em> speed. On a racetrack — handling balance, steering feel, brake endurance over repeated laps — a dedicated sports car like the M3 still has the edge. The Tesla matches the 0–60, not the lap time.</p>
+</div>
+
+<hr class="divider">
+
+<!-- ============ EXTRAS ============ -->
+<div class="section section-anchor" id="extras">
+  <div class="eyebrow">06 — The extras that add up</div>
+  <h2>Dozens of small things you stop being able to live without</h2>
+
+  <div class="nh-grid">
+    <div class="nh-card">
+      <div class="nh-icon">💡</div>
+      <h4>Matrix headlights</h4>
+      <p>Adaptive high beams stay on but blank out just the patch around oncoming cars — lighting ditches and signs without blinding anyone. <span class="nh-stat">US pixel-level control only became legal after NHTSA's late-2024 rule change.</span></p>
+    </div>
+    <div class="nh-card">
+      <div class="nh-icon">🔄</div>
+      <h4>The car gets better after you buy it</h4>
+      <p>Over-the-air updates have added real features to existing cars for over a decade — Sentry Mode, Dog Mode, even <span class="nh-stat">a ~5% power bump and +15 miles of range</span> pushed to cars already in driveways.</p>
+    </div>
+    <div class="nh-card">
+      <div class="nh-icon">🔌</div>
+      <h4>Tesla's plug won</h4>
+      <p>Nearly every automaker has adopted Tesla's connector (now the SAE J3400 standard). It's already <span class="nh-stat">~48% of US fast-charging ports</span> — so a Tesla's charging access only grows.</p>
+    </div>
+    <div class="nh-card">
+      <div class="nh-icon">🛰️</div>
+      <h4>The Supercharger network</h4>
+      <p>The biggest and most reliable fast-charging network — ranked <span class="nh-stat">#1 by J.D. Power five years running</span> — and the reason long EV road trips actually work.</p>
+    </div>
+    <div class="nh-card">
+      <div class="nh-icon">🛡️</div>
+      <h4>Sentry Mode + dashcam</h4>
+      <p>The cameras keep watch when parked — recording and deterring break-ins, vandalism, and hit-and-runs — and buffer continuously while you drive. No aftermarket dashcam needed.</p>
+    </div>
+    <div class="nh-card">
+      <div class="nh-icon">🏕️</div>
+      <h4>Camp &amp; Dog Mode</h4>
+      <p>Keep the cabin climate-controlled overnight for camping, or safely for a pet — with a screen that reassures passersby. The Performance can even power tools and devices (~2.4 kW).</p>
+    </div>
+  </div>
+  <p class="muted-note">(Vehicle-to-load powers gear and a campsite — but the Model Y can't back up a whole house; that's a Cybertruck feature.)</p>
+</div>
+
+<hr class="divider">
+
+<!-- ============ OBJECTIONS ============ -->
+<div class="section section-anchor" id="faq">
+  <div class="eyebrow">07 — The fair questions</div>
+  <h2>Common objections, answered honestly</h2>
+
+  <div class="qa-block" onclick="toggleQA(this)">
+    <div class="qa-question">
+      <span>"Aren't the Autopilot safety stats cherry-picked?"</span>
+      <div class="qa-icon">+</div>
+    </div>
+    <div class="qa-answer">
+      <p>Partly, yes — and it's worth being upfront. Tesla counts only crashes severe enough to deploy an airbag, while the national baseline counts all police-reported crashes, so the numerator is undercounted. Autopilot miles are also disproportionately highway, the safest roads per mile, and Teslas are newer and pricier than the average car on the road. A true like-for-like gap would be smaller than 9×.</p>
+      <p>But "smaller than 9×" isn't "zero." Even with Autopilot off, a Tesla's standard active-safety hardware reduces crashes, and the passive crash-protection ratings (NHTSA, IIHS, Euro NCAP) are independent of Tesla and unambiguous. The safety case doesn't rest on the 9× alone.</p>
+    </div>
+  </div>
+
+  <div class="qa-block" onclick="toggleQA(this)">
+    <div class="qa-question">
+      <span>"Isn't an electric car just a coal-powered car?"</span>
+      <div class="qa-icon">+</div>
+    </div>
+    <div class="qa-answer">
+      <p>Even on today's mixed grid, an EV converts far more of its energy into motion than a gas car does, so it comes out ahead well-to-wheel — and the grid keeps getting cleaner every year, which means the car effectively gets greener as it ages. (Our sister explainer, <a href="chapter2.html" style="color:var(--accent)">Power Shift: The Efficiency Revolution</a>, walks through this math in detail.)</p>
+    </div>
+  </div>
+
+  <div class="qa-block" onclick="toggleQA(this)">
+    <div class="qa-question">
+      <span>"Don't Teslas depreciate badly?"</span>
+      <div class="qa-icon">+</div>
+    </div>
+    <div class="qa-answer">
+      <p>This is a real knock, and recent history isn't flattering: when Tesla repeatedly cut new-car prices in 2023–2024, used values fell with them, and EVs as a class have depreciated faster than gas cars lately. The fair, narrow truth is that <em>among EVs</em>, the Model 3 holds its value better than most rivals (~45% after five years). If resale is your top priority, go in with eyes open — the fuel and maintenance savings are where a Tesla makes its money back, not the resale check.</p>
+    </div>
+  </div>
+
+  <div class="qa-block" onclick="toggleQA(this)">
+    <div class="qa-question">
+      <span>"Is 'Full Self-Driving' actually self-driving?"</span>
+      <div class="qa-icon">+</div>
+    </div>
+    <div class="qa-answer">
+      <p>No — and you shouldn't buy it expecting that. Despite the name, FSD (Supervised) is a Level 2 driver-assistance system that requires your hands ready and eyes on the road. It's impressive and improving, but it is not autonomous, and as of 2026 it's the subject of active federal scrutiny over how it behaves in poor visibility. Treat it as advanced assistance, not a chauffeur. The standard Autopilot and active-safety features — which <em>are</em> free — are the part most owners value daily.</p>
+    </div>
+  </div>
+
+  <div class="qa-block" onclick="toggleQA(this)">
+    <div class="qa-question">
+      <span>"Aren't they just too expensive?"</span>
+      <div class="qa-icon">+</div>
+    </div>
+    <div class="qa-answer">
+      <p>The upfront price is a real barrier, and with the federal credit gone in 2026 there's no sticker discount to lean on. But the comparison that matters is total cost of ownership: home charging that beats gas at any realistic pump price, roughly half the maintenance cost, and a feature set that would push a comparably-equipped rival into the same price range anyway. Over several years of driving, the gap narrows or reverses — it's just back-loaded into the years you own it rather than the day you buy it.</p>
+    </div>
+  </div>
+</div>
+
+<hr class="divider">
+
+<!-- CTA -->
+<div class="cta-section">
+  <h2>Curious why electrification wins in the first place?</h2>
+  <p>This page is about one car. Its sister site, Power Shift, makes the bigger case — why electric drivetrains are fundamentally more efficient than burning fuel, from the power plant to your wheels.</p>
+  <a href="index.html" class="cta-btn">Read Power Shift →</a>
+</div>
+
+<!-- SOURCES -->
+<div class="sources">
+  <h4>Sources</h4>
+  <ul>
+    <li><a href="https://www.tesla.com/VehicleSafetyReport" target="_blank">Tesla — Vehicle Safety Report (Q3 2025)</a></li>
+    <li><a href="https://www.nhtsa.gov/vehicle/2025/TESLA/MODEL%20Y/SUV/RWD" target="_blank">NHTSA — Tesla Model Y 5-Star Safety Ratings</a></li>
+    <li><a href="https://www.nhtsa.gov/press-releases/tesla-model-y-first-vehicle-pass-nhtsa-new-advanced-driver-assistance-system-tests" target="_blank">NHTSA — Model Y first to pass new ADAS tests (2026)</a></li>
+    <li><a href="https://www.iihs.org/ratings/vehicle/tesla/model-y-4-door-suv/2025" target="_blank">IIHS — Tesla Model Y ratings (Top Safety Pick+)</a></li>
+    <li><a href="https://www.euroncap.com/en/results/tesla/model+y/57985" target="_blank">Euro NCAP — Tesla Model Y (2025)</a></li>
+    <li><a href="https://www.fueleconomy.gov/feg/Find.do?action=sbs&id=48770" target="_blank">EPA fueleconomy.gov — Tesla Model Y efficiency (MPGe / kWh per 100 mi)</a></li>
+    <li><a href="https://www.eia.gov/electricity/state/iowa/" target="_blank">EIA — Iowa electricity profile &amp; residential rates</a></li>
+    <li><a href="https://www.consumerreports.org/car-repair-maintenance/pay-less-for-vehicle-maintenance-with-an-ev/" target="_blank">Consumer Reports — EV maintenance &amp; repair savings</a></li>
+    <li><a href="https://www.jdpower.com/business/automotive/us-electric-vehicle-experience-evx-public-charging-study" target="_blank">J.D. Power — US EV Experience (EVX) Public Charging Study</a></li>
+    <li><a href="https://www.federalregister.gov/documents/2024/12/30/2024-31141" target="_blank">Federal Register — NHTSA Adaptive Driving Beam rule amendment (Dec 2024)</a></li>
+    <li><a href="https://www.irs.gov/clean-vehicle-tax-credits" target="_blank">IRS — Clean Vehicle Tax Credits (status; credit ended 9/30/2025)</a></li>
+    <li><a href="https://www.tesla.com/support/connectivity" target="_blank">Tesla — Connectivity (Standard vs. Premium)</a></li>
+    <li><a href="https://www.tesla.com/destination-charging" target="_blank">Tesla — Destination Charging network</a></li>
+  </ul>
+</div>
+<p class="disclaimer">Prices, software versions, and trim names change frequently; figures are current to mid-2026 and should be confirmed on Tesla's configurator before any purchase decision. Comparison and option figures are illustrative and vary by brand, trim, and model year. This is an independent owner's explainer, not affiliated with or endorsed by Tesla, Inc.</p>
+
+<script>
+  /* ── BREAK-EVEN CALCULATOR ── */
+  const MODELY_KWH_PER_MILE = 0.288; // 28.8 kWh / 100 mi, EPA
+
+  function updateBreakeven() {
+    const rate = +document.getElementById('rate').value;      // ¢/kWh
+    const mpg  = +document.getElementById('mpg').value;        // MPG
+    const gas  = +document.getElementById('gas').value;        // $/gal
+    const miles = +document.getElementById('miles').value;     // mi/yr
+
+    document.getElementById('rateVal').textContent = rate.toFixed(1);
+    document.getElementById('mpgVal').textContent = mpg;
+    document.getElementById('gasVal').textContent = gas.toFixed(2);
+    document.getElementById('milesVal').textContent = miles.toLocaleString();
+
+    const evPerMile = MODELY_KWH_PER_MILE * (rate / 100);  // $/mi
+    const gasPerMile = gas / mpg;                          // $/mi
+    const breakeven = evPerMile * mpg;                     // $/gal at parity
+    const annualSave = (gasPerMile - evPerMile) * miles;   // $/yr
+
+    document.getElementById('rEv').textContent = (evPerMile * 100).toFixed(1) + '¢';
+    document.getElementById('rGas').textContent = (gasPerMile * 100).toFixed(1) + '¢';
+    document.getElementById('rBreakeven').textContent = '$' + breakeven.toFixed(2) + '/gal';
+
+    const savingsEl = document.getElementById('rSavings');
+    if (annualSave >= 0) {
+      savingsEl.textContent = `to break even — below that gas wins, above it your Tesla does. You'd save about $${Math.round(annualSave).toLocaleString()}/year.`;
+    } else {
+      savingsEl.textContent = `to break even. At these inputs the gas car is actually $${Math.round(-annualSave).toLocaleString()}/year cheaper — try a lower electricity rate or higher gas price.`;
+    }
+  }
+
+  /* ── SAFETY TOGGLE ── */
+  const SAFETY_VIEWS = {
+    tesla: '<strong>Tesla\'s headline:</strong> one crash per 6.36 million miles with Autopilot on, vs. ~702,000 miles for the US fleet average (Tesla Q3 2025 Vehicle Safety Report) — roughly <strong>9× fewer crashes per mile</strong>.',
+    fair: '<strong>The fine print:</strong> Tesla counts only airbag-deployment crashes (the baseline counts all crashes), and Autopilot miles are mostly highway — the safest roads. A genuine like-for-like gap is real but <strong>smaller than 9×</strong>. The independent crash-test ratings below don\'t depend on this number at all.'
+  };
+  function setSafety(view) {
+    document.getElementById('sb-tesla').classList.toggle('active', view === 'tesla');
+    document.getElementById('sb-fair').classList.toggle('active', view === 'fair');
+    document.getElementById('safetySummary').innerHTML = SAFETY_VIEWS[view];
+  }
+
+  /* ── FEATURE STACKER ── */
+  const RIVAL_BASE = 32000;
+  const MODELY_REF = 44990;
+  function toggleChip(el) {
+    el.classList.toggle('active');
+    let added = 0;
+    document.querySelectorAll('#stackOptions .stack-chip.active').forEach(c => added += +c.dataset.cost);
+    const total = RIVAL_BASE + added;
+    document.getElementById('rivalTotal').textContent = '$' + total.toLocaleString();
+    document.getElementById('rivalSub').textContent = `base + $${added.toLocaleString()} in options`;
+    const gap = MODELY_REF - total;
+    const gapSub = document.getElementById('gapSub');
+    if (gap > 0) {
+      gapSub.textContent = `gap: $${gap.toLocaleString()} — and you'd still be missing Tesla-only features`;
+    } else {
+      gapSub.textContent = `your "value" SUV now costs $${(-gap).toLocaleString()} more than the Tesla — without the frunk, Superchargers, or acceleration`;
+    }
+  }
+
+  /* ── FAQ TOGGLE ── */
+  function toggleQA(el) { el.classList.toggle('open'); }
+
+  /* ── INIT ── */
+  updateBreakeven();
+</script>
+</body>
+</html>
