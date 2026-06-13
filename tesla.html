@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>The Tesla Case: An Owner's Field Guide</title>
+  <title>The Tesla Case: Owning a Tesla, by the Numbers</title>
   <style>
     :root {
       --bg: #0d1117;
@@ -183,7 +183,7 @@
     .stat-card.orange .number { color: var(--orange); }
     .stat-card.purple .number { color: var(--purple); }
 
-    /* CALLOUT / ANALOGY */
+    /* CALLOUT */
     .callout { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem 2rem; margin: 2rem 0; }
     .callout.green { border-left: 4px solid var(--green); border-radius: 0 12px 12px 0; }
     .callout.orange { border-left: 4px solid var(--orange); border-radius: 0 12px 12px 0; }
@@ -195,30 +195,11 @@
     .callout.blue .callout-label { color: var(--accent); }
     .callout.red .callout-label { color: var(--red); }
     .callout p { color: var(--text); }
-    .callout p.italic { font-style: italic; }
 
     /* TABLES */
-    .data-table {
-      width: 100%;
-      border-collapse: collapse;
-      margin: 1.5rem 0;
-      font-size: 0.9rem;
-    }
-    .data-table th {
-      text-align: left;
-      padding: 0.6rem 1rem;
-      font-size: 0.75rem;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      color: var(--muted);
-      border-bottom: 1px solid var(--border);
-    }
-    .data-table td {
-      padding: 0.75rem 1rem;
-      border-bottom: 1px solid var(--border);
-      color: #c9d1d9;
-    }
+    .data-table { width: 100%; border-collapse: collapse; margin: 1.5rem 0; font-size: 0.9rem; }
+    .data-table th { text-align: left; padding: 0.6rem 1rem; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); border-bottom: 1px solid var(--border); }
+    .data-table td { padding: 0.75rem 1rem; border-bottom: 1px solid var(--border); color: #c9d1d9; }
     .data-table tr:last-child td { border-bottom: none; }
     .data-table .highlight td { color: var(--text); font-weight: 600; background: rgba(63,185,80,0.06); }
     .good { color: var(--green) !important; font-weight: 600; }
@@ -233,36 +214,11 @@
     .cmp-val { width: 78px; text-align: right; flex-shrink: 0; font-weight: 700; font-size: 0.85rem; }
     @media (max-width: 560px) { .cmp-label { width: 110px; } }
 
-    /* TOGGLE GROUP (shared) */
-    .toggle-group {
-      display: inline-flex;
-      background: var(--bg);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 3px;
-      gap: 2px;
-      margin-bottom: 1.25rem;
-    }
-    .toggle-btn {
-      padding: 0.4rem 1rem;
-      border: none;
-      background: transparent;
-      color: var(--muted);
-      font-size: 0.85rem;
-      font-weight: 500;
-      border-radius: 6px;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
+    /* TOGGLE GROUP */
+    .toggle-group { display: inline-flex; flex-wrap: wrap; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 3px; gap: 2px; margin-bottom: 1.25rem; }
+    .toggle-btn { padding: 0.4rem 1rem; border: none; background: transparent; color: var(--muted); font-size: 0.85rem; font-weight: 500; border-radius: 6px; cursor: pointer; transition: all 0.2s; }
     .toggle-btn.active { background: var(--surface2); color: var(--text); }
-    .toggle-summary {
-      padding: 1.1rem 1.35rem;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      font-size: 0.92rem;
-      color: #c9d1d9;
-    }
+    .toggle-summary { padding: 1.1rem 1.35rem; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; font-size: 0.92rem; color: #c9d1d9; min-height: 92px; }
     .toggle-summary strong { color: var(--text); }
 
     /* CALCULATOR */
@@ -287,17 +243,7 @@
 
     /* FEATURE STACKER */
     .stacker-options { display: flex; flex-wrap: wrap; gap: 0.6rem; margin-bottom: 1.5rem; }
-    .stack-chip {
-      border: 1px solid var(--border);
-      background: var(--bg);
-      color: var(--muted);
-      border-radius: 22px;
-      padding: 0.5rem 1rem;
-      cursor: pointer;
-      font-size: 0.85rem;
-      user-select: none;
-      transition: all 0.15s;
-    }
+    .stack-chip { border: 1px solid var(--border); background: var(--bg); color: var(--muted); border-radius: 22px; padding: 0.5rem 1rem; cursor: pointer; font-size: 0.85rem; user-select: none; transition: all 0.15s; }
     .stack-chip:hover { border-color: var(--muted); }
     .stack-chip.active { background: rgba(88,166,255,0.12); border-color: var(--accent); color: var(--text); }
     .stack-chip .chip-cost { color: var(--accent); font-weight: 600; }
@@ -327,11 +273,7 @@
     .cta-section { text-align: center; padding: 4rem 2rem 5rem; max-width: 620px; margin: 0 auto; }
     .cta-section h2 { margin-bottom: 0.75rem; }
     .cta-section p { color: var(--muted); margin-bottom: 2rem; }
-    .cta-btn {
-      display: inline-flex; align-items: center; gap: 0.5rem;
-      background: var(--accent); color: #0d1117; font-weight: 700; font-size: 0.95rem;
-      padding: 0.75rem 1.75rem; border-radius: 8px; text-decoration: none; transition: opacity 0.2s;
-    }
+    .cta-btn { display: inline-flex; align-items: center; gap: 0.5rem; background: var(--accent); color: #0d1117; font-weight: 700; font-size: 0.95rem; padding: 0.75rem 1.75rem; border-radius: 8px; text-decoration: none; transition: opacity 0.2s; }
     .cta-btn:hover { opacity: 0.85; }
 
     /* SOURCES */
@@ -367,16 +309,16 @@
 
 <!-- HERO -->
 <div class="hero" id="top">
-  <div class="chapter-label">An Owner's Field Guide</div>
-  <h1>The Honest Case for <span>Owning a Tesla</span></h1>
-  <p class="subtitle">When I show people my Model Y, I can talk for half an hour and still leave things out. This is that conversation — written down, backed by the actual numbers, with the caveats left in. Because the truth is convincing enough.</p>
+  <div class="chapter-label">A Buyer's Field Guide</div>
+  <h1>Everything Worth Knowing About <span>Owning a Tesla</span></h1>
+  <p class="subtitle">The safety, the running costs, and the dozens of details that add up — laid out by the numbers, with every figure sourced and the caveats left in.</p>
   <div class="scroll-cue">↓ start with safety</div>
 </div>
 
 <!-- INTRO -->
 <div class="section">
-  <p>I drive a <strong>Tesla Model Y</strong>, so that's the car this page is built around. Where the <strong>Model 3</strong> meaningfully differs — usually on price or straight-line speed — I'll say so.</p>
-  <p>Every headline figure here links to a primary source: Tesla's own safety report, NHTSA, IIHS, the EPA, the EIA. Where a popular claim doesn't survive scrutiny, I've corrected it rather than repeat it. A few numbers (prices, software versions) move month to month — those are flagged as current to mid-2026.</p>
+  <p>This guide centers on the <strong>Tesla Model Y</strong> — the best-selling vehicle in the world — and notes where the <strong>Model 3</strong> meaningfully differs, usually on price or straight-line speed. It's written for someone who doesn't already know much about Teslas and wants the real case, not a sales pitch.</p>
+  <p>Every headline figure links to a primary source — Tesla's safety reports, NHTSA, IIHS, Euro NCAP, the EPA, the EIA. Where a popular claim doesn't survive scrutiny, it's been corrected or year-stamped rather than repeated. Prices and software move month to month; figures here are current to mid-2026.</p>
 </div>
 
 <hr class="divider">
@@ -385,20 +327,20 @@
 <div class="section section-anchor" id="safety">
   <div class="eyebrow">01 — Safety</div>
   <h2>Two kinds of safety: avoiding the crash, and surviving it</h2>
-  <p>A Tesla is trying to keep you out of a collision in the first place — and then, if one happens anyway, to protect you better than almost anything else on the road. Both halves have hard data behind them.</p>
+  <p>A Tesla works to keep its occupants out of a collision in the first place — and then, if one is unavoidable, to protect them as well as anything on the road. Both halves are backed by data from independent testing bodies, not just the manufacturer.</p>
 
   <div class="stat-grid">
     <div class="stat-card green">
-      <div class="number">~9×</div>
-      <div class="label">fewer crashes per mile with Autopilot engaged vs. the US average — by Tesla's accounting*</div>
+      <div class="number">7×</div>
+      <div class="label">fewer collisions with FSD engaged than the same cars driven manually — including city streets</div>
     </div>
     <div class="stat-card blue">
       <div class="number">5★</div>
-      <div class="label">NHTSA overall rating — and 5 stars in every individual category</div>
+      <div class="label">top rating from every body that tests it: NHTSA, IIHS, Euro NCAP &amp; ANCAP</div>
     </div>
     <div class="stat-card purple">
-      <div class="number">4.2×</div>
-      <div class="label">the car's own weight in roof strength (IIHS "Good" threshold is 4×)</div>
+      <div class="number">91%</div>
+      <div class="label">Euro NCAP adult-occupant protection — named Best in Class (Small SUV) for 2025</div>
     </div>
     <div class="stat-card orange">
       <div class="number">1st</div>
@@ -409,76 +351,79 @@
 
 <!-- BEFORE THE CRASH -->
 <div class="section section-anchor" style="padding-top:0">
-  <h3>Before the crash — the part you never see</h3>
-  <p>Tesla's Vehicle Safety Report tracks how far its cars travel between crashes. In its most recent report (Q3 2025), cars with <strong>Autopilot engaged went 6.36 million miles between crashes</strong>, versus roughly <strong>702,000 miles for the average US vehicle</strong> — about <strong>9× farther</strong>. That's a real number. But it isn't a clean apples-to-apples comparison, and an honest page should say why.</p>
+  <h3>Before the crash — the collisions that never happen</h3>
+  <p>Tesla's driver-assistance software has now driven more than <strong>10 billion miles</strong> with Full Self-Driving (Supervised) engaged, which makes its crash statistics unusually large-scale. The headline number is striking — but how it's framed matters enormously, so here are three ways to look at the same data, from the most favorable to the most conservative:</p>
 
   <div class="toggle-group">
-    <button class="toggle-btn active" id="sb-tesla" onclick="setSafety('tesla')">What Tesla reports</button>
-    <button class="toggle-btn" id="sb-fair" onclick="setSafety('fair')">Is it apples-to-apples?</button>
+    <button class="toggle-btn active" id="sb-headline" onclick="setSafety('headline')">Tesla's headline</button>
+    <button class="toggle-btn" id="sb-fair" onclick="setSafety('fair')">Apples-to-apples</button>
+    <button class="toggle-btn" id="sb-independent" onclick="setSafety('independent')">Independent regulator</button>
   </div>
   <div class="toggle-summary" id="safetySummary">
-    <strong>Tesla's headline:</strong> one crash per 6.36 million miles with Autopilot on, vs. ~702,000 miles for the US fleet average (Tesla Q3 2025 Vehicle Safety Report) — roughly <strong>9× fewer crashes per mile</strong>.
+    <strong>The big number:</strong> with FSD (Supervised) engaged, Tesla reports roughly one major collision every <strong>5+ million miles</strong>, versus about <strong>660,000 miles</strong> for the average US vehicle — on the order of <strong>8× fewer crashes per mile</strong>. (Tesla Full Self-Driving Vehicle Safety Report, 2026.)
   </div>
 
-  <p style="margin-top:1.5rem">The takeaway isn't "Autopilot is 9× safer, full stop." It's that <strong>active safety features built into every Tesla</strong> — automatic emergency braking, lane keeping, blind-spot warning, forward-collision warning, all standard at no extra cost — measurably reduce crashes, and the more advanced assistance reduces them further on the roads where it's used most.</p>
+  <p style="margin-top:1.5rem">The honest read is the middle one: compared against <em>the same Tesla drivers when they switch the software off</em>, FSD shows about <strong>7× fewer collisions overall and ~5× fewer on non-highway roads</strong> — which matters because it rebuts the most common objection, that the numbers only look good because assisted miles are easy highway miles. And an <strong>independent regulator</strong> (the Netherlands' RDW, which required the reporting as a condition of approval) found a similar direction: ~3.5× fewer collisions overall.</p>
 
   <div class="callout blue">
-    <div class="callout-label">One important distinction</div>
-    <p>Standard <strong>Autopilot</strong> (traffic-aware cruise + lane centering) and the full active-safety suite come free on every car. <strong>Full Self-Driving (Supervised)</strong> is a separate paid option, and despite the name it's a Level 2 system that requires an attentive driver. Don't buy a Tesla expecting it to drive itself.</p>
+    <div class="callout-label">What's standard vs. what's paid</div>
+    <p>Every Tesla includes a full active-safety suite at no cost — automatic emergency braking, forward-collision warning, lane keeping, and blind-spot warning — plus standard <strong>Autopilot</strong> (traffic-aware cruise and lane centering). <strong>Full Self-Driving (Supervised)</strong> is a separate paid option, and despite the name it is a Level 2 system that requires an attentive driver. The safety case above rests on assisted driving, not autonomy.</p>
   </div>
 </div>
 
 <!-- DURING THE CRASH -->
 <div class="section section-anchor" style="padding-top:0">
-  <h3>During the crash — built to protect</h3>
-  <p>If a collision is unavoidable, the Model Y is one of the most thoroughly validated vehicles on the road:</p>
+  <h3>During the crash — engineered to protect</h3>
+  <p>If a collision can't be avoided, the Model Y is one of the most decorated vehicles on sale, with top marks from every major crash-test program:</p>
 
   <table class="data-table">
     <thead>
-      <tr><th>Rating body</th><th>Result</th></tr>
+      <tr><th>Program</th><th>Result (2025–2026)</th></tr>
     </thead>
     <tbody>
-      <tr><td>NHTSA (US)</td><td class="good">5-star overall — 5 stars frontal, side &amp; rollover</td></tr>
-      <tr><td>IIHS (US)</td><td class="good">Top Safety Pick+ — 5 years running</td></tr>
-      <tr><td>Euro NCAP (2025)</td><td class="good">5 stars — 91% adult / 93% child occupant protection</td></tr>
+      <tr><td>NHTSA (US)</td><td class="good">5-star overall — frontal, side &amp; rollover</td></tr>
+      <tr><td>IIHS (US)</td><td class="good">Top Safety Pick+ (2025 Model Y)</td></tr>
+      <tr><td>Euro NCAP (2025)</td><td class="good">5 stars — 91% adult / 93% child · Best in Class, Small SUV</td></tr>
+      <tr><td>ANCAP (Australia)</td><td class="good">5 stars</td></tr>
       <tr class="highlight"><td>NHTSA ADAS battery (2026)</td><td>First vehicle ever to pass the new test suite</td></tr>
     </tbody>
   </table>
+  <p class="muted-note">The Model 3 earns the same 5-star ratings and was named Euro NCAP Best in Class (Large Family Car) for 2025; its IIHS award is Top Safety Pick (one tier below the Model Y's "+", owing to an Acceptable result on the updated moderate-overlap front test). NHTSA's new ADAS evaluation is a pass/fail check of basic driver-assist features — not Full Self-Driving — and doesn't change the crash-test star rating.</p>
 
-  <p>Two engineering reasons it does so well:</p>
-  <p><strong>A floor full of battery.</strong> The heavy pack sits low and flat, giving the car a very low center of gravity — NHTSA recorded a <strong>7.9% rollover risk</strong>, among the lowest of any SUV. There's also no engine block to intrude into the cabin, leaving a large front crumple zone. The roof withstands roughly <strong>4.2× the vehicle's weight</strong> (about 19,000 lbs), clearing the IIHS "Good" bar of 4× and well past the federal minimum of 3×.</p>
-  <p><strong>Cameras that brace you for impact.</strong> A 2025 software update lets Tesla's Vision system <em>anticipate</em> some frontal collisions up to <strong>~70 milliseconds before impact</strong> — beginning to tighten the seatbelts and prepare the airbags before traditional crash sensors would even register the hit. Tesla presents this as a supplement to conventional sensors, not a replacement.</p>
+  <p>Two engineering reasons it tests so well:</p>
+  <p><strong>A floor full of battery.</strong> The heavy pack sits low and flat, giving an exceptionally low center of gravity — among the lowest rollover risk of any SUV NHTSA has measured (about <strong>7.9%</strong> in the original Model Y's testing). With no engine block up front, there's a large crumple zone, and the roof earns an IIHS <strong>"Good"</strong> rating — its standard requires the roof to withstand at least <strong>4× the vehicle's weight</strong>.</p>
+  <p><strong>Cameras that brace you for impact.</strong> A 2025 over-the-air update (software 2025.32.3) lets Tesla's Vision system <em>anticipate</em> some frontal collisions up to <strong>~70 milliseconds before impact</strong> — beginning to tension the seatbelts and ready the airbags before traditional crash sensors register the hit. Tesla presents this as a supplement to conventional sensors, not a replacement.</p>
 
-  <p class="muted-note">A note on superlatives: NHTSA doesn't rank cars beyond the 5-star tier, so "the safest car you can buy" isn't a claim the data supports (and it's one NHTSA has explicitly asked Tesla not to make). The narrower, true statement: the Model Y earns top marks from every body that tests it. The record for <em>lowest injury probability</em> in NHTSA testing actually belongs to the Tesla Model 3 (5.7%), not the Model Y (6.3%).</p>
+  <p class="muted-note">A note on superlatives: NHTSA doesn't rank cars beyond the 5-star tier and has objected to "safest car" marketing, so this page avoids that framing. The accurate statement is simply that the Model Y earns the top result from every program that tests it.</p>
 </div>
 
 <!-- WINTER -->
 <div class="section section-anchor" style="padding-top:0">
-  <h3>Winter, specifically</h3>
-  <p>Cold-weather driving is where a lot of buyers worry about EVs, and where the Model Y quietly shines — for reasons of hardware, not hype:</p>
+  <h3>Cold-weather hardware</h3>
+  <p>Winter is where many buyers worry about EVs, and where the Model Y's hardware quietly answers most of the concern:</p>
   <div class="nh-grid">
     <div class="nh-card">
       <div class="nh-icon">🔥</div>
       <h4>Standard heat pump</h4>
-      <p>Every Model Y has one. It heats the cabin and battery far more efficiently than resistance heat, protecting range in the cold.</p>
+      <p>Standard on every Model Y. It heats the cabin and battery far more efficiently than resistance heat, protecting range in the cold.</p>
     </div>
     <div class="nh-card">
       <div class="nh-icon">❄️</div>
       <h4>Available all-wheel drive</h4>
-      <p>Dual-motor AWD with instant, independent torque control front and rear — traction management faster than any mechanical system.</p>
+      <p>Dual-motor AWD meters torque to each axle independently and instantly — traction control faster than any mechanical system.</p>
     </div>
     <div class="nh-card">
       <div class="nh-icon">🔋</div>
       <h4>~80–86% range retention</h4>
-      <p>In independent cold-weather testing, a preconditioned Model Y holds most of its range — and you start every cold morning warm.</p>
+      <p>In independent cold-weather testing, a preconditioned Model Y holds most of its rated range rather than collapsing in the cold.</p>
     </div>
     <div class="nh-card">
       <div class="nh-icon">📱</div>
-      <h4>Preheat from your phone</h4>
-      <p>Defrost the glass and warm the seats before you leave the house. No idling in the driveway, no scraping in the cold.</p>
+      <h4>Preheat before departure</h4>
+      <p>Glass and seats can be warmed remotely or on a schedule — no idling to defrost, no scraping, cabin warm before anyone gets in.</p>
     </div>
   </div>
-  <p class="muted-note">The low, central battery mass also helps stability on slick roads. (Driver-assistance features like Autopilot are degraded by snow, ice, and glare — Tesla's own manual says so — so treat winter as a place the <em>car</em> excels and <em>you</em> stay in command.)</p>
+  <p class="muted-note">The low, central battery mass also aids stability on slick roads. (Camera-based driver assistance is degraded by snow, ice, and glare — per Tesla's own manual — so winter is a place the car's hardware excels while the driver stays in command.)</p>
 </div>
 
 <hr class="divider">
@@ -486,21 +431,21 @@
 <!-- ============ EFFICIENCY ============ -->
 <div class="section section-anchor" id="efficiency">
   <div class="eyebrow">02 — Efficiency</div>
-  <h2>Every place you park is a place you can fuel</h2>
-  <p>The real question isn't "is charging cheaper than gas?" — it almost always is. It's <strong>how far gas would have to fall to even break even</strong> with charging at home. Plug in numbers below and find out.</p>
+  <h2>Every place you park becomes a place to fuel</h2>
+  <p>The useful question isn't "is charging cheaper than gas?" — it almost always is. It's <strong>how far gas would have to fall to even break even</strong> with charging at home. The Model Y uses about 28.8 kWh per 100 miles (EPA). Plug in real numbers below:</p>
 
   <div class="calc-card">
     <h3>⚡ The break-even gas price</h3>
-    <p class="calc-subtitle">A Model Y uses about 28.8 kWh per 100 miles (EPA). Set your home electricity rate, the gas car you'd compare against, and today's pump price.</p>
+    <p class="calc-subtitle">Set a home electricity rate, the gas vehicle to compare against, and today's pump price. The result is the gas price at which the two cost the same per mile.</p>
 
     <div class="calc-inputs">
       <div class="calc-field">
-        <label>Your electricity rate</label>
+        <label>Home electricity rate</label>
         <input type="range" id="rate" min="6" max="35" step="0.5" value="13.5" oninput="updateBreakeven()">
         <div class="range-val"><span id="rateVal">13.5</span>¢/kWh</div>
       </div>
       <div class="calc-field">
-        <label>Gas car you'd compare</label>
+        <label>Gas vehicle compared</label>
         <input type="range" id="mpg" min="15" max="55" step="1" value="27" oninput="updateBreakeven()">
         <div class="range-val"><span id="mpgVal">27</span> MPG</div>
       </div>
@@ -510,7 +455,7 @@
         <div class="range-val">$<span id="gasVal">3.00</span>/gal</div>
       </div>
       <div class="calc-field">
-        <label>Miles you drive a year</label>
+        <label>Miles driven per year</label>
         <input type="range" id="miles" min="5000" max="30000" step="1000" value="12000" oninput="updateBreakeven()">
         <div class="range-val"><span id="milesVal">12,000</span> mi</div>
       </div>
@@ -523,42 +468,55 @@
         <div class="r-sub">per mile</div>
       </div>
       <div class="result-cell">
-        <div class="r-label">The gas car</div>
+        <div class="r-label">The gas vehicle</div>
         <div class="r-val gas" id="rGas">11.1¢</div>
         <div class="r-sub">per mile</div>
       </div>
       <div class="result-cell highlight" style="grid-column:1/-1">
         <div class="r-label">Gas would have to fall to</div>
         <div class="r-val save" id="rBreakeven">$1.05/gal</div>
-        <div class="r-sub" id="rSavings">to break even — below that gas wins, above it your Tesla does. You'd save about $864/year.</div>
+        <div class="r-sub" id="rSavings">to break even — below that gas wins, above it the Tesla does. Annual saving: about $864.</div>
       </div>
     </div>
   </div>
 
   <div class="callout green">
-    <div class="callout-label">The Iowa reality</div>
-    <p>At Iowa's residential rate (~13–16¢/kWh, EIA), home charging runs about <strong>4–5¢ a mile</strong>. Against a typical 25–30 MPG gas SUV, gas would have to crater to roughly <strong>$1.00–$1.55 a gallon</strong> to compete — a price not seen in years. If you compare against a fuel-sipping 40–50 MPG hybrid instead, the break-even rises to around $1.90. Either way, at any realistic 2026 pump price, charging at home wins comfortably.</p>
+    <div class="callout-label">A worked example: Iowa</div>
+    <p>At Iowa's residential rate (~13–16¢/kWh, EIA), home charging runs about <strong>4–5¢ per mile</strong>. Against a typical 25–30 MPG gas SUV, gasoline would have to drop to roughly <strong>$1.00–$1.55 a gallon</strong> to compete — a price not seen in over a decade. Even against a 40–50 MPG hybrid, break-even only rises to about $1.90. At any realistic 2026 pump price, home charging wins comfortably.</p>
   </div>
 </div>
 
 <!-- CHARGING CONVENIENCE -->
 <div class="section section-anchor" style="padding-top:0">
-  <h3>And the time you get back</h3>
-  <p>Gas means a recurring errand — a few minutes, a few times a month, always slightly off your route. Charging inverts that. You plug in at home and <strong>wake up full every morning</strong>. A Tesla Wall Connector adds up to <strong>44 miles of range per hour</strong>; even a standard 120V wall outlet adds ~3 mi/hr, which quietly keeps pace with the average 37-mile day.</p>
-  <p>Away from home, nearly everywhere you park becomes a place to top up: Tesla's <strong>Destination Charging network puts 50,000+ chargers</strong> at hotels, restaurants, and friends' houses — often free, while you'd be parked anyway. The road trip is the only time you think about fueling at all.</p>
+  <h3>The time and attention it gives back</h3>
+  <p>Gasoline is a recurring errand — a few minutes, several times a month, always slightly off-route. Charging inverts it: plug in at home and the car is <strong>full every morning</strong>. A Tesla Wall Connector adds up to <strong>44 miles of range per hour</strong>; even a standard 120V outlet adds ~3 mi/hr, which keeps pace with the average 37-mile day. Away from home, the <strong>50,000+ chargers</strong> in Tesla's Destination network sit at hotels and restaurants — power gained while parked anyway.</p>
 
   <div class="callout blue">
-    <div class="callout-label">The part that's hard to put a number on</div>
-    <p>Maybe the biggest day-to-day benefit: I just <em>don't think about the car</em>. I don't turn it on or off. I don't lock or unlock it. I don't plan charging. I walk up, it opens; I walk away, it locks; I plug in at night and it's full by morning. The car drops out of my mental load entirely — and that's worth more than any spec.</p>
+    <div class="callout-label">Convenience that compounds</div>
+    <p>The phone <em>is</em> the key — the car unlocks on approach and locks when the driver walks away. There's no start button, no fob to manage, no warming up, no manual locking, and no planning charging stops for daily driving. Climate and battery can be preconditioned on a schedule, so the car is ready at departure time. The routine friction of car ownership mostly disappears.</p>
   </div>
 </div>
 
-<!-- MAINTENANCE -->
+<!-- MAINTENANCE + BATTERY -->
 <div class="section section-anchor" style="padding-top:0">
-  <h3>Maintenance you mostly don't do</h3>
-  <p>An electric drivetrain has a fraction of the moving parts. No oil changes, no spark plugs, no timing belts, no transmission service. Regenerative braking does most of your slowing with the motor, so brake pads and rotors last far longer than on a gas car.</p>
-  <p>Consumer Reports' analysis of hundreds of thousands of owners found EV drivers pay <strong>about half as much</strong> to maintain and repair their cars — an average <strong>~$4,600 saved over the life of the vehicle</strong> (CR, 2020).</p>
-  <p class="muted-note">The honest trade-off: heavier, instant-torque EVs go through <strong>tires roughly 15–30% faster</strong>, and EV-rated tires cost a bit more — so budget slightly more there. It offsets some, but nowhere near all, of the savings.</p>
+  <h3>Less to maintain, built to last</h3>
+  <p>An electric drivetrain has a fraction of the moving parts. No oil changes, no spark plugs, no timing belts, no transmission service. Regenerative braking does most of the slowing with the motor, so pads and rotors last far longer. Consumer Reports' analysis of hundreds of thousands of owners found EV drivers pay <strong>about half as much</strong> to maintain and repair their cars — an average <strong>~$4,600 saved over the life of the vehicle</strong> (CR, 2020).</p>
+
+  <div class="stat-grid">
+    <div class="stat-card green">
+      <div class="number">~85%</div>
+      <div class="label">battery capacity retained after 200,000 miles (Model 3/Y Long Range, Tesla 2026 Impact Report)</div>
+    </div>
+    <div class="stat-card blue">
+      <div class="number">~half</div>
+      <div class="label">the maintenance &amp; repair cost of a comparable gas car over its life (Consumer Reports)</div>
+    </div>
+    <div class="stat-card purple">
+      <div class="number">300k+</div>
+      <div class="label">miles many packs are projected to reach before dropping to 70% capacity</div>
+    </div>
+  </div>
+  <p class="muted-note">Battery degradation is front-loaded — a few percent in the first 20,000 miles — then flattens, which is why the curve looks alarming early and reassuring later. The honest trade-off elsewhere: heavier, instant-torque EVs wear <strong>tires ~15–30% faster</strong>, and EV-rated tires cost a bit more.</p>
 </div>
 
 <hr class="divider">
@@ -567,7 +525,7 @@
 <div class="section section-anchor" id="storage">
   <div class="eyebrow">03 — Storage</div>
   <h2>More room than the footprint suggests</h2>
-  <p>Skipping the engine and transmission frees up space a gas car can't reach. The Model Y carries about <strong>30 cu ft behind the back seats</strong>, expanding to roughly <strong>76 cu ft folded flat</strong> — plus a sealed front trunk where an engine used to be.</p>
+  <p>Deleting the engine and transmission frees space a gas car can't reach. The Model Y holds about <strong>30 cu ft behind the back seats</strong>, expanding to roughly <strong>76 cu ft folded flat</strong> — plus a sealed front trunk where an engine would otherwise sit.</p>
 
   <div class="cmp-block">
     <div class="cmp-row">
@@ -588,11 +546,11 @@
   </div>
   <p class="muted-note">*The Highlander is a much larger three-row SUV — yet behind its second row it holds <em>less</em> than the Model Y. That's the EV-packaging advantage in everyday use.</p>
 
-  <p>The honest caveat: a genuinely bigger SUV folded completely flat can still beat the Model Y on maximum volume (a Highlander hits ~84 cu ft). And Tesla measures generously, to the roofline. So the fair claim isn't "biggest cargo, period" — it's "<strong>more usable space than its footprint implies, and more than larger SUVs in the configurations you actually use.</strong>"</p>
+  <p>The honest caveat: a genuinely bigger SUV folded completely flat can still win on maximum volume (a Highlander reaches ~84 cu ft), and Tesla measures generously, to the roofline. So the fair claim isn't "most cargo, period" — it's <strong>more usable space than the footprint implies, and more than larger SUVs in the configurations people actually use.</strong></p>
 
   <div class="callout green">
     <div class="callout-label">The frunk</div>
-    <p>A sealed <strong>4.1 cu ft front trunk</strong> sits completely outside the cabin — perfect for groceries, muddy boots, or anything you don't want stinking up the interior. It even has a <strong>drain plug</strong>, so you can hose it out or pack it with ice and use it as a cooler. No gas SUV has anything like it.</p>
+    <p>A sealed <strong>4.1 cu ft front trunk</strong> sits entirely outside the cabin — ideal for groceries, muddy gear, or anything that shouldn't share air with the interior. It has a <strong>drain plug</strong>, so it can be hosed out or filled with ice and used as a cooler. No gas SUV offers anything like it.</p>
   </div>
 </div>
 
@@ -602,11 +560,11 @@
 <div class="section section-anchor" id="value">
   <div class="eyebrow">04 — Bang for the buck</div>
   <h2>What's standard here costs extra elsewhere</h2>
-  <p>A lot of what feels premium in a Tesla is just included. Ventilated front seats, a 15-speaker audio system, a big central touchscreen, the full active-safety suite, and free over-the-air map updates all come standard on the mainstream (Premium and Performance) trims. On rival SUVs, those are top-trim-only or cost-extra options. Try building one up to match:</p>
+  <p>Much of what feels premium in a Tesla is simply included. Ventilated front seats, a 15-speaker audio system, a large central touchscreen, the full active-safety suite, and free over-the-air map updates all come standard on the mainstream (Premium and Performance) trims. On rival SUVs, those are top-trim-only or paid options. Building one up to match closes the gap fast:</p>
 
   <div class="calc-card">
-    <h3>🧱 Build a rival to match a Model Y</h3>
-    <p class="calc-subtitle">Start with a typical compact SUV at a base price, then add the features a mid-trim Model Y already includes. Watch the gap close. (Figures illustrative — option prices vary by brand and year.)</p>
+    <h3>🧱 Equip a rival to match a Model Y</h3>
+    <p class="calc-subtitle">Start with a typical compact SUV at a base price, then add the features a mid-trim Model Y already includes. (Figures illustrative — option prices vary by brand and year.)</p>
 
     <div class="stacker-options" id="stackOptions">
       <div class="stack-chip" data-cost="3000" onclick="toggleChip(this)">+ Ventilated front seats <span class="chip-cost">$3,000</span></div>
@@ -626,14 +584,14 @@
       <div class="result-cell highlight">
         <div class="r-label">Comparable Model Y (Premium RWD)</div>
         <div class="r-val ev">$44,990</div>
-        <div class="r-sub" id="gapSub">gap: $12,990 — and you'd still be missing Tesla-only features</div>
+        <div class="r-sub" id="gapSub">gap: $12,990 — before counting Tesla-only features</div>
       </div>
     </div>
-    <p class="muted-note" style="margin-top:1rem">…and even fully loaded, the rival still has no frunk, no Supercharger access, no over-the-air improvements, and nowhere near the acceleration. The point isn't that Tesla is always cheapest — it's that once you equip a rival to match, the price gap shrinks fast.</p>
+    <p class="muted-note" style="margin-top:1rem">Even fully equipped, the rival still has no frunk, no Supercharger access, no over-the-air improvements, and nowhere near the acceleration. The point isn't that Tesla is always cheapest — it's that a like-for-like rival closes most of the apparent price gap.</p>
   </div>
 
   <h3>Connectivity for about the price of one streaming service</h3>
-  <p>Tesla's <strong>Premium Connectivity is $9.99/month or $99/year</strong> (US) — it adds live traffic visualization, satellite-view maps, in-car video and music streaming, a web browser, and Caraoke. Even without it, you still get maps, turn-by-turn navigation with traffic-based routing, and live Supercharger availability over the built-in cellular connection. Many cars charge several times that for connected services, often as a bundled subscription you can't opt out of.</p>
+  <p>Tesla's <strong>Premium Connectivity is $9.99/month or $99/year</strong> (US): live traffic, satellite-view maps, in-car video and music streaming, a web browser, and Caraoke. Even without it, maps, turn-by-turn navigation with traffic-based routing, and live Supercharger availability still work over the built-in cellular connection. Many automakers charge more, often as a bundled subscription that can't be declined.</p>
 
   <h3>Current pricing (mid-2026)</h3>
   <table class="data-table">
@@ -646,11 +604,11 @@
       <tr><td>Performance</td><td>~$57,490</td><td>~$54,990</td></tr>
     </tbody>
   </table>
-  <p class="muted-note">Add ~$1,640 destination. Tesla renamed the lineup to Standard / Premium / Performance ("Premium" is the old Long Range), and adjusts prices often — confirm live before relying on a figure.</p>
+  <p class="muted-note">Add ~$1,640 destination. Tesla renamed the lineup to Standard / Premium / Performance ("Premium" replaces "Long Range") and adjusts prices frequently — confirm live before relying on a figure.</p>
 
   <div class="callout red">
-    <div class="callout-label">Don't expect a federal tax credit</div>
-    <p>The federal $7,500 new-EV tax credit <strong>ended for vehicles purchased after September 30, 2025</strong> and is <strong>not available in 2026</strong>. Any pitch built around "minus $7,500" is out of date. Check current state and local incentives instead — those still vary widely.</p>
+    <div class="callout-label">No federal tax credit in 2026</div>
+    <p>The federal $7,500 new-EV tax credit <strong>ended for vehicles purchased after September 30, 2025</strong> and is <strong>not available in 2026</strong>. Any math built around "minus $7,500" is out of date. State and local incentives still vary widely and are worth checking.</p>
   </div>
 </div>
 
@@ -660,7 +618,7 @@
 <div class="section section-anchor" id="performance">
   <div class="eyebrow">05 — Performance</div>
   <h2>Supercar acceleration, mainstream money</h2>
-  <p>Instant electric torque makes even the everyday trims feel quick. But the genuine showstopper is the <strong>Model 3 Performance</strong>: Tesla claims 0–60 in 2.9 seconds, and <em>Edmunds independently tested 3.0 seconds</em> — matching the launch of six-figure sports cars, for <strong>$54,990</strong>.</p>
+  <p>Instant electric torque makes even the everyday trims feel quick. The standout is the <strong>Model 3 Performance</strong>: Tesla claims 0–60 mph in 2.9 seconds, and <em>Edmunds independently measured 3.0 seconds</em> — matching the launch of six-figure sports cars, for <strong>$54,990</strong>.</p>
 
   <div class="cmp-block">
     <div class="cmp-row">
@@ -690,8 +648,8 @@
     </div>
   </div>
 
-  <p>A Model 3 Performance is <strong>~$22,000 cheaper than a BMW M3</strong> and just as quick to 60. A Model Y Performance is <strong>roughly twice as quick</strong> to 60 as the gas luxury SUVs it's cross-shopped against. And there's no warm-up, no downshift, no drama — just immediate, repeatable thrust.</p>
-  <p class="muted-note">Keep it honest: this is <em>straight-line</em> speed. On a racetrack — handling balance, steering feel, brake endurance over repeated laps — a dedicated sports car like the M3 still has the edge. The Tesla matches the 0–60, not the lap time.</p>
+  <p>A Model 3 Performance is <strong>~$22,000 cheaper than a BMW M3</strong> and just as quick to 60. A Model Y Performance is <strong>roughly twice as quick</strong> to 60 as the gas luxury SUVs it's cross-shopped against — with no warm-up, no downshift, just immediate, repeatable thrust.</p>
+  <p class="muted-note">Kept honest: this is <em>straight-line</em> speed. On a racetrack — handling, steering feel, brake endurance over repeated laps — a dedicated sports car like the M3 still leads. The Tesla matches the 0–60, not the lap time.</p>
 </div>
 
 <hr class="divider">
@@ -699,41 +657,41 @@
 <!-- ============ EXTRAS ============ -->
 <div class="section section-anchor" id="extras">
   <div class="eyebrow">06 — The extras that add up</div>
-  <h2>Dozens of small things you stop being able to live without</h2>
+  <h2>The details owners stop being able to live without</h2>
 
   <div class="nh-grid">
     <div class="nh-card">
-      <div class="nh-icon">💡</div>
-      <h4>Matrix headlights</h4>
-      <p>Adaptive high beams stay on but blank out just the patch around oncoming cars — lighting ditches and signs without blinding anyone. <span class="nh-stat">US pixel-level control only became legal after NHTSA's late-2024 rule change.</span></p>
-    </div>
-    <div class="nh-card">
-      <div class="nh-icon">🔄</div>
-      <h4>The car gets better after you buy it</h4>
-      <p>Over-the-air updates have added real features to existing cars for over a decade — Sentry Mode, Dog Mode, even <span class="nh-stat">a ~5% power bump and +15 miles of range</span> pushed to cars already in driveways.</p>
+      <div class="nh-icon">🛰️</div>
+      <h4>The Supercharger network</h4>
+      <p>The largest, most reliable fast-charging network — <span class="nh-stat">52% of all US fast-charge ports</span>, ranked #1 by J.D. Power with just a ~4% failed-session rate.</p>
     </div>
     <div class="nh-card">
       <div class="nh-icon">🔌</div>
       <h4>Tesla's plug won</h4>
-      <p>Nearly every automaker has adopted Tesla's connector (now the SAE J3400 standard). It's already <span class="nh-stat">~48% of US fast-charging ports</span> — so a Tesla's charging access only grows.</p>
+      <p>Nearly every automaker adopted Tesla's connector (now the SAE J3400 standard); <span class="nh-stat">27,500+ stalls</span> already open to other brands. A Tesla's charging access only grows.</p>
     </div>
     <div class="nh-card">
-      <div class="nh-icon">🛰️</div>
-      <h4>The Supercharger network</h4>
-      <p>The biggest and most reliable fast-charging network — ranked <span class="nh-stat">#1 by J.D. Power five years running</span> — and the reason long EV road trips actually work.</p>
+      <div class="nh-icon">🔄</div>
+      <h4>It improves after you buy it</h4>
+      <p>Over-the-air updates have added real features to existing cars for a decade — Sentry Mode, Dog Mode, even <span class="nh-stat">a ~5% power bump and +15 miles of range</span> to cars already sold.</p>
+    </div>
+    <div class="nh-card">
+      <div class="nh-icon">💡</div>
+      <h4>Matrix headlights</h4>
+      <p>Adaptive high beams stay on but blank the patch around oncoming cars — lighting ditches and signs without glare. <span class="nh-stat">US pixel control only became legal after NHTSA's late-2024 rule.</span></p>
     </div>
     <div class="nh-card">
       <div class="nh-icon">🛡️</div>
       <h4>Sentry Mode + dashcam</h4>
-      <p>The cameras keep watch when parked — recording and deterring break-ins, vandalism, and hit-and-runs — and buffer continuously while you drive. No aftermarket dashcam needed.</p>
+      <p>Cameras keep watch when parked — recording and deterring break-ins and hit-and-runs — and buffer continuously while driving. No aftermarket dashcam needed.</p>
     </div>
     <div class="nh-card">
       <div class="nh-icon">🏕️</div>
       <h4>Camp &amp; Dog Mode</h4>
-      <p>Keep the cabin climate-controlled overnight for camping, or safely for a pet — with a screen that reassures passersby. The Performance can even power tools and devices (~2.4 kW).</p>
+      <p>Hold cabin climate overnight for camping or safely for a pet, with a reassuring screen message. The Performance can also power devices (~2.4 kW).</p>
     </div>
   </div>
-  <p class="muted-note">(Vehicle-to-load powers gear and a campsite — but the Model Y can't back up a whole house; that's a Cybertruck feature.)</p>
+  <p class="muted-note">Vehicle-to-load powers tools and a campsite — but the Model Y can't back up a whole house; that's a Cybertruck feature. (The Model 3 and Model Y also topped their segments in J.D. Power's 2026 US EV owner-satisfaction study.)</p>
 </div>
 
 <hr class="divider">
@@ -745,12 +703,22 @@
 
   <div class="qa-block" onclick="toggleQA(this)">
     <div class="qa-question">
-      <span>"Aren't the Autopilot safety stats cherry-picked?"</span>
+      <span>"Aren't the FSD safety stats cherry-picked?"</span>
       <div class="qa-icon">+</div>
     </div>
     <div class="qa-answer">
-      <p>Partly, yes — and it's worth being upfront. Tesla counts only crashes severe enough to deploy an airbag, while the national baseline counts all police-reported crashes, so the numerator is undercounted. Autopilot miles are also disproportionately highway, the safest roads per mile, and Teslas are newer and pricier than the average car on the road. A true like-for-like gap would be smaller than 9×.</p>
-      <p>But "smaller than 9×" isn't "zero." Even with Autopilot off, a Tesla's standard active-safety hardware reduces crashes, and the passive crash-protection ratings (NHTSA, IIHS, Euro NCAP) are independent of Tesla and unambiguous. The safety case doesn't rest on the 9× alone.</p>
+      <p>Some criticism is fair. Tesla counts only crashes severe enough to trigger a restraint, while the national baseline counts all police-reported crashes, so a straight "8× vs the US average" overstates the gap. Independent analysts argue the fairest comparison — FSD on vs. the same Teslas with safety features but FSD off — yields a smaller multiple.</p>
+      <p>But the gap doesn't vanish. Measured against the same drivers, FSD still shows roughly 7× fewer collisions overall and ~5× fewer on non-highway roads, and an independent Dutch regulator's required reporting found ~3.5× fewer. The direction is consistent across datasets — and the passive crash-test ratings are independent of Tesla entirely.</p>
+    </div>
+  </div>
+
+  <div class="qa-block" onclick="toggleQA(this)">
+    <div class="qa-question">
+      <span>"Won't the battery wear out and cost a fortune to replace?"</span>
+      <div class="qa-icon">+</div>
+    </div>
+    <div class="qa-answer">
+      <p>This is the most common EV fear, and the data is reassuring. Tesla's 2026 Impact Report shows Model 3 and Model Y Long Range packs retaining about <strong>85% of capacity after 200,000 miles</strong>, with degradation front-loaded then flattening — many packs are projected to pass 300,000 miles before dropping to 70%. Most drivers will replace the car before the battery becomes the reason to. Packs are also covered by an 8-year warranty.</p>
     </div>
   </div>
 
@@ -760,7 +728,7 @@
       <div class="qa-icon">+</div>
     </div>
     <div class="qa-answer">
-      <p>Even on today's mixed grid, an EV converts far more of its energy into motion than a gas car does, so it comes out ahead well-to-wheel — and the grid keeps getting cleaner every year, which means the car effectively gets greener as it ages. (Our sister explainer, <a href="chapter2.html" style="color:var(--accent)">Power Shift: The Efficiency Revolution</a>, walks through this math in detail.)</p>
+      <p>Even on today's mixed grid, an EV converts far more of its energy into motion than a gas car, so it comes out ahead well-to-wheel — and the grid keeps getting cleaner each year, so the car effectively gets greener as it ages. The sister explainer, <a href="chapter2.html" style="color:var(--accent)">Power Shift: The Efficiency Revolution</a>, walks through that math.</p>
     </div>
   </div>
 
@@ -770,7 +738,7 @@
       <div class="qa-icon">+</div>
     </div>
     <div class="qa-answer">
-      <p>This is a real knock, and recent history isn't flattering: when Tesla repeatedly cut new-car prices in 2023–2024, used values fell with them, and EVs as a class have depreciated faster than gas cars lately. The fair, narrow truth is that <em>among EVs</em>, the Model 3 holds its value better than most rivals (~45% after five years). If resale is your top priority, go in with eyes open — the fuel and maintenance savings are where a Tesla makes its money back, not the resale check.</p>
+      <p>Recent history isn't flattering: when Tesla cut new-car prices in 2023–2024, used values fell with them, and EVs as a class have depreciated faster than gas cars lately. The narrow, fair truth is that <em>among EVs</em>, the Model 3 holds value better than most rivals (~45% after five years). The savings live in fuel and maintenance, not the resale check — worth going in with eyes open.</p>
     </div>
   </div>
 
@@ -780,7 +748,7 @@
       <div class="qa-icon">+</div>
     </div>
     <div class="qa-answer">
-      <p>No — and you shouldn't buy it expecting that. Despite the name, FSD (Supervised) is a Level 2 driver-assistance system that requires your hands ready and eyes on the road. It's impressive and improving, but it is not autonomous, and as of 2026 it's the subject of active federal scrutiny over how it behaves in poor visibility. Treat it as advanced assistance, not a chauffeur. The standard Autopilot and active-safety features — which <em>are</em> free — are the part most owners value daily.</p>
+      <p>No — and it shouldn't be bought expecting that. Despite the name, FSD (Supervised) is a Level 2 assistance system that needs hands ready and eyes on the road, and as of 2026 it's under active federal review for how it behaves in poor visibility. Treat it as advanced assistance, not a chauffeur. The free standard Autopilot and active-safety features are the part most owners rely on daily.</p>
     </div>
   </div>
 
@@ -790,7 +758,7 @@
       <div class="qa-icon">+</div>
     </div>
     <div class="qa-answer">
-      <p>The upfront price is a real barrier, and with the federal credit gone in 2026 there's no sticker discount to lean on. But the comparison that matters is total cost of ownership: home charging that beats gas at any realistic pump price, roughly half the maintenance cost, and a feature set that would push a comparably-equipped rival into the same price range anyway. Over several years of driving, the gap narrows or reverses — it's just back-loaded into the years you own it rather than the day you buy it.</p>
+      <p>The upfront price is a real barrier, and with the federal credit gone in 2026 there's no sticker discount. But total cost of ownership tells a different story: home charging that beats gas at any realistic pump price, roughly half the maintenance cost, and a feature set that pushes a comparably-equipped rival into the same price range. The savings are back-loaded into the years of ownership rather than the day of purchase.</p>
     </div>
   </div>
 </div>
@@ -800,7 +768,7 @@
 <!-- CTA -->
 <div class="cta-section">
   <h2>Curious why electrification wins in the first place?</h2>
-  <p>This page is about one car. Its sister site, Power Shift, makes the bigger case — why electric drivetrains are fundamentally more efficient than burning fuel, from the power plant to your wheels.</p>
+  <p>This page is about one car. Its sister site, Power Shift, makes the broader case — why electric drivetrains are fundamentally more efficient than burning fuel, from the power plant to the wheels.</p>
   <a href="index.html" class="cta-btn">Read Power Shift →</a>
 </div>
 
@@ -808,22 +776,25 @@
 <div class="sources">
   <h4>Sources</h4>
   <ul>
-    <li><a href="https://www.tesla.com/VehicleSafetyReport" target="_blank">Tesla — Vehicle Safety Report (Q3 2025)</a></li>
-    <li><a href="https://www.nhtsa.gov/vehicle/2025/TESLA/MODEL%20Y/SUV/RWD" target="_blank">NHTSA — Tesla Model Y 5-Star Safety Ratings</a></li>
-    <li><a href="https://www.nhtsa.gov/press-releases/tesla-model-y-first-vehicle-pass-nhtsa-new-advanced-driver-assistance-system-tests" target="_blank">NHTSA — Model Y first to pass new ADAS tests (2026)</a></li>
-    <li><a href="https://www.iihs.org/ratings/vehicle/tesla/model-y-4-door-suv/2025" target="_blank">IIHS — Tesla Model Y ratings (Top Safety Pick+)</a></li>
-    <li><a href="https://www.euroncap.com/en/results/tesla/model+y/57985" target="_blank">Euro NCAP — Tesla Model Y (2025)</a></li>
-    <li><a href="https://www.fueleconomy.gov/feg/Find.do?action=sbs&id=48770" target="_blank">EPA fueleconomy.gov — Tesla Model Y efficiency (MPGe / kWh per 100 mi)</a></li>
-    <li><a href="https://www.eia.gov/electricity/state/iowa/" target="_blank">EIA — Iowa electricity profile &amp; residential rates</a></li>
-    <li><a href="https://www.consumerreports.org/car-repair-maintenance/pay-less-for-vehicle-maintenance-with-an-ev/" target="_blank">Consumer Reports — EV maintenance &amp; repair savings</a></li>
+    <li><a href="https://www.tesla.com/fsd/safety" target="_blank">Tesla — Full Self-Driving (Supervised) Vehicle Safety Report (highway/non-highway)</a></li>
+    <li><a href="https://www.tesla.com/VehicleSafetyReport" target="_blank">Tesla — Vehicle Safety Report (Autopilot)</a></li>
+    <li><a href="https://www.notateslaapp.com/news/4274/tesla-shares-fsd-safety-data-from-the-netherlands" target="_blank">Tesla FSD safety data, Netherlands (RDW-required reporting)</a></li>
+    <li><a href="https://philkoopman.substack.com/p/new-tesla-fsd-safety-data" target="_blank">Philip Koopman — critical analysis of Tesla FSD safety data</a></li>
+    <li><a href="https://www.iihs.org/ratings/vehicle/tesla/model-y-4-door-suv/2025" target="_blank">IIHS — 2025 Tesla Model Y (Top Safety Pick+)</a></li>
+    <li><a href="https://www.euroncap.com/press-media/euro-ncap-names-best-in-class-cars-tested-in-2025/" target="_blank">Euro NCAP — Best in Class 2025 (Model Y Small SUV, Model 3 Large Family Car)</a></li>
+    <li><a href="https://cdn.euroncap.com/media/93129/euroncap-2025-tesla-model-y-datasheet.pdf" target="_blank">Euro NCAP — 2025 Model Y datasheet (91/93/86/92)</a></li>
+    <li><a href="https://www.nhtsa.gov/press-releases/tesla-model-y-first-vehicle-pass-nhtsa-new-advanced-driver-assistance-system-tests" target="_blank">NHTSA — Model Y first to pass new ADAS tests (May 2026)</a></li>
+    <li><a href="https://www.nhtsa.gov/vehicle/2025/TESLA/MODEL%20Y/SUV/RWD" target="_blank">NHTSA — Tesla Model Y 5-star ratings</a></li>
+    <li><a href="https://www.notateslaapp.com/tesla-reference/1371/tesla-shows-data-around-battery-life-span-just-12-degradation-after-200-000-miles" target="_blank">Tesla 2026 Impact Report — battery capacity retention</a></li>
+    <li><a href="https://www.fueleconomy.gov/feg/Find.do?action=sbs&id=48770" target="_blank">EPA fueleconomy.gov — Model Y efficiency (kWh/100 mi)</a></li>
+    <li><a href="https://www.eia.gov/electricity/state/iowa/" target="_blank">EIA — Iowa electricity rates</a></li>
+    <li><a href="https://www.consumerreports.org/car-repair-maintenance/pay-less-for-vehicle-maintenance-with-an-ev/" target="_blank">Consumer Reports — EV maintenance savings</a></li>
     <li><a href="https://www.jdpower.com/business/automotive/us-electric-vehicle-experience-evx-public-charging-study" target="_blank">J.D. Power — US EV Experience (EVX) Public Charging Study</a></li>
-    <li><a href="https://www.federalregister.gov/documents/2024/12/30/2024-31141" target="_blank">Federal Register — NHTSA Adaptive Driving Beam rule amendment (Dec 2024)</a></li>
-    <li><a href="https://www.irs.gov/clean-vehicle-tax-credits" target="_blank">IRS — Clean Vehicle Tax Credits (status; credit ended 9/30/2025)</a></li>
     <li><a href="https://www.tesla.com/support/connectivity" target="_blank">Tesla — Connectivity (Standard vs. Premium)</a></li>
-    <li><a href="https://www.tesla.com/destination-charging" target="_blank">Tesla — Destination Charging network</a></li>
+    <li><a href="https://www.irs.gov/clean-vehicle-tax-credits" target="_blank">IRS — Clean Vehicle Tax Credits (ended 9/30/2025)</a></li>
   </ul>
 </div>
-<p class="disclaimer">Prices, software versions, and trim names change frequently; figures are current to mid-2026 and should be confirmed on Tesla's configurator before any purchase decision. Comparison and option figures are illustrative and vary by brand, trim, and model year. This is an independent owner's explainer, not affiliated with or endorsed by Tesla, Inc.</p>
+<p class="disclaimer">Prices, software versions, and trim names change frequently; figures are current to mid-2026 and should be confirmed on Tesla's configurator and the primary sources above before any purchase decision. Crash-test awards are stated by model year (2025); a 2026 IIHS award for the Model Y/3 had not been published at the time of writing. Comparison and option figures are illustrative and vary by brand, trim, and model year. Several Tesla safety statistics are manufacturer self-reported and use crash definitions that differ from national baselines. This is an independent owner-education explainer, not affiliated with or endorsed by Tesla, Inc.</p>
 
 <script>
   /* ── BREAK-EVEN CALCULATOR ── */
@@ -851,20 +822,21 @@
 
     const savingsEl = document.getElementById('rSavings');
     if (annualSave >= 0) {
-      savingsEl.textContent = `to break even — below that gas wins, above it your Tesla does. You'd save about $${Math.round(annualSave).toLocaleString()}/year.`;
+      savingsEl.textContent = `to break even — below that gas wins, above it the Tesla does. Annual saving: about $${Math.round(annualSave).toLocaleString()}.`;
     } else {
-      savingsEl.textContent = `to break even. At these inputs the gas car is actually $${Math.round(-annualSave).toLocaleString()}/year cheaper — try a lower electricity rate or higher gas price.`;
+      savingsEl.textContent = `to break even. At these inputs the gas vehicle is actually $${Math.round(-annualSave).toLocaleString()}/year cheaper — try a lower electricity rate or higher gas price.`;
     }
   }
 
-  /* ── SAFETY TOGGLE ── */
+  /* ── SAFETY TOGGLE (three framings) ── */
   const SAFETY_VIEWS = {
-    tesla: '<strong>Tesla\'s headline:</strong> one crash per 6.36 million miles with Autopilot on, vs. ~702,000 miles for the US fleet average (Tesla Q3 2025 Vehicle Safety Report) — roughly <strong>9× fewer crashes per mile</strong>.',
-    fair: '<strong>The fine print:</strong> Tesla counts only airbag-deployment crashes (the baseline counts all crashes), and Autopilot miles are mostly highway — the safest roads. A genuine like-for-like gap is real but <strong>smaller than 9×</strong>. The independent crash-test ratings below don\'t depend on this number at all.'
+    headline: '<strong>The big number:</strong> with FSD (Supervised) engaged, Tesla reports roughly one major collision every <strong>5+ million miles</strong>, versus about <strong>660,000 miles</strong> for the average US vehicle — on the order of <strong>8× fewer crashes per mile</strong>. (Tesla Full Self-Driving Vehicle Safety Report, 2026.)',
+    fair: '<strong>Apples-to-apples:</strong> compared against the <em>same Tesla drivers with the software off</em>, FSD shows about <strong>7× fewer collisions overall and ~5× fewer on non-highway roads</strong> — which answers the usual objection that assisted miles are just easy highway miles. Critics note the fairest baseline still narrows the headline multiple.',
+    independent: '<strong>Independent regulator:</strong> the Netherlands\' RDW required Tesla to report FSD safety data as a condition of approval — not voluntary marketing. Its figures show roughly <strong>3.5× fewer collisions overall</strong>, ~3.4× on highways and ~1.6× on non-highway roads. A smaller multiple than Tesla\'s headline, but the same direction.'
   };
   function setSafety(view) {
-    document.getElementById('sb-tesla').classList.toggle('active', view === 'tesla');
-    document.getElementById('sb-fair').classList.toggle('active', view === 'fair');
+    ['headline','fair','independent'].forEach(v =>
+      document.getElementById('sb-' + v).classList.toggle('active', v === view));
     document.getElementById('safetySummary').innerHTML = SAFETY_VIEWS[view];
   }
 
@@ -881,9 +853,9 @@
     const gap = MODELY_REF - total;
     const gapSub = document.getElementById('gapSub');
     if (gap > 0) {
-      gapSub.textContent = `gap: $${gap.toLocaleString()} — and you'd still be missing Tesla-only features`;
+      gapSub.textContent = `gap: $${gap.toLocaleString()} — before counting Tesla-only features`;
     } else {
-      gapSub.textContent = `your "value" SUV now costs $${(-gap).toLocaleString()} more than the Tesla — without the frunk, Superchargers, or acceleration`;
+      gapSub.textContent = `the "value" SUV now costs $${(-gap).toLocaleString()} more — without the frunk, Superchargers, or acceleration`;
     }
   }
 
