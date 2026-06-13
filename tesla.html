@@ -212,6 +212,14 @@
     .cmp-bar-bg { flex: 1; height: 24px; background: var(--surface2); border-radius: 5px; overflow: hidden; }
     .cmp-bar-fill { height: 100%; border-radius: 5px; display: flex; align-items: center; padding-left: 9px; font-size: 0.72rem; font-weight: 700; color: #0d1117; white-space: nowrap; transition: width 0.5s ease; }
     .cmp-val { width: 78px; text-align: right; flex-shrink: 0; font-weight: 700; font-size: 0.85rem; }
+    .cmp-delta { width: 56px; text-align: right; flex-shrink: 0; font-weight: 700; font-size: 0.82rem; }
+    .cmp-delta.ref { color: var(--accent); font-weight: 600; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.05em; }
+    .cmp-delta.more { color: var(--orange); }
+    .cmp-delta.less { color: var(--green); }
+    .cmp-delta.even { color: var(--yellow); }
+    .cmp-legend { display: flex; flex-wrap: wrap; gap: 0.5rem 1.25rem; margin: 1.5rem 0 1rem; font-size: 0.78rem; color: var(--muted); }
+    .cmp-legend span { display: flex; align-items: center; gap: 0.4rem; }
+    .cmp-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; display: inline-block; }
     @media (max-width: 560px) { .cmp-label { width: 110px; } }
 
     /* TOGGLE GROUP */
@@ -525,28 +533,38 @@
 <div class="section section-anchor" id="storage">
   <div class="eyebrow">03 — Storage</div>
   <h2>More room than the footprint suggests</h2>
-  <p>Deleting the engine and transmission frees space a gas car can't reach. The Model Y holds about <strong>30 cu ft behind the back seats</strong>, expanding to roughly <strong>76 cu ft folded flat</strong> — plus a sealed front trunk where an engine would otherwise sit.</p>
+  <p>Deleting the engine and transmission frees up space a gas car can't reach. By total cargo with the rear seats folded, the Model Y holds its own against — and often beats — SUVs of a similar or larger footprint:</p>
+
+  <div class="cmp-legend">
+    <span><i class="cmp-dot" style="background:var(--accent)"></i> Model Y (reference)</span>
+    <span><i class="cmp-dot" style="background:var(--green)"></i> Model Y has more</span>
+    <span><i class="cmp-dot" style="background:var(--yellow)"></i> about even</span>
+    <span><i class="cmp-dot" style="background:var(--orange)"></i> more than Model Y</span>
+  </div>
 
   <div class="cmp-block">
     <div class="cmp-row">
-      <div class="cmp-label">Behind 2nd row</div>
-      <div class="cmp-bar-bg"><div class="cmp-bar-fill" style="width:79%;background:var(--green)">Model Y · 30 cu ft</div></div>
-      <div class="cmp-val">30</div>
+      <div class="cmp-label">Tesla Model Y</div>
+      <div class="cmp-bar-bg"><div class="cmp-bar-fill" style="width:86%;background:var(--accent)">76 cu ft · incl. frunk</div></div>
+      <div class="cmp-delta ref">ref</div>
+    </div>
+    <div class="cmp-row">
+      <div class="cmp-label">Toyota Highlander</div>
+      <div class="cmp-bar-bg"><div class="cmp-bar-fill" style="width:95%;background:var(--orange)">84 cu ft</div></div>
+      <div class="cmp-delta more">+8</div>
+    </div>
+    <div class="cmp-row">
+      <div class="cmp-label">Honda CR-V</div>
+      <div class="cmp-bar-bg"><div class="cmp-bar-fill" style="width:87%;background:var(--yellow)">76.5 cu ft</div></div>
+      <div class="cmp-delta even">≈0</div>
     </div>
     <div class="cmp-row">
       <div class="cmp-label">Toyota RAV4</div>
-      <div class="cmp-bar-bg"><div class="cmp-bar-fill" style="width:99%;background:var(--surface2);color:var(--text)">37.5 cu ft</div></div>
-      <div class="cmp-val">37.5</div>
-    </div>
-    <div class="cmp-row">
-      <div class="cmp-label">Toyota Highlander*</div>
-      <div class="cmp-bar-bg"><div class="cmp-bar-fill" style="width:42%;background:var(--surface2);color:var(--text)">16 cu ft</div></div>
-      <div class="cmp-val">16</div>
+      <div class="cmp-bar-bg"><div class="cmp-bar-fill" style="width:79%;background:var(--green)">69.8 cu ft</div></div>
+      <div class="cmp-delta less">−6</div>
     </div>
   </div>
-  <p class="muted-note">*The Highlander is a much larger three-row SUV — yet behind its second row it holds <em>less</em> than the Model Y. That's the EV-packaging advantage in everyday use.</p>
-
-  <p>The honest caveat: a genuinely bigger SUV folded completely flat can still win on maximum volume (a Highlander reaches ~84 cu ft), and Tesla measures generously, to the roofline. So the fair claim isn't "most cargo, period" — it's <strong>more usable space than the footprint implies, and more than larger SUVs in the configurations people actually use.</strong></p>
+  <p class="muted-note">Maximum cargo, rear seats folded (the Model Y figure includes its 4.1 cu ft frunk). The much larger three-row Highlander pulls ahead only when folded flat — yet <strong>behind the second row</strong>, in everyday seats-up use, the Model Y's ~30 cu ft beats the Highlander's ~16 (compact RAV4/CR-V carry a little more there). Cargo figures aren't perfectly standardized — Tesla measures to the roofline — so treat small gaps as ties.</p>
 
   <div class="callout green">
     <div class="callout-label">The frunk</div>
@@ -707,8 +725,9 @@
       <div class="qa-icon">+</div>
     </div>
     <div class="qa-answer">
-      <p>Some criticism is fair. Tesla counts only crashes severe enough to trigger a restraint, while the national baseline counts all police-reported crashes, so a straight "8× vs the US average" overstates the gap. Independent analysts argue the fairest comparison — FSD on vs. the same Teslas with safety features but FSD off — yields a smaller multiple.</p>
-      <p>But the gap doesn't vanish. Measured against the same drivers, FSD still shows roughly 7× fewer collisions overall and ~5× fewer on non-highway roads, and an independent Dutch regulator's required reporting found ~3.5× fewer. The direction is consistent across datasets — and the passive crash-test ratings are independent of Tesla entirely.</p>
+      <p>It helps to be precise about what Tesla actually counts. Its FSD safety report logs two kinds of events: <strong>"major" collisions</strong>, where an airbag or other non-reversible restraint deploys, and <strong>"minor" collisions</strong> — any other impact above roughly an 8 km/h change in speed. The headline "7× fewer collisions" counts <strong>both</strong>, so the common rebuttal that "Tesla only counts airbag deployments" doesn't actually apply to these figures.</p>
+      <p>The comparison still isn't perfectly clean — but the biases cut <strong>both</strong> ways. Against Tesla's case: assisted miles skew toward highways, the safest roads per mile, and Teslas are newer and better-equipped than the average car. In Tesla's favor: the US baseline of one crash per ~702,000 miles is built from <strong>police-reported</strong> crashes, and NHTSA's own research finds roughly <strong>60% of property-damage crashes and 32% of injury crashes are never reported to police</strong> (Blincoe et al., 2023). Tesla's cars log even minor impacts automatically, so that human baseline almost certainly undercounts real-world crashes — which works to <em>understate</em> Tesla's edge.</p>
+      <p>Because those distortions partly cancel, the most trustworthy comparison is the same Tesla drivers with the system <em>on vs. off</em> — counted identically and split by road type: ~7× fewer collisions overall and ~5× fewer on non-highway roads. An independent Dutch regulator's required reporting points the same way (~3.5× fewer). And the passive crash-test ratings come from independent labs, so they don't depend on any of this.</p>
     </div>
   </div>
 
@@ -780,6 +799,7 @@
     <li><a href="https://www.tesla.com/VehicleSafetyReport" target="_blank">Tesla — Vehicle Safety Report (Autopilot)</a></li>
     <li><a href="https://www.notateslaapp.com/news/4274/tesla-shares-fsd-safety-data-from-the-netherlands" target="_blank">Tesla FSD safety data, Netherlands (RDW-required reporting)</a></li>
     <li><a href="https://philkoopman.substack.com/p/new-tesla-fsd-safety-data" target="_blank">Philip Koopman — critical analysis of Tesla FSD safety data</a></li>
+    <li><a href="https://crashstats.nhtsa.dot.gov/Api/Public/ViewPublication/813403" target="_blank">NHTSA / Blincoe et al. (2023) — share of crashes not reported to police</a></li>
     <li><a href="https://www.iihs.org/ratings/vehicle/tesla/model-y-4-door-suv/2025" target="_blank">IIHS — 2025 Tesla Model Y (Top Safety Pick+)</a></li>
     <li><a href="https://www.euroncap.com/press-media/euro-ncap-names-best-in-class-cars-tested-in-2025/" target="_blank">Euro NCAP — Best in Class 2025 (Model Y Small SUV, Model 3 Large Family Car)</a></li>
     <li><a href="https://cdn.euroncap.com/media/93129/euroncap-2025-tesla-model-y-datasheet.pdf" target="_blank">Euro NCAP — 2025 Model Y datasheet (91/93/86/92)</a></li>
