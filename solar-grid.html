@@ -1,0 +1,865 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Solar Grid — A Renewable Energy Game</title>
+<style>
+  :root {
+    --bg: #0d1117;
+    --surface: #161b22;
+    --surface2: #1f2937;
+    --border: #30363d;
+    --text: #e6edf3;
+    --muted: #8b949e;
+    --accent: #58a6ff;
+    --green: #3fb950;
+    --orange: #f97316;
+    --red: #f85149;
+    --yellow: #d29922;
+    --purple: #a371f7;
+    --cyan: #56d4dd;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    line-height: 1.5;
+  }
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(13,17,23,0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 1.5rem;
+    display: flex; align-items: center; gap: 1.5rem; height: 56px;
+  }
+  .nav-brand { font-weight: 700; font-size: 1rem; color: var(--accent); text-decoration: none; letter-spacing: -0.02em; }
+  .nav-back { color: var(--muted); text-decoration: none; font-size: 0.85rem; }
+  .nav-back:hover { color: var(--text); }
+  .nav-spacer { flex: 1; }
+  .nav-tag { font-size: 0.75rem; color: var(--muted); }
+
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 1.25rem 1.25rem 3rem; }
+  .title-row { display: flex; align-items: baseline; gap: 0.75rem; flex-wrap: wrap; margin-bottom: 0.75rem; }
+  h1 { font-size: 1.6rem; font-weight: 800; letter-spacing: -0.02em; }
+  h1 span { color: var(--yellow); }
+  .subtitle { color: var(--muted); font-size: 0.9rem; }
+
+  /* HUD top bar */
+  .hud {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: 0.5rem; margin-bottom: 0.75rem;
+  }
+  .stat {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 8px;
+    padding: 0.5rem 0.7rem;
+  }
+  .stat .label { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
+  .stat .value { font-size: 1.05rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .stat .sub { font-size: 0.68rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .bar { height: 5px; background: var(--surface2); border-radius: 3px; margin-top: 0.35rem; overflow: hidden; }
+  .bar > i { display: block; height: 100%; width: 0%; transition: width 0.15s linear; }
+
+  .game { display: grid; grid-template-columns: 1fr 240px; gap: 0.85rem; align-items: start; }
+  @media (max-width: 860px) { .game { grid-template-columns: 1fr; } }
+
+  .stage { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 0.5rem; position: relative; }
+  canvas { display: block; width: 100%; height: auto; border-radius: 6px; cursor: pointer; touch-action: none; }
+
+  .panel { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 0.75rem; }
+  .panel h2 { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.07em; color: var(--muted); margin-bottom: 0.55rem; }
+  .tools { display: flex; flex-direction: column; gap: 0.35rem; }
+  .tool {
+    display: flex; align-items: center; gap: 0.6rem; width: 100%; text-align: left;
+    background: var(--surface2); border: 1px solid var(--border); border-radius: 7px;
+    color: var(--text); padding: 0.45rem 0.55rem; cursor: pointer; font-size: 0.82rem;
+    transition: border-color 0.15s, background 0.15s;
+  }
+  .tool:hover { border-color: var(--accent); }
+  .tool.active { border-color: var(--accent); background: rgba(88,166,255,0.12); }
+  .tool:disabled { opacity: 0.45; cursor: not-allowed; }
+  .tool .ic { width: 22px; height: 22px; border-radius: 5px; flex: none; display: grid; place-items: center; font-size: 0.8rem; font-weight: 800; color: #0d1117; }
+  .tool .nm { flex: 1; font-weight: 600; }
+  .tool .ct { font-size: 0.68rem; color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+  .hint { font-size: 0.72rem; color: var(--muted); margin-top: 0.6rem; line-height: 1.5; }
+  .log { margin-top: 0.75rem; max-height: 140px; overflow-y: auto; font-size: 0.72rem; }
+  .log div { padding: 0.18rem 0; border-top: 1px solid var(--border); color: var(--muted); }
+  .log div.warn { color: var(--yellow); }
+  .log div.bad { color: var(--red); }
+  .log div.good { color: var(--green); }
+
+  .controls { display: flex; gap: 0.4rem; margin-top: 0.6rem; }
+  .btn { flex:1; background: var(--surface2); border: 1px solid var(--border); color: var(--text);
+    border-radius: 7px; padding: 0.4rem; cursor: pointer; font-size: 0.78rem; font-weight: 600; }
+  .btn:hover { border-color: var(--accent); }
+
+  /* selected building inspector */
+  .inspect { margin-top: 0.6rem; font-size: 0.78rem; display: none; }
+  .inspect.show { display: block; }
+  .inspect .row { display: flex; justify-content: space-between; padding: 0.15rem 0; color: var(--muted); }
+  .inspect .row b { color: var(--text); font-variant-numeric: tabular-nums; }
+
+  /* overlay */
+  .overlay {
+    position: absolute; inset: 0.5rem; border-radius: 6px;
+    background: rgba(13,17,23,0.92); backdrop-filter: blur(4px);
+    display: grid; place-items: center; text-align: center; padding: 1.5rem; z-index: 5;
+  }
+  .overlay.hidden { display: none; }
+  .overlay .card { max-width: 460px; }
+  .overlay h3 { font-size: 1.5rem; margin-bottom: 0.6rem; }
+  .overlay p { color: var(--muted); font-size: 0.88rem; margin-bottom: 0.5rem; }
+  .overlay ul { text-align: left; color: var(--muted); font-size: 0.84rem; margin: 0.6rem 0 1rem 1.1rem; line-height: 1.6; }
+  .overlay .start { background: var(--accent); color: #0d1117; border: none; font-weight: 800;
+    padding: 0.6rem 1.4rem; border-radius: 8px; cursor: pointer; font-size: 0.95rem; }
+  .overlay h3.win { color: var(--green); }
+  .overlay h3.lose { color: var(--red); }
+  kbd { background: var(--surface2); border: 1px solid var(--border); border-radius: 4px; padding: 0 0.3rem; font-size: 0.8em; }
+</style>
+</head>
+<body>
+<nav>
+  <a class="nav-brand" href="index.html">⚡ Power Shift</a>
+  <a class="nav-back" href="index.html">← Back to chapters</a>
+  <span class="nav-spacer"></span>
+  <span class="nav-tag">Interactive Lab</span>
+</nav>
+
+<div class="wrap">
+  <div class="title-row">
+    <h1><span>☀ Solar</span> Grid</h1>
+    <span class="subtitle">Power a renewable base through lengthening nights. Store sunlight, mine the dark.</span>
+  </div>
+
+  <!-- HUD -->
+  <div class="hud">
+    <div class="stat">
+      <div class="label">Time</div>
+      <div class="value" id="hud-time">Day 1</div>
+      <div class="sub" id="hud-phase">Dawn</div>
+      <div class="bar"><i id="hud-daybar" style="background:var(--yellow)"></i></div>
+    </div>
+    <div class="stat">
+      <div class="label">Power</div>
+      <div class="value" id="hud-power">0 / 0 kW</div>
+      <div class="sub" id="hud-powersub">gen / demand</div>
+      <div class="bar"><i id="hud-powerbar" style="background:var(--green)"></i></div>
+    </div>
+    <div class="stat">
+      <div class="label">Storage</div>
+      <div class="value" id="hud-storage">0%</div>
+      <div class="sub" id="hud-storagesub">0 / 0 kWs</div>
+      <div class="bar"><i id="hud-storagebar" style="background:var(--accent)"></i></div>
+    </div>
+    <div class="stat">
+      <div class="label">Copper</div>
+      <div class="value" id="hud-copper" style="color:var(--orange)">0</div>
+      <div class="sub">basic builds</div>
+    </div>
+    <div class="stat">
+      <div class="label">Silicon</div>
+      <div class="value" id="hud-silicon" style="color:var(--purple)">0</div>
+      <div class="sub">batteries · adv.</div>
+    </div>
+    <div class="stat">
+      <div class="label">Iridium ⭐</div>
+      <div class="value" id="hud-iridium" style="color:var(--cyan)">0 / 30</div>
+      <div class="sub">win goal · night only</div>
+      <div class="bar"><i id="hud-iridiumbar" style="background:var(--cyan)"></i></div>
+    </div>
+  </div>
+
+  <div class="game">
+    <div class="stage">
+      <canvas id="cv" width="900" height="540"></canvas>
+      <div class="overlay" id="overlay">
+        <div class="card">
+          <h3>☀ Solar Grid</h3>
+          <p>You run a renewable mining outpost. The sun powers everything — but nights grow longer, and the richest ore (Iridium) can only be mined in the dark, off stored battery power.</p>
+          <ul>
+            <li><b>Generate:</b> place Solar Panels (daytime only).</li>
+            <li><b>Store:</b> Batteries bank surplus sun for the night.</li>
+            <li><b>Distribute:</b> Pylons carry power — buildings must sit inside a pylon's range. Each hop from the Hub loses a little energy.</li>
+            <li><b>Mine:</b> Extractors sit on ore nodes and run only while powered. Iridium needs lots of power, at night.</li>
+            <li><b>Goal:</b> deliver <b>30 Iridium</b>. <b>Lose</b> if your Hub goes dark for 60s.</li>
+          </ul>
+          <button class="start" id="startBtn">Start ▶</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>Build</h2>
+      <div class="tools" id="tools"></div>
+
+      <div class="inspect" id="inspect">
+        <h2 style="margin-top:0.8rem">Selected</h2>
+        <div id="inspectBody"></div>
+        <div class="controls">
+          <button class="btn" id="toggleBtn">Toggle On/Off</button>
+          <button class="btn" id="demoBtn" style="border-color:var(--red);color:var(--red)">Demolish</button>
+        </div>
+      </div>
+
+      <div class="hint" id="hint">
+        Click a tool, then a tile to build. <kbd>Esc</kbd> / right-click cancels. Click a building to inspect it.
+      </div>
+
+      <div class="controls">
+        <button class="btn" id="pauseBtn">⏸ Pause</button>
+        <button class="btn" id="speedBtn">▶ 1×</button>
+      </div>
+
+      <div class="log" id="log"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+"use strict";
+(() => {
+  // ---------- config ----------
+  const COLS = 30, ROWS = 18, TILE = 30;
+  const W = COLS * TILE, H = ROWS * TILE;
+  const STEP = 0.1;                 // sim step seconds (10 Hz)
+  const PYLON_RANGE = 4.2;          // tiles
+  const LOSS_PER_HOP = 0.06;        // flat transmission loss per pylon hop
+  const HUB_IDLE = 5;               // kW the hub needs to keep lights on
+  const DARK_LIMIT = 60;            // seconds of hub-dark before loss
+  const WIN_IRIDIUM = 30;
+  const LEAK_PER_SEC = 0.01 / 60;   // batteries leak ~1%/min
+
+  // day/night
+  let dayLen = 45, nightLen = 30;
+  const NIGHT_GROW = 5, DAY_SHRINK = 2, DAY_MIN = 25, NIGHT_MAX = 110;
+
+  const C = getComputedStyle(document.documentElement);
+  const col = n => C.getPropertyValue(n).trim();
+  const COLORS = {
+    accent: col('--accent'), green: col('--green'), orange: col('--orange'),
+    red: col('--red'), yellow: col('--yellow'), purple: col('--purple'),
+    cyan: col('--cyan'), muted: col('--muted'), border: col('--border'),
+    surface: col('--surface'), surface2: col('--surface2'), text: col('--text')
+  };
+
+  // ---------- building defs ----------
+  // cost: {copper, silicon}; draw: kW when running; produce: per-second; node: required ore
+  const DEFS = {
+    pylon:   { name:'Pylon',   icon:'⊥', color:COLORS.muted,   cost:{copper:5},              router:true,  desc:'Carries power. Range 4 tiles, chains to other pylons.' },
+    solar:   { name:'Solar Panel', icon:'☀', color:COLORS.yellow, cost:{copper:10},          gen:true,     desc:'Up to 30 kW at noon. Nothing at night.' },
+    battery: { name:'Battery', icon:'▮', color:COLORS.green,   cost:{copper:15, silicon:8},  storage:800, rate:200, desc:'Stores 800 kWs. Banks surplus for the night.' },
+    copperEx:{ name:'Copper Mine', icon:'Cu', color:COLORS.orange, cost:{copper:10},         draw:8,  produce:2.0, node:'copper',  desc:'Mines copper while powered.' },
+    siliconEx:{ name:'Silicon Mine', icon:'Si', color:COLORS.purple, cost:{copper:25},       draw:20, produce:1.0, node:'silicon', desc:'Mines silicon while powered.' },
+    iridiumEx:{ name:'Iridium Mine', icon:'Ir', color:COLORS.cyan, cost:{copper:30, silicon:25}, draw:60, produce:0.6, node:'iridium', nightOnly:true, desc:'Heavy draw. Mines ONLY at night, off battery power.' },
+  };
+  const BUILD_ORDER = ['solar','battery','pylon','copperEx','siliconEx','iridiumEx'];
+
+  // ---------- state ----------
+  let G; // game state
+  function fresh() {
+    return {
+      started:false, paused:false, over:null, speed:1,
+      t:0, dayCount:1, phaseT:0, isDay:true,
+      copper:60, silicon:0, iridium:0,
+      buildings:[],        // {type, x, y, on, connected, hops, ratio, charge?}
+      nodes:new Map(),     // "x,y" -> oreType
+      occ:new Map(),       // "x,y" -> building
+      hub:null,
+      tool:null, selected:null, hover:null,
+      darkTimer:0, acc:0,
+      genKW:0, demandKW:0, storeNow:0, storeMax:0,
+      log:[]
+    };
+  }
+
+  function key(x,y){ return x+','+y; }
+
+  // hand-authored map
+  function buildMap() {
+    G.hub = { type:'hub', x:15, y:9, on:true, connected:true, hops:0, ratio:1 };
+    G.buildings.push(G.hub);
+    G.occ.set(key(15,9), G.hub);
+    const nodes = [
+      ['copper',11,7],['copper',12,11],['copper',18,8],['copper',19,11],
+      ['silicon',8,5],['silicon',22,13],['silicon',9,13],
+      ['iridium',3,9],['iridium',26,4],
+    ];
+    for (const [t,x,y] of nodes) G.nodes.set(key(x,y), t);
+
+    // free starter kit next to the hub so dawn isn't an instant blackout
+    for (const [t,x,y] of [['solar',14,8],['solar',16,8],['battery',15,7]]) {
+      const b = { type:t, x, y, on:true, connected:true, hops:0, ratio:0 };
+      if (t==='battery') b.charge = DEFS.battery.storage * 0.5;
+      G.buildings.push(b);
+      G.occ.set(key(x,y), b);
+    }
+  }
+
+  // ---------- helpers ----------
+  function dist(a,b){ return Math.hypot(a.x-b.x, a.y-b.y); }
+  function lossFactor(hops){ return Math.pow(1 - LOSS_PER_HOP, hops); }
+  function canAfford(cost){ return (G.copper >= (cost.copper||0)) && (G.silicon >= (cost.silicon||0)); }
+  function pay(cost){ G.copper -= (cost.copper||0); G.silicon -= (cost.silicon||0); }
+
+  function logMsg(msg, kind){
+    G.log.unshift({msg, kind, t:G.t});
+    if (G.log.length > 40) G.log.pop();
+    renderLog();
+  }
+
+  // ---------- network: BFS over hub+pylons, attach buildings ----------
+  function computeNetwork() {
+    const routers = G.buildings.filter(b => b.type==='hub' || b.type==='pylon');
+    for (const r of routers) r.depth = Infinity;
+    G.hub.depth = 0;
+    const q = [G.hub];
+    while (q.length) {
+      const n = q.shift();
+      for (const m of routers) {
+        if (m === n || m.depth <= n.depth+1) continue;
+        if (dist(n,m) <= PYLON_RANGE) { m.depth = n.depth + 1; q.push(m); }
+      }
+    }
+    for (const b of G.buildings) {
+      if (b.type === 'hub') { b.connected = true; b.hops = 0; continue; }
+      if (b.type === 'pylon') { b.connected = b.depth < Infinity; b.hops = b.depth; continue; }
+      // other buildings attach to nearest reachable router within range
+      let best = null;
+      for (const r of routers) {
+        if (r.depth === Infinity) continue;
+        if (dist(b,r) <= PYLON_RANGE && (!best || r.depth < best.depth)) best = r;
+      }
+      b.connected = !!best;
+      b.hops = best ? best.depth : Infinity;
+    }
+  }
+
+  // ---------- solar curve ----------
+  function solarOutput() {
+    if (!G.isDay) return 0;
+    const f = G.phaseT / dayLen;            // 0..1 across the day
+    return Math.sin(Math.PI * Math.max(0, Math.min(1, f))); // 0..1
+  }
+
+  function extractorActive(b){
+    const d = DEFS[b.type];
+    if (!d || !d.draw) return false;
+    if (!b.on || !b.connected) return false;
+    if (d.nightOnly && G.isDay) return false;
+    return true;
+  }
+
+  // ---------- one fixed sim step ----------
+  function step(dt) {
+    // advance clock
+    G.t += dt; G.phaseT += dt;
+    const phaseLen = G.isDay ? dayLen : nightLen;
+    if (G.phaseT >= phaseLen) {
+      G.phaseT -= phaseLen;
+      if (G.isDay) { G.isDay = false; logMsg('🌙 Night falls — solar offline, running on batteries.', 'warn'); }
+      else {
+        G.isDay = true; G.dayCount++;
+        nightLen = Math.min(NIGHT_MAX, nightLen + NIGHT_GROW);
+        dayLen = Math.max(DAY_MIN, dayLen - DAY_SHRINK);
+        logMsg('☀ Day '+G.dayCount+' — nights are getting longer.', 'good');
+      }
+    }
+
+    computeNetwork();
+
+    // leak batteries
+    for (const b of G.buildings) {
+      if (b.type==='battery' && b.charge>0) b.charge = Math.max(0, b.charge - b.charge*LEAK_PER_SEC*dt);
+    }
+
+    // generation (connected solar only)
+    const sun = solarOutput();
+    let genKW = 0;
+    for (const b of G.buildings) {
+      if (b.type==='solar' && b.connected && b.on) genKW += 30 * sun;
+    }
+
+    // consumers (hub idle + active extractors) -> demand from pool incl. transmission penalty
+    const consumers = [];
+    let hubDemand = HUB_IDLE; // hub hops = 0
+    let totalDemand = hubDemand;
+    for (const b of G.buildings) {
+      if (extractorActive(b)) {
+        const pd = DEFS[b.type].draw / lossFactor(b.hops);
+        consumers.push({ b, pd });
+        totalDemand += pd;
+      } else if (DEFS[b.type] && DEFS[b.type].draw) {
+        b.ratio = 0; // inactive extractor
+      }
+    }
+
+    // batteries (connected) — discharge availability
+    const bats = G.buildings.filter(b => b.type==='battery' && b.connected);
+    let dischargeAvail = 0;
+    for (const bt of bats) dischargeAvail += Math.min(DEFS.battery.rate, (bt.charge||0)/dt);
+
+    let hubPowered = true, ratioNonHub = 1;
+
+    if (genKW >= totalDemand) {
+      // surplus -> charge batteries
+      let surplus = genKW - totalDemand;
+      chargeBatteries(bats, surplus, dt);
+    } else {
+      const deficit = totalDemand - genKW;
+      const dischargeKW = Math.min(deficit, dischargeAvail);
+      applyDischarge(bats, dischargeKW, dt);
+      const covered = genKW + dischargeKW;
+      if (covered >= totalDemand - 1e-6) {
+        // fully covered by gen+battery
+      } else if (covered >= hubDemand) {
+        const rem = covered - hubDemand;
+        const nonHub = totalDemand - hubDemand;
+        ratioNonHub = nonHub > 0 ? rem / nonHub : 1;
+        hubPowered = true;
+      } else {
+        hubPowered = false;
+        ratioNonHub = 0;
+      }
+    }
+
+    // apply ratios + produce
+    for (const c of consumers) c.b.ratio = hubPowered ? ratioNonHub : 0;
+    for (const c of consumers) {
+      const d = DEFS[c.b.type];
+      const made = d.produce * c.b.ratio * dt;
+      if (c.b.type==='copperEx') G.copper += made;
+      else if (c.b.type==='siliconEx') G.silicon += made;
+      else if (c.b.type==='iridiumEx') G.iridium += made;
+    }
+
+    // hub dark tracking
+    if (!hubPowered) {
+      const before = G.darkTimer;
+      G.darkTimer += dt;
+      if (before === 0) logMsg('⚠ HUB DARK! Restore power within 60s or you lose.', 'bad');
+    } else {
+      if (G.darkTimer > 0) logMsg('Hub power restored.', 'good');
+      G.darkTimer = 0;
+    }
+
+    // book-keeping for HUD
+    G.genKW = genKW;
+    G.demandKW = totalDemand;
+    G.storeNow = bats.reduce((s,b)=>s+(b.charge||0),0) + G.buildings.filter(b=>b.type==='battery'&&!b.connected).reduce((s,b)=>s+(b.charge||0),0);
+    G.storeMax = G.buildings.filter(b=>b.type==='battery').length * DEFS.battery.storage;
+
+    // win / lose
+    if (G.iridium >= WIN_IRIDIUM) endGame('win');
+    else if (G.darkTimer >= DARK_LIMIT) endGame('lose');
+  }
+
+  function chargeBatteries(bats, surplusKW, dt) {
+    if (surplusKW <= 0 || !bats.length) return;
+    // distribute proportional to remaining room, capped by rate
+    let energy = surplusKW * dt;
+    let rooms = bats.map(b => Math.min(DEFS.battery.rate*dt, DEFS.battery.storage - (b.charge||0)));
+    let totalRoom = rooms.reduce((a,b)=>a+b,0);
+    if (totalRoom <= 0) return;
+    const give = Math.min(energy, totalRoom);
+    for (let i=0;i<bats.length;i++){
+      if (rooms[i] <= 0) continue;
+      bats[i].charge = (bats[i].charge||0) + give * (rooms[i]/totalRoom);
+    }
+  }
+
+  function applyDischarge(bats, dischargeKW, dt) {
+    if (dischargeKW <= 0 || !bats.length) return;
+    let energy = dischargeKW * dt;
+    let avail = bats.map(b => Math.min(DEFS.battery.rate*dt, b.charge||0));
+    let totalAvail = avail.reduce((a,b)=>a+b,0);
+    if (totalAvail <= 0) return;
+    const take = Math.min(energy, totalAvail);
+    for (let i=0;i<bats.length;i++){
+      if (avail[i] <= 0) continue;
+      bats[i].charge = Math.max(0, (bats[i].charge||0) - take * (avail[i]/totalAvail));
+    }
+  }
+
+  function endGame(result) {
+    if (G.over) return;
+    G.over = result;
+    G.started = false;
+    showOverlay(result);
+  }
+
+  // ---------- placement ----------
+  function tryPlace(type, x, y) {
+    const d = DEFS[type];
+    if (!d) return;
+    const k = key(x,y);
+    if (G.occ.has(k)) { logMsg('Tile occupied.', 'warn'); return; }
+    const node = G.nodes.get(k);
+    if (d.node) {
+      if (node !== d.node) { logMsg(d.name+' must be placed on a '+d.node+' node.', 'warn'); return; }
+    } else if (node) {
+      logMsg('Can\'t build there — that\'s an ore node (place a mine on it).', 'warn'); return;
+    }
+    if (!canAfford(d.cost)) { logMsg('Not enough resources for '+d.name+'.', 'bad'); return; }
+    pay(d.cost);
+    const b = { type, x, y, on:true, connected:false, hops:Infinity, ratio:0 };
+    if (d.storage) b.charge = 0;
+    G.buildings.push(b);
+    G.occ.set(k, b);
+    computeNetwork();
+    logMsg('Built '+d.name+'.', 'good');
+  }
+
+  function demolish(b) {
+    if (!b || b.type==='hub') return;
+    const d = DEFS[b.type];
+    // partial refund (50%)
+    G.copper += Math.floor((d.cost.copper||0)*0.5);
+    G.silicon += Math.floor((d.cost.silicon||0)*0.5);
+    G.occ.delete(key(b.x,b.y));
+    G.buildings = G.buildings.filter(x => x!==b);
+    G.selected = null;
+    computeNetwork();
+    renderInspect();
+    logMsg('Demolished '+d.name+' (50% refund).', 'warn');
+  }
+
+  // ---------- input ----------
+  const cv = document.getElementById('cv');
+  const ctx = cv.getContext('2d');
+
+  function tileFromEvent(e) {
+    const r = cv.getBoundingClientRect();
+    const sx = cv.width / r.width, sy = cv.height / r.height;
+    const px = (e.clientX - r.left) * sx, py = (e.clientY - r.top) * sy;
+    return { x: Math.floor(px / TILE), y: Math.floor(py / TILE) };
+  }
+
+  cv.addEventListener('mousemove', e => {
+    const t = tileFromEvent(e);
+    G.hover = (t.x>=0 && t.x<COLS && t.y>=0 && t.y<ROWS) ? t : null;
+  });
+  cv.addEventListener('mouseleave', () => G.hover = null);
+
+  cv.addEventListener('contextmenu', e => { e.preventDefault(); setTool(null); });
+
+  cv.addEventListener('click', e => {
+    if (!G.started) return;
+    const t = tileFromEvent(e);
+    if (t.x<0||t.x>=COLS||t.y<0||t.y>=ROWS) return;
+    if (G.tool) {
+      tryPlace(G.tool, t.x, t.y);
+    } else {
+      const b = G.occ.get(key(t.x,t.y));
+      G.selected = b || null;
+      renderInspect();
+    }
+  });
+
+  window.addEventListener('keydown', e => { if (e.key === 'Escape') { setTool(null); G.selected=null; renderInspect(); } });
+
+  function setTool(type) {
+    G.tool = type;
+    if (type) { G.selected = null; renderInspect(); }
+    [...document.querySelectorAll('.tool')].forEach(el => el.classList.toggle('active', el.dataset.type === type));
+    cv.style.cursor = type ? 'copy' : 'pointer';
+  }
+
+  // ---------- UI building ----------
+  function buildToolbar() {
+    const tools = document.getElementById('tools');
+    tools.innerHTML = '';
+    for (const type of BUILD_ORDER) {
+      const d = DEFS[type];
+      const btn = document.createElement('button');
+      btn.className = 'tool'; btn.dataset.type = type;
+      const cost = [];
+      if (d.cost.copper) cost.push(d.cost.copper+'Cu');
+      if (d.cost.silicon) cost.push(d.cost.silicon+'Si');
+      btn.innerHTML = `<span class="ic" style="background:${d.color}">${d.icon}</span>`+
+                      `<span class="nm">${d.name}</span><span class="ct">${cost.join(' ')}</span>`;
+      btn.addEventListener('click', () => setTool(G.tool===type ? null : type));
+      tools.appendChild(btn);
+    }
+  }
+
+  function renderInspect() {
+    const wrap = document.getElementById('inspect');
+    const body = document.getElementById('inspectBody');
+    const b = G.selected;
+    if (!b) { wrap.classList.remove('show'); return; }
+    wrap.classList.add('show');
+    const d = b.type==='hub' ? {name:'Hub'} : DEFS[b.type];
+    let rows = `<div class="row"><span>Type</span><b>${d.name}</b></div>`;
+    rows += `<div class="row"><span>Status</span><b style="color:${b.connected?COLORS.green:COLORS.red}">${b.connected?'Connected':'OFFLINE'}</b></div>`;
+    if (b.type!=='hub') rows += `<div class="row"><span>Pylon hops</span><b>${b.hops===Infinity?'—':b.hops} (-${b.hops===Infinity?0:Math.round((1-lossFactor(b.hops))*100)}%)</b></div>`;
+    if (b.type==='battery') rows += `<div class="row"><span>Charge</span><b>${Math.round(b.charge||0)} / ${DEFS.battery.storage}</b></div>`;
+    if (DEFS[b.type] && DEFS[b.type].draw) {
+      rows += `<div class="row"><span>Running</span><b>${Math.round((b.ratio||0)*100)}%</b></div>`;
+      if (DEFS[b.type].nightOnly) rows += `<div class="row"><span>Window</span><b>Night only</b></div>`;
+    }
+    if (b.type!=='hub') rows += `<div class="row"><span>Power</span><b style="color:${b.on?COLORS.green:COLORS.muted}">${b.on?'ON':'OFF'}</b></div>`;
+    body.innerHTML = rows;
+    document.getElementById('toggleBtn').style.display = (b.type==='hub') ? 'none' : '';
+    document.getElementById('demoBtn').style.display = (b.type==='hub') ? 'none' : '';
+  }
+
+  document.getElementById('toggleBtn').addEventListener('click', () => {
+    if (G.selected && G.selected.type!=='hub') { G.selected.on = !G.selected.on; renderInspect(); }
+  });
+  document.getElementById('demoBtn').addEventListener('click', () => { if (G.selected) demolish(G.selected); });
+
+  function renderLog() {
+    const el = document.getElementById('log');
+    el.innerHTML = G.log.slice(0,12).map(l => `<div class="${l.kind||''}">${l.msg}</div>`).join('');
+  }
+
+  // ---------- HUD ----------
+  function updateHUD() {
+    const phase = G.isDay ? 'Day' : 'Night';
+    document.getElementById('hud-time').textContent = 'Day ' + G.dayCount;
+    const phaseLen = G.isDay ? dayLen : nightLen;
+    const remain = Math.ceil(phaseLen - G.phaseT);
+    let phaseLabel = phase + ' · ' + remain + 's left';
+    if (G.darkTimer > 0) phaseLabel = '⚠ HUB DARK ' + Math.ceil(DARK_LIMIT - G.darkTimer) + 's';
+    document.getElementById('hud-phase').textContent = phaseLabel;
+    const db = document.getElementById('hud-daybar');
+    db.style.width = (100*G.phaseT/phaseLen) + '%';
+    db.style.background = G.isDay ? COLORS.yellow : COLORS.accent;
+
+    document.getElementById('hud-power').textContent = Math.round(G.genKW) + ' / ' + Math.round(G.demandKW) + ' kW';
+    const pbar = document.getElementById('hud-powerbar');
+    const pratio = G.demandKW>0 ? G.genKW/G.demandKW : 1;
+    pbar.style.width = Math.min(100, pratio*100) + '%';
+    pbar.style.background = pratio>=1 ? COLORS.green : (pratio>=0.5 ? COLORS.yellow : COLORS.red);
+    document.getElementById('hud-powersub').textContent = G.genKW>=G.demandKW ? 'surplus → charging' : 'deficit → draining';
+
+    const spct = G.storeMax>0 ? G.storeNow/G.storeMax : 0;
+    document.getElementById('hud-storage').textContent = Math.round(spct*100) + '%';
+    document.getElementById('hud-storagesub').textContent = Math.round(G.storeNow) + ' / ' + Math.round(G.storeMax) + ' kWs';
+    document.getElementById('hud-storagebar').style.width = (spct*100) + '%';
+
+    document.getElementById('hud-copper').textContent = Math.floor(G.copper);
+    document.getElementById('hud-silicon').textContent = Math.floor(G.silicon);
+    document.getElementById('hud-iridium').textContent = Math.floor(G.iridium) + ' / ' + WIN_IRIDIUM;
+    document.getElementById('hud-iridiumbar').style.width = Math.min(100, 100*G.iridium/WIN_IRIDIUM) + '%';
+
+    // refresh inspector live values
+    if (G.selected) renderInspect();
+  }
+
+  // ---------- render ----------
+  function nodeColor(t){ return t==='copper'?COLORS.orange : t==='silicon'?COLORS.purple : COLORS.cyan; }
+
+  function draw() {
+    // sky background reflects time of day
+    const sun = solarOutput();
+    const night = 1 - (G.isDay ? sun : 0);
+    const top = mix([13,17,23], [22,30,55], (G.isDay?sun:0));
+    ctx.fillStyle = `rgb(${top[0]},${top[1]},${top[2]})`;
+    ctx.fillRect(0,0,W,H);
+
+    // grid
+    ctx.strokeStyle = 'rgba(255,255,255,0.04)';
+    ctx.lineWidth = 1;
+    for (let x=0;x<=COLS;x++){ ctx.beginPath(); ctx.moveTo(x*TILE,0); ctx.lineTo(x*TILE,H); ctx.stroke(); }
+    for (let y=0;y<=ROWS;y++){ ctx.beginPath(); ctx.moveTo(0,y*TILE); ctx.lineTo(W,y*TILE); ctx.stroke(); }
+
+    // pylon coverage (under everything)
+    for (const b of G.buildings) {
+      if (b.type==='pylon' || b.type==='hub') {
+        ctx.beginPath();
+        ctx.arc(b.x*TILE+TILE/2, b.y*TILE+TILE/2, PYLON_RANGE*TILE, 0, Math.PI*2);
+        ctx.fillStyle = b.connected ? 'rgba(88,166,255,0.05)' : 'rgba(248,81,73,0.05)';
+        ctx.fill();
+      }
+    }
+    // connection links between routers
+    const routers = G.buildings.filter(b=>b.type==='hub'||b.type==='pylon');
+    ctx.lineWidth = 2;
+    for (let i=0;i<routers.length;i++) for (let j=i+1;j<routers.length;j++){
+      const a=routers[i], c=routers[j];
+      if (dist(a,c)<=PYLON_RANGE && a.connected && c.connected) {
+        ctx.strokeStyle = 'rgba(88,166,255,0.25)';
+        ctx.beginPath();
+        ctx.moveTo(a.x*TILE+TILE/2, a.y*TILE+TILE/2);
+        ctx.lineTo(c.x*TILE+TILE/2, c.y*TILE+TILE/2);
+        ctx.stroke();
+      }
+    }
+
+    // ore nodes
+    for (const [k,t] of G.nodes) {
+      const [x,y] = k.split(',').map(Number);
+      ctx.fillStyle = nodeColor(t);
+      ctx.globalAlpha = 0.18; roundRect(x*TILE+2,y*TILE+2,TILE-4,TILE-4,5); ctx.fill(); ctx.globalAlpha=1;
+      ctx.strokeStyle = nodeColor(t); ctx.globalAlpha=0.5; ctx.lineWidth=1.5;
+      roundRect(x*TILE+2,y*TILE+2,TILE-4,TILE-4,5); ctx.stroke(); ctx.globalAlpha=1;
+      ctx.fillStyle = nodeColor(t); ctx.font='bold 10px system-ui'; ctx.textAlign='center'; ctx.textBaseline='middle';
+      ctx.fillText(t==='copper'?'Cu':t==='silicon'?'Si':'Ir', x*TILE+TILE/2, y*TILE+TILE/2);
+    }
+
+    // buildings
+    for (const b of G.buildings) {
+      const d = b.type==='hub' ? {color:COLORS.accent, icon:'⌂'} : DEFS[b.type];
+      const cx=b.x*TILE, cy=b.y*TILE;
+      // body
+      ctx.fillStyle = d.color;
+      ctx.globalAlpha = b.on===false ? 0.35 : 1;
+      roundRect(cx+3,cy+3,TILE-6,TILE-6,5); ctx.fill();
+      ctx.globalAlpha = 1;
+      // icon
+      ctx.fillStyle = '#0d1117'; ctx.font='bold 12px system-ui'; ctx.textAlign='center'; ctx.textBaseline='middle';
+      ctx.fillText(d.icon, cx+TILE/2, cy+TILE/2+1);
+      // offline marker
+      if (b.connected===false && b.type!=='hub') {
+        ctx.strokeStyle = COLORS.red; ctx.lineWidth = 2;
+        roundRect(cx+2,cy+2,TILE-4,TILE-4,5); ctx.stroke();
+      }
+      // hub dark pulse
+      if (b.type==='hub' && G.darkTimer>0) {
+        ctx.strokeStyle = COLORS.red; ctx.lineWidth = 2 + 2*Math.sin(G.t*8);
+        roundRect(cx+1,cy+1,TILE-2,TILE-2,6); ctx.stroke();
+      }
+      // selected highlight
+      if (b===G.selected) {
+        ctx.strokeStyle = COLORS.text; ctx.lineWidth = 2;
+        roundRect(cx+1,cy+1,TILE-2,TILE-2,6); ctx.stroke();
+      }
+      // battery charge pip
+      if (b.type==='battery') {
+        const f = (b.charge||0)/DEFS.battery.storage;
+        ctx.fillStyle = '#0d1117'; ctx.fillRect(cx+5,cy+TILE-8,TILE-10,3);
+        ctx.fillStyle = COLORS.green; ctx.fillRect(cx+5,cy+TILE-8,(TILE-10)*f,3);
+      }
+    }
+
+    // hover ghost / range preview
+    if (G.hover && G.tool && G.started) {
+      const d = DEFS[G.tool];
+      const k = key(G.hover.x,G.hover.y);
+      const node = G.nodes.get(k);
+      let ok = !G.occ.has(k) && canAfford(d.cost);
+      if (d.node) ok = ok && node===d.node;
+      else ok = ok && !node;
+      const cx=G.hover.x*TILE, cy=G.hover.y*TILE;
+      ctx.globalAlpha=0.5;
+      ctx.fillStyle = ok ? d.color : COLORS.red;
+      roundRect(cx+3,cy+3,TILE-6,TILE-6,5); ctx.fill();
+      ctx.globalAlpha=1;
+      if (d.router || G.tool==='solar' || G.tool==='battery' || d.draw) {
+        // preview range if it's a router; else show nearest-pylon reach
+        if (d.router) {
+          ctx.strokeStyle='rgba(88,166,255,0.4)'; ctx.setLineDash([4,4]);
+          ctx.beginPath(); ctx.arc(cx+TILE/2,cy+TILE/2,PYLON_RANGE*TILE,0,Math.PI*2); ctx.stroke(); ctx.setLineDash([]);
+        }
+      }
+    }
+
+    // night vignette
+    if (night > 0.01) {
+      const g = ctx.createRadialGradient(W/2,H/2,H*0.2,W/2,H/2,H*0.9);
+      g.addColorStop(0,'rgba(0,0,10,0)');
+      g.addColorStop(1,`rgba(0,0,15,${0.5*night})`);
+      ctx.fillStyle = g; ctx.fillRect(0,0,W,H);
+    }
+
+    // sun/moon indicator
+    drawSky();
+  }
+
+  function drawSky() {
+    const phaseLen = G.isDay ? dayLen : nightLen;
+    const f = G.phaseT/phaseLen;
+    const x = 20 + f*(W-40);
+    const y = 26 - 12*Math.sin(Math.PI*f);
+    ctx.beginPath(); ctx.arc(x,y,9,0,Math.PI*2);
+    ctx.fillStyle = G.isDay ? COLORS.yellow : '#cdd9e5';
+    ctx.fill();
+    if (G.isDay) { ctx.strokeStyle='rgba(210,153,34,0.5)'; ctx.lineWidth=2; ctx.beginPath(); ctx.arc(x,y,13,0,Math.PI*2); ctx.stroke(); }
+  }
+
+  function roundRect(x,y,w,h,r){ ctx.beginPath(); ctx.moveTo(x+r,y); ctx.arcTo(x+w,y,x+w,y+h,r); ctx.arcTo(x+w,y+h,x,y+h,r); ctx.arcTo(x,y+h,x,y,r); ctx.arcTo(x,y,x+w,y,r); ctx.closePath(); }
+  function mix(a,b,t){ return [a[0]+(b[0]-a[0])*t, a[1]+(b[1]-a[1])*t, a[2]+(b[2]-a[2])*t].map(Math.round); }
+
+  // ---------- main loop ----------
+  let last = performance.now();
+  function frame(now) {
+    let real = (now - last)/1000; last = now;
+    real = Math.min(real, 0.25); // clamp big gaps
+    if (G.started && !G.paused) {
+      G.acc += real * G.speed;
+      let guard = 0;
+      while (G.acc >= STEP && !G.over && guard < 20) { step(STEP); G.acc -= STEP; guard++; }
+    }
+    draw();
+    updateHUD();
+    requestAnimationFrame(frame);
+  }
+
+  // ---------- overlay / controls ----------
+  function showOverlay(kind) {
+    const ov = document.getElementById('overlay');
+    const card = ov.querySelector('.card');
+    ov.classList.remove('hidden');
+    if (kind==='win') {
+      card.innerHTML = `<h3 class="win">⭐ Victory!</h3>
+        <p>You delivered ${WIN_IRIDIUM} Iridium and survived to Day ${G.dayCount}. Your grid held through the long nights.</p>
+        <button class="start" id="againBtn">Play again ↻</button>`;
+    } else {
+      card.innerHTML = `<h3 class="lose">⚠ Blackout</h3>
+        <p>Your Hub went dark and the outpost shut down on Day ${G.dayCount}. Build more storage next time — the nights only get longer.</p>
+        <button class="start" id="againBtn">Try again ↻</button>`;
+    }
+    document.getElementById('againBtn').addEventListener('click', startGame);
+  }
+
+  function startGame() {
+    G = fresh();
+    buildMap();
+    computeNetwork();
+    document.getElementById('overlay').classList.add('hidden');
+    G.started = true;
+    renderLog(); renderInspect();
+    logMsg('Outpost online. Build solar before the first night.', 'good');
+  }
+
+  document.getElementById('startBtn').addEventListener('click', startGame);
+  document.getElementById('pauseBtn').addEventListener('click', () => {
+    G.paused = !G.paused;
+    document.getElementById('pauseBtn').textContent = G.paused ? '▶ Resume' : '⏸ Pause';
+  });
+  document.getElementById('speedBtn').addEventListener('click', () => {
+    G.speed = G.speed===1 ? 2 : (G.speed===2 ? 3 : 1);
+    document.getElementById('speedBtn').textContent = '▶ '+G.speed+'×';
+  });
+
+  // ---------- debug hook (only active with ?debug in URL) ----------
+  if (location.search.includes('debug')) {
+    window.__sg = {
+      grant: (c,s,i) => { G.copper += c||0; G.silicon += s||0; G.iridium += i||0; },
+      skipToNight: () => { if (G.isDay) G.phaseT = dayLen - 0.1; },
+      skipToDay: () => { if (!G.isDay) G.phaseT = nightLen - 0.1; },
+      list: () => G.buildings.map(b => ({ type:b.type, x:b.x, y:b.y, conn:b.connected, hops:b.hops===Infinity?'inf':b.hops, on:b.on, ratio:+(b.ratio||0).toFixed(2) })),
+      state: () => ({ t:+G.t.toFixed(1), day:G.dayCount, isDay:G.isDay,
+        gen:Math.round(G.genKW), demand:Math.round(G.demandKW),
+        store:Math.round(G.storeNow), storeMax:G.storeMax,
+        copper:Math.floor(G.copper), silicon:Math.floor(G.silicon), iridium:+G.iridium.toFixed(2),
+        dark:+G.darkTimer.toFixed(1), over:G.over, buildings:G.buildings.length })
+    };
+  }
+
+  // ---------- boot ----------
+  G = fresh();
+  buildMap();
+  buildToolbar();
+  computeNetwork();
+  renderLog();
+  requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>
