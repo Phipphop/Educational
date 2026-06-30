@@ -46,11 +46,12 @@
   h1 { font-size: 1.6rem; font-weight: 800; letter-spacing: -0.02em; }
   h1 span { color: var(--orange); }
   .subtitle { color: var(--muted); font-size: 0.9rem; }
+  .about-link { color: var(--accent); font-size: 0.8rem; cursor: pointer; text-decoration: underline; background: none; border: none; }
 
   /* HUD top bar */
   .hud {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(135px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
     gap: 0.5rem; margin-bottom: 0.75rem;
   }
   .stat {
@@ -80,13 +81,12 @@
   }
   .tool:hover { border-color: var(--accent); }
   .tool.active { border-color: var(--accent); background: rgba(88,166,255,0.12); }
-  .tool:disabled { opacity: 0.45; cursor: not-allowed; }
   .tool .ic { width: 22px; height: 22px; border-radius: 5px; flex: none; display: grid; place-items: center; font-size: 0.85rem; font-weight: 800; color: #0d1117; }
   .tool .nm { flex: 1; font-weight: 600; }
-  .tool .ct { font-size: 0.68rem; color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .tool .ct { font-size: 0.66rem; color: var(--muted); white-space: nowrap; }
 
   .hint { font-size: 0.72rem; color: var(--muted); margin-top: 0.6rem; line-height: 1.5; }
-  .log { margin-top: 0.75rem; max-height: 130px; overflow-y: auto; font-size: 0.72rem; }
+  .log { margin-top: 0.75rem; max-height: 120px; overflow-y: auto; font-size: 0.72rem; }
   .log div { padding: 0.18rem 0; border-top: 1px solid var(--border); color: var(--muted); }
   .log div.warn { color: var(--yellow); }
   .log div.bad { color: var(--red); }
@@ -119,7 +119,7 @@
     overflow-y: auto;
   }
   .overlay.hidden { display: none; }
-  .overlay .card { max-width: 560px; }
+  .overlay .card { max-width: 600px; }
   .overlay h3 { font-size: 1.5rem; margin-bottom: 0.6rem; }
   .overlay p { color: var(--muted); font-size: 0.88rem; margin-bottom: 0.5rem; }
   .overlay ul { text-align: left; color: var(--muted); font-size: 0.84rem; margin: 0.6rem 0 1rem 1.1rem; line-height: 1.6; }
@@ -127,11 +127,17 @@
     padding: 0.6rem 1.4rem; border-radius: 8px; cursor: pointer; font-size: 0.95rem; }
   .overlay h3.win { color: var(--green); }
   .bignum { display: flex; gap: 0.6rem; justify-content: center; flex-wrap: wrap; margin: 0.8rem 0; }
-  .bignum > div { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 0.6rem 0.9rem; min-width: 120px; }
+  .bignum > div { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 0.6rem 0.9rem; min-width: 130px; }
   .bignum .n { font-size: 1.3rem; font-weight: 800; font-variant-numeric: tabular-nums; }
-  .bignum .l { font-size: 0.66rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; }
-  .punch { background: rgba(88,166,255,0.1); border: 1px solid var(--accent); border-radius: 8px; padding: 0.8rem; font-size: 0.9rem; color: var(--text); margin: 0.8rem 0; }
+  .bignum .l { font-size: 0.64rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; }
+  .punch { background: rgba(88,166,255,0.1); border: 1px solid var(--accent); border-radius: 8px; padding: 0.8rem; font-size: 0.9rem; color: var(--text); margin: 0.8rem 0; text-align: left; }
   .src { font-size: 0.68rem; color: var(--muted); margin-top: 0.4rem; }
+  .about { text-align: left; }
+  .about h4 { font-size: 0.92rem; margin: 0.8rem 0 0.3rem; color: var(--text); }
+  .about table { width: 100%; border-collapse: collapse; font-size: 0.78rem; margin: 0.4rem 0; }
+  .about td { padding: 0.28rem 0.4rem; border-top: 1px solid var(--border); color: var(--muted); vertical-align: top; }
+  .about td:first-child { color: var(--text); font-weight: 600; white-space: nowrap; }
+  .about td b { color: var(--accent); }
   kbd { background: var(--surface2); border: 1px solid var(--border); border-radius: 4px; padding: 0 0.3rem; font-size: 0.8em; }
 </style>
 </head>
@@ -146,16 +152,12 @@
 <div class="wrap">
   <div class="title-row">
     <h1><span>🛢 Fuel</span> Chain</h1>
-    <span class="subtitle">Build the whole supply chain that puts gas in a car — and watch the hidden energy bill add up.</span>
+    <span class="subtitle">Build the supply chain that puts gas in cars — and watch the hidden energy bill add up.</span>
+    <button class="about-link" id="aboutLink">ⓘ About these numbers</button>
   </div>
 
   <!-- HUD -->
   <div class="hud">
-    <div class="stat">
-      <div class="label">Cash</div>
-      <div class="value" id="hud-cash">$0</div>
-      <div class="sub" id="hud-net">net $0 / day</div>
-    </div>
     <div class="stat">
       <div class="label">Delivered to cars ⛽</div>
       <div class="value" id="hud-delivered">0 / 0 gal</div>
@@ -168,34 +170,27 @@
       <div class="sub" id="hud-kwhrate">to run the chain</div>
     </div>
     <div class="stat">
-      <div class="label">Fuel burned moving fuel 🔥</div>
+      <div class="label">Fuel burned 🔥</div>
       <div class="value" id="hud-burned" style="color:var(--orange)">0 gal</div>
-      <div class="sub">tankers · trucks · refining</div>
+      <div class="sub" id="hud-burnedeq">moving & refining fuel</div>
     </div>
     <div class="stat">
-      <div class="label">Station fuel</div>
-      <div class="value" id="hud-station">0 gal</div>
+      <div class="label">Energy per gallon</div>
+      <div class="value" id="hud-perg">— kWh</div>
+      <div class="sub">electricity + fuel, per gal delivered</div>
+    </div>
+    <div class="stat">
+      <div class="label">Stations fueled</div>
+      <div class="value" id="hud-stations">0 / 0</div>
       <div class="sub" id="hud-lost">0 gal demand lost</div>
-      <div class="bar"><i id="hud-stationbar" style="background:var(--yellow)"></i></div>
     </div>
   </div>
 
   <div class="game">
     <div class="stage">
-      <canvas id="cv" width="936" height="520"></canvas>
+      <canvas id="cv" width="960" height="528"></canvas>
       <div class="overlay" id="overlay">
-        <div class="card">
-          <h3>🛢 Fuel Chain</h3>
-          <p>Gas doesn't appear at the pump. Before a car can burn it, someone has to pump crude oil, refine it, ship it across the sea, and truck it to a station — and <b>every one of those steps burns energy</b>.</p>
-          <p>Build that chain yourself. Your job: keep the gas station across the water supplied until you've delivered the goal amount of fuel to cars.</p>
-          <ul>
-            <li><b>Pump:</b> place a Pumpjack on the oil field (left). It runs on electricity.</li>
-            <li><b>Connect:</b> lay Pipe from the well to a Refinery, then to an Export Port on the coast.</li>
-            <li><b>Ship:</b> build an Import Port on the island. Tankers cross automatically, trucks deliver to the station.</li>
-            <li><b>Watch the meters:</b> every step adds to the electricity and fuel the chain quietly consumes.</li>
-          </ul>
-          <button class="start" id="startBtn">Start building ▶</button>
-        </div>
+        <div class="card" id="overlayCard"></div>
       </div>
     </div>
 
@@ -233,67 +228,69 @@
   //  Fuel Chain — a teaching sim for Chapter 3 (Invisible Cost of Fuel)
   //  Self-contained, no build step. Add ?debug to the URL for window.__fc.
   //
-  //  The numbers below are illustrative and tuned to make the supply-chain
-  //  energy cost legible, not to be a precise refinery model. The *ratios*
-  //  (only ~10-15% of crude energy reaches a car; the electricity to make
-  //  fuel rivals the driving the fuel provides) follow Chapter 3's sources:
-  //  EROI literature, DOE refining bandwidth study, Argonne GREET.
+  //  There is no money here on purpose: the only things we count are the
+  //  ELECTRICITY and the FUEL the supply chain consumes to put gasoline in
+  //  a car. The conversion constants (kWh/gallon, EV mi/kWh, mpg, stage
+  //  losses, EROI) are real and to scale and are documented in the
+  //  "About these numbers" panel. The simulation's flow rates and volumes
+  //  are accelerated so a whole chain fits on one screen — so treat absolute
+  //  totals as illustrative, but the *ratios* follow the cited sources.
   // ============================================================
 
   // ---------- grid / map ----------
-  const COLS = 36, ROWS = 20, TILE = 26;
+  const COLS = 40, ROWS = 22, TILE = 24;
   const W = COLS * TILE, H = ROWS * TILE;
   const STEP = 0.1;                 // sim step seconds (10 Hz)
-  const SECS_PER_DAY = 60;          // for per-day maintenance accrual
 
   // landmass layout (column bands): mainland | water | island
-  const MAIN_MAX_X = 13;            // cols 0..13 mainland
-  const WATER_MAX_X = 21;           // cols 14..21 water; 22..35 island
-  const OIL = { x: 4, y: 11, amount: 4000 };  // the oil field
-  const STATION = { x: 31, y: 9 };            // pre-placed gas station
+  const MAIN_MAX_X = 15;            // cols 0..15 mainland
+  const WATER_MAX_X = 23;           // cols 16..23 water; 24..39 island
+  const OILS = [[4, 6], [7, 15], [12, 9]];          // oil deposits on the mainland
+  const OIL_AMOUNT = 1500;                            // crude per deposit
+  const STATIONS = [[30, 4], [36, 12], [30, 18]];    // pre-placed gas stations (island)
 
-  // ---------- economy ($) ----------
-  const START_CASH = 25000;
-  const ELEC_PRICE = 0.12;          // $ per kWh drawn from the grid
-  const FUEL_SELL = 3.50;           // $ per gallon cars pay at the pump
-  const COST = { pumpjack: 3000, pipe: 120, refinery: 8000, port: 6000 };
-  const MAINT = { pumpjack: 300, refinery: 1200, port: 600, pipe: 10, station: 0 }; // $/day
-
-  // ---------- energy intensities (the lesson) ----------
-  // electricity (kWh) consumed per unit handled at each stage:
-  const KWH_EXTRACT = 0.8;          // per crude pumped (pumpjack motors, injection)
-  const KWH_REFINE  = 1.6;          // per crude refined (the hidden factory)
-  const KWH_PIPE    = 0.03;         // per fuel unit, per pipe tile (pumping stations)
-  const KWH_PORT    = 0.4;          // per fuel unit handled at the export port
-  const REFINE_YIELD = 0.85;        // 15% of crude is burned/lost to run refining
-  // fuel (gal) burned just moving fuel around:
-  const TANKER_BURN = 0.08;         // fraction of cargo burned as bunker fuel per crossing
-  const TRUCK_BURN  = 0.06;         // fraction of cargo burned as diesel per delivery
-
-  // ---------- flow rates ----------
-  const REFINE_RATE = 0.8;          // crude/s a refinery can process
-  const PIPE_FLOW   = 1.4;          // fuel/s a pipe can move to the port
-  const TANKER_CAP = 22, TRUCK_CAP = 11;
-  const TANKER_SPEED = 3.2, TRUCK_SPEED = 3.6, CAR_SPEED = 4.5; // tiles/s
-  const DEMAND = 0.55;              // gal/s cars want at the station
-  const MAX_TANKERS = 3, MAX_TRUCKS = 4, MAX_CARS = 5;
-
-  // ---------- goal + payoff ----------
-  const TARGET_DELIVERED = 120;     // gallons to cars to complete the lesson
+  // ---------- energy constants (the lesson — see About panel for sources) ----------
+  const GGE = 33.7;                 // kWh of energy in one gallon of gasoline (EPA gge)
   const EV_MI_PER_KWH = 3.5;        // a typical EV
   const ICE_MPG = 25;               // a typical gas car
 
+  // ELECTRICITY (kWh) consumed per unit handled — this is the *purchased-power*
+  // slice of each stage (pumpjack motors, refinery electricity, pumping), the part
+  // that could instead go straight into an EV. Process heat lives in the fuel bucket.
+  const KWH_EXTRACT = 0.4;          // per crude pumped at a fresh well (pumpjack motors)
+  const EROI_DECLINE = 2.5;         // extraction energy rises up to (1+this)x as a well empties
+  const KWH_REFINE  = 1.0;          // per crude refined (refinery electricity, not process heat)
+  const KWH_PIPE    = 0.02;         // per fuel unit, per pipe tile (pumping stations)
+  const KWH_PORT    = 0.25;         // per fuel unit handled at a port
+  // FUEL (gal) burned to make & move fuel — refinery process heat + transport:
+  const REFINE_YIELD = 0.85;        // ~15% of crude is burned as process heat to run refining
+  const TANKER_BURN = 0.035;        // fraction of cargo burned as bunker fuel per crossing
+  const TRUCK_BURN  = 0.025;        // fraction of cargo burned as diesel per delivery
+
+  // ---------- flow rates ----------
+  const REFINE_RATE = 0.8;          // crude/s a refinery can process
+  const PIPE_FLOW   = 1.6;          // fuel/s along a pipe link
+  const PORT_CAP = 60, TANK_CAP = 120;
+  const TANKER_CAP = 22, TRUCK_CAP = 12;
+  const TANKER_SPEED = 3.2, TRUCK_SPEED = 3.8, CAR_SPEED = 4.8; // tiles/s
+  const DEMAND = 0.3;               // gal/s each station's cars want
+  const MAX_TANKERS = 3, MAX_TRUCKS = 5, MAX_CARS = 6;
+
+  // ---------- goal ----------
+  const TARGET_DELIVERED = 200;     // gallons to cars to complete the lesson
+
   // ---------- building definitions ----------
   const DEFS = {
-    pumpjack: { name: "Pumpjack", icon: "🛢", color: "#f97316", cost: COST.pumpjack, desc: "Place on the oil field. Pumps crude — and runs on electricity." },
-    pipe:     { name: "Pipe",     icon: "═",  color: "#8b949e", cost: COST.pipe,     desc: "Carries crude & fuel. Drag to lay a line. Pumping it costs electricity." },
-    refinery: { name: "Refinery", icon: "🏭", color: "#a371f7", cost: COST.refinery, desc: "Turns crude into fuel. Draws power and burns ~15% of the crude itself." },
-    port:     { name: "Port",     icon: "⚓", color: "#56d4dd", cost: COST.port,     desc: "On a coast. Export (mainland) loads tankers; Import (island) sends trucks." },
+    pumpjack: { name: "Pumpjack", icon: "🛢", color: "#f97316", tag: "on a well", desc: "Place on an oil deposit. Pumps crude and runs on electricity — which climbs as the well runs dry (declining EROI)." },
+    pipe:     { name: "Pipe",     icon: "═",  color: "#8b949e", tag: "drag", desc: "Carries crude & fuel between buildings. Drag to lay a line. Pumping it costs electricity per tile." },
+    refinery: { name: "Refinery", icon: "🏭", color: "#a371f7", tag: "⚡+🔥", desc: "Turns crude into fuel. Draws power and burns ~15% of the crude itself to run." },
+    tank:     { name: "Storage Tank", icon: "🛍", color: "#3fb950", tag: "buffer", desc: "Buffers fuel on the pipe network so refineries keep running and ports don't starve." },
+    port:     { name: "Port",     icon: "⚓", color: "#56d4dd", tag: "coast", desc: "On a coast. Export (mainland) loads tankers; Import (island) sends out trucks." },
   };
-  const TOOL_ORDER = ["pumpjack", "pipe", "refinery", "port"];
+  const TOOL_ORDER = ["pumpjack", "pipe", "refinery", "tank", "port"];
 
   // ---------- colors ----------
-  const TC = { land: "#2a2620", main: "#332c1f", island: "#1e3326", water: "#13243a", grid: "rgba(255,255,255,0.04)" };
+  const TC = { main: "#332c1f", island: "#1e3326", water: "#13243a", grid: "rgba(255,255,255,0.04)" };
 
   let G = null;
 
@@ -306,83 +303,64 @@
   const dist = (ax, ay, bx, by) => Math.hypot(ax - bx, ay - by);
 
   function fresh() {
+    const oils = OILS.map(([x, y]) => ({ x, y, amount: OIL_AMOUNT, max: OIL_AMOUNT }));
+    const stations = STATIONS.map(([x, y]) => ({ x, y, fuel: 0, max: 60 }));
     return {
-      t: 0, day: 1, paused: true, speed: 1, started: false, over: null,
-      cash: START_CASH, netPerDay: 0,
+      t: 0, paused: true, speed: 1, started: false, over: null,
       buildings: [], pipes: new Set(),
       tankers: [], trucks: [], cars: [],
-      oil: { x: OIL.x, y: OIL.y, amount: OIL.amount, max: OIL.amount },
-      station: { x: STATION.x, y: STATION.y, fuel: 0, max: 60 },
-      ledger: { kwh: 0, kwhRate: 0, fuelBurned: 0, delivered: 0, lostDemand: 0, revenue: 0, elecCost: 0, maint: 0 },
-      carTimer: 0,
-      selected: null, tool: null, log: [], nextId: 1,
+      oils, stations,
+      ledger: { kwh: 0, kwhRate: 0, fuelBurned: 0, delivered: 0, lostDemand: 0 },
+      carTimer: 0, selected: null, tool: null, log: [], nextId: 1,
     };
   }
 
   function occAt(x, y) { return G.buildings.find(b => b.x === x && b.y === y) || null; }
+  function oilAt(x, y) { return G.oils.find(o => o.x === x && o.y === y) || null; }
+  function stationAt(x, y) { return G.stations.find(s => s.x === x && s.y === y) || null; }
 
-  // ---------- map ----------
-  function buildMap() {
-    // pre-placed gas station on the island
-    G.buildings.push({ id: G.nextId++, type: "station", x: STATION.x, y: STATION.y, built: true });
-  }
+  function buildMap() { /* deposits & stations live in G.oils / G.stations */ }
 
   // ---------- pipe network (flood-fill into components) ----------
   function computePipes() {
-    const comp = new Map();      // "x,y" -> component id
-    let next = 0;
+    const comp = new Map(); let next = 0;
+    const len = new Map();
     for (const k of G.pipes) {
       if (comp.has(k)) continue;
-      const id = next++;
-      const stack = [k];
-      comp.set(k, id);
+      const id = next++; const stack = [k]; comp.set(k, id); let n = 0;
       while (stack.length) {
-        const cur = stack.pop();
+        const cur = stack.pop(); n++;
         const [cx, cy] = cur.split(",").map(Number);
         for (const [dx, dy] of [[1,0],[-1,0],[0,1],[0,-1]]) {
           const nk = key(cx + dx, cy + dy);
           if (G.pipes.has(nk) && !comp.has(nk)) { comp.set(nk, id); stack.push(nk); }
         }
       }
+      len.set(id, n);
     }
-    // tag each fluid building with EVERY pipe component it touches (4-neighbour).
-    // A refinery often bridges two segments — the crude line in and the fuel line
-    // out — so it must belong to both, not just the first one found.
     for (const b of G.buildings) {
-      if (b.type === "station") continue;
       b.comps = new Set();
       for (const [dx, dy] of [[1,0],[-1,0],[0,1],[0,-1]]) {
         const c = comp.get(key(b.x + dx, b.y + dy));
         if (c !== undefined) b.comps.add(c);
       }
     }
-    G.pipeComp = comp;
+    G.pipeComp = comp; G.compLen = len;
   }
-
   const onNet = b => b.comps && b.comps.size > 0;
-  function shareComp(a, b) {
-    if (!a.comps || !b.comps) return false;
-    for (const id of a.comps) if (b.comps.has(id)) return true;
-    return false;
-  }
-  function pipeLenShared(a, b) {
-    let n = 0;
-    for (const [k, c] of G.pipeComp) { void k; if (a.comps.has(c) && b.comps.has(c)) n++; }
-    return n;
-  }
+  function shareComp(a, b) { if (!a.comps || !b.comps) return false; for (const id of a.comps) if (b.comps.has(id)) return true; return false; }
+  function sharedLen(a, b) { let n = 0; for (const id of a.comps) if (b.comps.has(id)) n += (G.compLen.get(id) || 0); return n; }
 
   // ---------- A* over the grid with a passability predicate ----------
   function pass(x, y, domain, goalKey) {
     if (!inB(x, y)) return false;
     if (goalKey && key(x, y) === goalKey) return true;
     if (domain === "sea") return isWater(x, y);
-    // land: walkable land tile not blocked by a building (pipes are fine to drive over)
     if (!isLand(x, y)) return false;
     const b = occAt(x, y);
-    if (b && b.type !== "station") return false;
+    if (b) return false;
     return true;
   }
-
   function astar(sx, sy, gx, gy, domain) {
     if (sx === gx && sy === gy) return [];
     const goalKey = key(gx, gy);
@@ -398,31 +376,20 @@
       const [cx, cy] = cur.split(",").map(Number);
       if (cx === gx && cy === gy) {
         const path = []; let k = cur;
-        while (k !== key(sx, sy)) {
-          const [px, py] = k.split(",").map(Number);
-          path.push({ x: px + 0.5, y: py + 0.5 });
-          k = came.get(k); if (!k) break;
-        }
+        while (k !== key(sx, sy)) { const [px, py] = k.split(",").map(Number); path.push({ x: px + 0.5, y: py + 0.5 }); k = came.get(k); if (!k) break; }
         return path.reverse();
       }
       const gc = g.get(cur);
       for (const [dx, dy, cost] of dirs) {
         const nx = cx + dx, ny = cy + dy;
         if (!pass(nx, ny, domain, goalKey)) continue;
-        if (dx && dy) { // no corner-cutting
-          if (!pass(cx + dx, cy, domain, goalKey) || !pass(cx, cy + dy, domain, goalKey)) continue;
-        }
+        if (dx && dy) { if (!pass(cx + dx, cy, domain, goalKey) || !pass(cx, cy + dy, domain, goalKey)) continue; }
         const nk = key(nx, ny), tentative = gc + cost;
-        if (tentative < (g.get(nk) ?? Infinity)) {
-          came.set(nk, cur); g.set(nk, tentative);
-          open.set(nk, tentative + dist(nx, ny, gx, gy));
-        }
+        if (tentative < (g.get(nk) ?? Infinity)) { came.set(nk, cur); g.set(nk, tentative); open.set(nk, tentative + dist(nx, ny, gx, gy)); }
       }
     }
     return null;
   }
-
-  // a tile of the given domain adjacent to a building, nearest to (tx,ty)
   function adjOf(b, domain, tx, ty) {
     let best = null, bd = Infinity;
     for (const [dx, dy] of [[1,0],[-1,0],[0,1],[0,-1],[1,1],[1,-1],[-1,1],[-1,-1]]) {
@@ -434,146 +401,135 @@
     }
     return best;
   }
-
-  // role of a port: export on the mainland, import on the island
   const portRole = b => (landmass(b.x, b.y) === 0 ? "export" : "import");
-  const ports = role => G.buildings.filter(b => b.type === "port" && b.built && portRole(b) === role);
+  const ports = role => G.buildings.filter(b => b.type === "port" && portRole(b) === role);
 
   // ---------- sim step ----------
   function step(dt) {
     const L = G.ledger;
-    L.kwhRate = 0;
-    let tickKwh = 0, tickRevenue = 0;
-
+    let tickKwh = 0;
     computePipes();
 
-    const refineries = G.buildings.filter(b => b.type === "refinery" && b.built);
-    const pumpjacks = G.buildings.filter(b => b.type === "pumpjack" && b.built);
-    const exports = ports("export");
-    const imports = ports("import");
+    const refineries = G.buildings.filter(b => b.type === "refinery");
+    const pumpjacks = G.buildings.filter(b => b.type === "pumpjack");
+    const tanks = G.buildings.filter(b => b.type === "tank");
+    const exportsP = ports("export");
+    const importsP = ports("import");
 
-    // --- extraction + refining: refinery pulls crude from wells on its pipe net ---
+    // --- extraction + refining: each refinery pulls crude from its connected wells ---
     for (const r of refineries) {
       if (!onNet(r)) continue;
-      const wells = pumpjacks.filter(p => shareComp(p, r));
-      if (!wells.length || G.oil.amount <= 0) continue;
-      const want = REFINE_RATE * dt;
-      const got = Math.min(want, G.oil.amount);
-      if (got <= 0) continue;
-      G.oil.amount -= got;
-      tickKwh += got * (KWH_EXTRACT + KWH_REFINE);   // pump + refine electricity
-      L.fuelBurned += got * (1 - REFINE_YIELD);      // crude burned to run the refinery
-      r.fuel = (r.fuel || 0) + got * REFINE_YIELD;   // fuel produced
+      const wells = pumpjacks.filter(p => shareComp(p, r) && p.oil && p.oil.amount > 0);
+      if (!wells.length) continue;
+      let avail = 0; for (const w of wells) avail += w.oil.amount;
+      let processed = Math.min(REFINE_RATE * dt, avail);
+      if (processed <= 0) continue;
+      // draw crude proportional to each well's remaining deposit, with EROI decline
+      for (const w of wells) {
+        const share = processed * (w.oil.amount / avail);
+        const got = Math.min(share, w.oil.amount);
+        w.oil.amount -= got;
+        const fill = w.oil.amount / w.oil.max;                 // 1 = full, 0 = empty
+        const eroi = 1 + EROI_DECLINE * (1 - fill);            // last barrels cost more
+        tickKwh += got * KWH_EXTRACT * eroi;                   // pumpjack electricity
+      }
+      tickKwh += processed * KWH_REFINE;                       // refinery electricity
+      L.fuelBurned += processed * (1 - REFINE_YIELD);          // crude burned to run refining
+      r.fuel = (r.fuel || 0) + processed * REFINE_YIELD;       // fuel produced
     }
 
-    // --- pipe transport: export port pulls fuel from refineries on its net ---
-    for (const p of exports) {
-      if (!onNet(p)) continue;
-      for (const r of refineries) {
-        if (!shareComp(r, p) || !(r.fuel > 0)) continue;
-        const len = pipeLenShared(r, p);
-        const moved = Math.min(PIPE_FLOW * dt, r.fuel);
-        r.fuel -= moved;
-        p.fuel = (p.fuel || 0) + moved;
-        tickKwh += moved * (KWH_PIPE * len + KWH_PORT); // pumping + port handling
+    // --- pipe transport: fill export ports first, then stash surplus in tanks ---
+    const pull = (sink, cap, sources, portHandling) => {
+      for (const s of sources) {
+        if (!shareComp(s, sink) || !(s.fuel > 0)) continue;
+        const room = cap - (sink.fuel || 0);
+        if (room <= 0) break;
+        const moved = Math.min(PIPE_FLOW * dt, s.fuel, room);
+        if (moved <= 0) continue;
+        s.fuel -= moved; sink.fuel = (sink.fuel || 0) + moved;
+        tickKwh += moved * (KWH_PIPE * sharedLen(s, sink) + (portHandling ? KWH_PORT : 0));
       }
-    }
+    };
+    for (const p of exportsP) { if (onNet(p)) pull(p, PORT_CAP, refineries, true), pull(p, PORT_CAP, tanks, true); }
+    for (const tk of tanks) { if (onNet(tk)) pull(tk, TANK_CAP, refineries, false); }
 
     // --- tankers: export -> import across the water ---
-    if (imports.length && G.tankers.length < MAX_TANKERS) {
-      const src = exports.find(p => (p.fuel || 0) >= TANKER_CAP);
+    if (importsP.length && G.tankers.length < MAX_TANKERS) {
+      const src = exportsP.find(p => (p.fuel || 0) >= TANKER_CAP);
       if (src) {
-        const dst = imports[0];
+        const dst = importsP[0];
         const a = adjOf(src, "sea", dst.x, dst.y), b = adjOf(dst, "sea", src.x, src.y);
         if (a && b) {
           const path = astar(a.x, a.y, b.x, b.y, "sea");
           if (path) {
             src.fuel -= TANKER_CAP;
-            const burn = TANKER_CAP * TANKER_BURN;
-            L.fuelBurned += burn;
+            const burn = TANKER_CAP * TANKER_BURN; L.fuelBurned += burn;
             G.tankers.push({ x: a.x + 0.5, y: a.y + 0.5, path, cargo: TANKER_CAP - burn, target: dst.id });
           }
         }
       }
     }
-    advanceAgents(G.tankers, TANKER_SPEED, dt, (t) => {
-      const dst = G.buildings.find(b => b.id === t.target);
-      if (dst) dst.fuel = (dst.fuel || 0) + t.cargo;
-    });
+    advanceAgents(G.tankers, TANKER_SPEED, dt, (t) => { const d = G.buildings.find(b => b.id === t.target); if (d) d.fuel = (d.fuel || 0) + t.cargo; });
 
-    // --- trucks: import -> station on the island ---
-    const st = G.station;
-    if (imports.length && G.trucks.length < MAX_TRUCKS && st.fuel < st.max * 0.8) {
-      const src = imports.find(p => (p.fuel || 0) >= TRUCK_CAP);
+    // --- trucks: import port -> the neediest reachable station ---
+    if (importsP.length && G.trucks.length < MAX_TRUCKS) {
+      const src = importsP.find(p => (p.fuel || 0) >= TRUCK_CAP);
       if (src) {
-        const a = adjOf(src, "land", st.x, st.y), b = adjOf({ x: st.x, y: st.y }, "land", src.x, src.y);
-        if (a && b) {
+        const needy = G.stations
+          .filter(s => s.fuel < s.max * 0.6)
+          .sort((a, b) => a.fuel - b.fuel);
+        for (const st of needy) {
+          const a = adjOf(src, "land", st.x, st.y), b = adjOf(st, "land", src.x, src.y);
+          if (!a || !b) continue;
           const path = astar(a.x, a.y, b.x, b.y, "land");
           if (path) {
             src.fuel -= TRUCK_CAP;
-            const burn = TRUCK_CAP * TRUCK_BURN;
-            L.fuelBurned += burn;
-            G.trucks.push({ x: a.x + 0.5, y: a.y + 0.5, path, cargo: TRUCK_CAP - burn });
+            const burn = TRUCK_CAP * TRUCK_BURN; L.fuelBurned += burn;
+            G.trucks.push({ x: a.x + 0.5, y: a.y + 0.5, path, cargo: TRUCK_CAP - burn, station: st });
+            break;
           }
         }
       }
     }
-    advanceAgents(G.trucks, TRUCK_SPEED, dt, () => { st.fuel = Math.min(st.max, st.fuel + TRUCK_CAP * (1 - TRUCK_BURN)); });
+    advanceAgents(G.trucks, TRUCK_SPEED, dt, (t) => { t.station.fuel = Math.min(t.station.max, t.station.fuel + t.cargo); });
 
-    // --- demand: cars draw fuel from the station ---
-    const want = DEMAND * dt;
-    const served = Math.min(want, st.fuel);
-    st.fuel -= served;
-    L.delivered += served;
-    tickRevenue += served * FUEL_SELL;
-    if (served < want) L.lostDemand += (want - served);
+    // --- demand: cars draw fuel from every station ---
+    for (const st of G.stations) {
+      const want = DEMAND * dt;
+      const served = Math.min(want, st.fuel);
+      st.fuel -= served; L.delivered += served;
+      if (served < want) L.lostDemand += (want - served);
+    }
 
-    // car visuals (cosmetic, only when the station can serve)
+    // car visuals (cosmetic; spawn toward a station that can serve)
     G.carTimer -= dt;
-    if (G.carTimer <= 0 && st.fuel > 1 && G.cars.length < MAX_CARS) {
-      G.carTimer = 1.4 + Math.random() * 1.6;
-      const fromTop = Math.random() < 0.5;
-      const edge = { x: COLS - 1, y: fromTop ? 0 : ROWS - 1 };
-      const a = adjOf({ x: st.x, y: st.y }, "land", edge.x, edge.y);
-      if (a) {
-        const path = astar(edge.x, edge.y, a.x, a.y, "land");
-        if (path) G.cars.push({ x: edge.x + 0.5, y: edge.y + 0.5, path, phase: "in", wait: 0, home: edge });
+    if (G.carTimer <= 0 && G.cars.length < MAX_CARS) {
+      G.carTimer = 0.9 + Math.random() * 1.2;
+      const open = G.stations.filter(s => s.fuel > 1);
+      if (open.length) {
+        const st = open[Math.floor(Math.random() * open.length)];
+        const edge = { x: COLS - 1, y: Math.random() < 0.5 ? 0 : ROWS - 1 };
+        const a = adjOf(st, "land", edge.x, edge.y);
+        if (a) { const path = astar(edge.x, edge.y, a.x, a.y, "land"); if (path) G.cars.push({ x: edge.x + 0.5, y: edge.y + 0.5, path, phase: "in", wait: 0, home: edge }); }
       }
     }
     updateCars(dt);
 
-    // --- money ---
-    L.revenue += tickRevenue;
-    const elecCost = tickKwh * ELEC_PRICE;
-    let maintPerDay = 0;
-    for (const b of G.buildings) maintPerDay += (MAINT[b.type] || 0);
-    maintPerDay += G.pipes.size * MAINT.pipe;
-    const maintTick = maintPerDay * (dt / SECS_PER_DAY);
-    G.cash += tickRevenue - elecCost - maintTick;
-    L.kwh += tickKwh; L.elecCost += elecCost; L.maint += maintTick;
-    L.kwhRate = tickKwh / dt; // kW (kWh per second)
-    G.netPerDay = (tickRevenue / dt - elecCost / dt - maintPerDay / SECS_PER_DAY) * SECS_PER_DAY;
-
-    // --- clock ---
+    // --- ledger bookkeeping ---
+    L.kwh += tickKwh; L.kwhRate = tickKwh / dt;
     G.t += dt;
-    if (G.t >= G.day * SECS_PER_DAY) G.day++;
 
-    // --- goal ---
     if (!G.over && L.delivered >= TARGET_DELIVERED) { G.over = "win"; showReport(); }
   }
 
-  // move agents along their path; call done() and despawn on arrival
   function advanceAgents(arr, speed, dt, done) {
     for (let i = arr.length - 1; i >= 0; i--) {
-      const a = arr[i];
-      let budget = speed * dt;
+      const a = arr[i]; let budget = speed * dt;
       while (budget > 1e-6 && a.path.length) {
-        const n = a.path[0];
-        const d = dist(a.x, a.y, n.x, n.y);
+        const n = a.path[0]; const d = dist(a.x, a.y, n.x, n.y);
         if (d < 1e-6) { a.path.shift(); continue; }
         const move = Math.min(budget, d);
-        a.x += (n.x - a.x) / d * move; a.y += (n.y - a.y) / d * move;
-        budget -= move;
+        a.x += (n.x - a.x) / d * move; a.y += (n.y - a.y) / d * move; budget -= move;
         if (move >= d - 1e-6) { a.x = n.x; a.y = n.y; a.path.shift(); }
       }
       if (!a.path.length) { done(a); arr.splice(i, 1); }
@@ -583,32 +539,22 @@
   function updateCars(dt) {
     for (let i = G.cars.length - 1; i >= 0; i--) {
       const c = G.cars[i];
-      if (c.phase === "in") {
-        let budget = CAR_SPEED * dt;
-        while (budget > 1e-6 && c.path.length) {
-          const n = c.path[0]; const d = dist(c.x, c.y, n.x, n.y);
-          if (d < 1e-6) { c.path.shift(); continue; }
-          const move = Math.min(budget, d);
-          c.x += (n.x - c.x) / d * move; c.y += (n.y - c.y) / d * move; budget -= move;
-          if (move >= d - 1e-6) { c.x = n.x; c.y = n.y; c.path.shift(); }
-        }
-        if (!c.path.length) { c.phase = "fuel"; c.wait = 1.2; }
-      } else if (c.phase === "fuel") {
+      if (c.phase === "fuel") {
         c.wait -= dt;
-        if (c.wait <= 0) {
-          const p = astar(Math.floor(c.x), Math.floor(c.y), c.home.x, c.home.y, "land");
-          c.path = p || []; c.phase = "out";
-        }
-      } else {
-        let budget = CAR_SPEED * dt;
-        while (budget > 1e-6 && c.path.length) {
-          const n = c.path[0]; const d = dist(c.x, c.y, n.x, n.y);
-          if (d < 1e-6) { c.path.shift(); continue; }
-          const move = Math.min(budget, d);
-          c.x += (n.x - c.x) / d * move; c.y += (n.y - c.y) / d * move; budget -= move;
-          if (move >= d - 1e-6) { c.x = n.x; c.y = n.y; c.path.shift(); }
-        }
-        if (!c.path.length) G.cars.splice(i, 1);
+        if (c.wait <= 0) { const p = astar(Math.floor(c.x), Math.floor(c.y), c.home.x, c.home.y, "land"); c.path = p || []; c.phase = "out"; }
+        continue;
+      }
+      let budget = CAR_SPEED * dt;
+      while (budget > 1e-6 && c.path.length) {
+        const n = c.path[0]; const d = dist(c.x, c.y, n.x, n.y);
+        if (d < 1e-6) { c.path.shift(); continue; }
+        const move = Math.min(budget, d);
+        c.x += (n.x - c.x) / d * move; c.y += (n.y - c.y) / d * move; budget -= move;
+        if (move >= d - 1e-6) { c.x = n.x; c.y = n.y; c.path.shift(); }
+      }
+      if (!c.path.length) {
+        if (c.phase === "in") { c.phase = "fuel"; c.wait = 1.0; }
+        else G.cars.splice(i, 1);
       }
     }
   }
@@ -619,169 +565,134 @@
 
   function draw() {
     ctx.clearRect(0, 0, W, H);
-    // terrain
     for (let y = 0; y < ROWS; y++) for (let x = 0; x < COLS; x++) {
       ctx.fillStyle = isWater(x, y) ? TC.water : (landmass(x, y) === 0 ? TC.main : TC.island);
       ctx.fillRect(x * TILE, y * TILE, TILE, TILE);
     }
-    // subtle grid
     ctx.strokeStyle = TC.grid; ctx.lineWidth = 1;
     for (let x = 0; x <= COLS; x++) { ctx.beginPath(); ctx.moveTo(x * TILE, 0); ctx.lineTo(x * TILE, H); ctx.stroke(); }
     for (let y = 0; y <= ROWS; y++) { ctx.beginPath(); ctx.moveTo(0, y * TILE); ctx.lineTo(W, y * TILE); ctx.stroke(); }
 
-    // oil field
-    const o = G.oil;
-    const of = o.amount / o.max;
-    ctx.fillStyle = "rgba(20,15,30," + (0.25 + 0.5 * of) + ")";
-    roundRect(o.x * TILE + 2, o.y * TILE + 2, TILE - 4, TILE - 4, 5); ctx.fill();
-    ctx.strokeStyle = "#6e5494"; ctx.lineWidth = 1.5;
-    roundRect(o.x * TILE + 2, o.y * TILE + 2, TILE - 4, TILE - 4, 5); ctx.stroke();
-    glyph("⬤", o.x, o.y, "#1b1330", 0.42);
+    // oil deposits
+    for (const o of G.oils) {
+      const f = o.amount / o.max;
+      ctx.fillStyle = "rgba(20,15,30," + (0.2 + 0.55 * f) + ")";
+      roundRect(o.x * TILE + 2, o.y * TILE + 2, TILE - 4, TILE - 4, 5); ctx.fill();
+      ctx.strokeStyle = f > 0 ? "#6e5494" : "#3a3030"; ctx.lineWidth = 1.5;
+      roundRect(o.x * TILE + 2, o.y * TILE + 2, TILE - 4, TILE - 4, 5); ctx.stroke();
+      glyph("⬤", o.x, o.y, "#1b1330", 0.4);
+    }
 
     // pipes
-    ctx.strokeStyle = "#7d8590"; ctx.lineWidth = Math.max(3, TILE * 0.22);
-    ctx.lineCap = "round";
+    ctx.strokeStyle = "#7d8590"; ctx.lineWidth = Math.max(3, TILE * 0.2); ctx.lineCap = "round";
     for (const k of G.pipes) {
       const [x, y] = k.split(",").map(Number);
       const cx = x * TILE + TILE / 2, cy = y * TILE + TILE / 2;
-      for (const [dx, dy] of [[1,0],[0,1]]) {
-        if (G.pipes.has(key(x + dx, y + dy))) {
-          ctx.beginPath(); ctx.moveTo(cx, cy);
-          ctx.lineTo((x + dx) * TILE + TILE / 2, (y + dy) * TILE + TILE / 2); ctx.stroke();
-        }
-      }
-      ctx.fillStyle = "#7d8590";
-      ctx.beginPath(); ctx.arc(cx, cy, TILE * 0.13, 0, 7); ctx.fill();
+      for (const [dx, dy] of [[1,0],[0,1]]) if (G.pipes.has(key(x + dx, y + dy))) { ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo((x + dx) * TILE + TILE / 2, (y + dy) * TILE + TILE / 2); ctx.stroke(); }
+      ctx.fillStyle = "#7d8590"; ctx.beginPath(); ctx.arc(cx, cy, TILE * 0.12, 0, 7); ctx.fill();
     }
     ctx.lineCap = "butt";
 
+    // stations
+    for (const st of G.stations) {
+      ctx.fillStyle = "#d29922"; roundRect(st.x * TILE + 3, st.y * TILE + 3, TILE - 6, TILE - 6, 5); ctx.fill();
+      glyph("⛽", st.x, st.y, "#0d1117", 0.44);
+      const f = st.fuel / st.max;
+      ctx.fillStyle = "rgba(0,0,0,0.45)"; ctx.fillRect(st.x * TILE + 3, st.y * TILE + TILE - 6, TILE - 6, 3);
+      ctx.fillStyle = f > 0.25 ? "#3fb950" : "#f85149"; ctx.fillRect(st.x * TILE + 3, st.y * TILE + TILE - 6, (TILE - 6) * f, 3);
+      if (st === G.selected) sel(st.x, st.y);
+    }
+
     // buildings
     for (const b of G.buildings) {
-      if (b.type === "station") { drawStation(b); continue; }
       const d = DEFS[b.type];
-      ctx.fillStyle = d.color; ctx.globalAlpha = b.built ? 1 : 0.5;
-      roundRect(b.x * TILE + 3, b.y * TILE + 3, TILE - 6, TILE - 6, 5); ctx.fill();
-      ctx.globalAlpha = 1;
-      glyph(d.icon, b.x, b.y, "#0d1117", 0.46);
-      if (b.type === "port") {
-        const role = portRole(b);
-        ctx.fillStyle = "#0d1117"; ctx.font = "bold 8px system-ui"; ctx.textAlign = "center";
-        ctx.fillText(role === "export" ? "OUT" : "IN", b.x * TILE + TILE / 2, b.y * TILE + TILE - 4);
-      }
-      // small fuel pip on fluid buildings
-      if (b.fuel > 0) {
-        ctx.fillStyle = "var";
-        ctx.fillStyle = "#f9a516";
-        const w = (TILE - 8) * Math.min(1, b.fuel / 30);
-        ctx.fillRect(b.x * TILE + 4, b.y * TILE + TILE - 6, w, 3);
+      ctx.fillStyle = d.color; roundRect(b.x * TILE + 3, b.y * TILE + 3, TILE - 6, TILE - 6, 5); ctx.fill();
+      glyph(d.icon, b.x, b.y, "#0d1117", 0.44);
+      if (b.type === "port") { ctx.fillStyle = "#0d1117"; ctx.font = "bold 7px system-ui"; ctx.textAlign = "center"; ctx.fillText(portRole(b) === "export" ? "OUT" : "IN", b.x * TILE + TILE / 2, b.y * TILE + TILE - 3); }
+      if (b.fuel > 0 && (b.type === "tank" || b.type === "port" || b.type === "refinery")) {
+        const cap = b.type === "tank" ? TANK_CAP : (b.type === "port" ? PORT_CAP : 20);
+        ctx.fillStyle = "#f9c513"; ctx.fillRect(b.x * TILE + 3, b.y * TILE + TILE - 6, (TILE - 6) * Math.min(1, b.fuel / cap), 3);
       }
       if (b === G.selected) sel(b.x, b.y);
     }
 
-    // agents
-    for (const t of G.tankers) drawAgent(t, "#56d4dd", 0.5, "🚢");
-    for (const t of G.trucks) drawAgent(t, "#f97316", 0.4, "🚚");
-    for (const c of G.cars) drawAgent(c, "#e6edf3", 0.3, "🚗");
+    for (const t of G.tankers) glyphAt("🚢", t.x, t.y);
+    for (const t of G.trucks) glyphAt("🚚", t.x, t.y);
+    for (const c of G.cars) glyphAt("🚗", c.x, c.y);
   }
 
-  function drawStation(b) {
-    ctx.fillStyle = "#d29922";
-    roundRect(b.x * TILE + 3, b.y * TILE + 3, TILE - 6, TILE - 6, 5); ctx.fill();
-    glyph("⛽", b.x, b.y, "#0d1117", 0.46);
-    const f = G.station.fuel / G.station.max;
-    ctx.fillStyle = "rgba(0,0,0,0.45)"; ctx.fillRect(b.x * TILE + 4, b.y * TILE + TILE - 6, TILE - 8, 3);
-    ctx.fillStyle = f > 0.25 ? "#3fb950" : "#f85149";
-    ctx.fillRect(b.x * TILE + 4, b.y * TILE + TILE - 6, (TILE - 8) * f, 3);
-    if (b === G.selected) sel(b.x, b.y);
-  }
-
-  function drawAgent(a, color, r, emoji) {
-    const px = a.x * TILE, py = a.y * TILE;
-    ctx.font = Math.round(TILE * 0.7) + "px system-ui";
-    ctx.textAlign = "center"; ctx.textBaseline = "middle";
-    ctx.fillText(emoji, px, py + 1);
-  }
-
-  function glyph(ch, x, y, color, scale) {
-    ctx.fillStyle = color; ctx.font = "bold " + Math.round(TILE * scale) + "px system-ui";
-    ctx.textAlign = "center"; ctx.textBaseline = "middle";
-    ctx.fillText(ch, x * TILE + TILE / 2, y * TILE + TILE / 2 + 1);
-  }
-  function roundRect(x, y, w, h, r) {
-    ctx.beginPath();
-    ctx.moveTo(x + r, y);
-    ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r);
-    ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath();
-  }
-  function sel(x, y) {
-    ctx.strokeStyle = "#e6edf3"; ctx.lineWidth = 2;
-    roundRect(x * TILE + 1, y * TILE + 1, TILE - 2, TILE - 2, 6); ctx.stroke();
-  }
+  function glyphAt(emoji, x, y) { ctx.font = Math.round(TILE * 0.66) + "px system-ui"; ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.fillText(emoji, x * TILE, y * TILE + 1); }
+  function glyph(ch, x, y, color, scale) { ctx.fillStyle = color; ctx.font = "bold " + Math.round(TILE * scale) + "px system-ui"; ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.fillText(ch, x * TILE + TILE / 2, y * TILE + TILE / 2 + 1); }
+  function roundRect(x, y, w, h, r) { ctx.beginPath(); ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r); ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath(); }
+  function sel(x, y) { ctx.strokeStyle = "#e6edf3"; ctx.lineWidth = 2; roundRect(x * TILE + 1, y * TILE + 1, TILE - 2, TILE - 2, 6); ctx.stroke(); }
 
   // ---------- HUD ----------
   function renderHud() {
     const L = G.ledger;
-    document.getElementById("hud-cash").textContent = "$" + Math.round(G.cash).toLocaleString();
-    const net = Math.round(G.netPerDay);
-    const netEl = document.getElementById("hud-net");
-    netEl.textContent = "net " + (net >= 0 ? "+$" : "-$") + Math.abs(net).toLocaleString() + " / day";
-    netEl.style.color = net >= 0 ? "var(--green)" : "var(--red)";
-
     document.getElementById("hud-delivered").textContent = L.delivered.toFixed(0) + " / " + TARGET_DELIVERED + " gal";
     document.getElementById("hud-delbar").style.width = Math.min(100, L.delivered / TARGET_DELIVERED * 100) + "%";
     document.getElementById("hud-kwh").textContent = L.kwh.toFixed(0) + " kWh";
     document.getElementById("hud-kwhrate").textContent = G.started ? L.kwhRate.toFixed(1) + " kW now" : "to run the chain";
     document.getElementById("hud-burned").textContent = L.fuelBurned.toFixed(1) + " gal";
+    document.getElementById("hud-burnedeq").textContent = "≈ " + Math.round(L.fuelBurned * GGE).toLocaleString() + " kWh of energy";
 
-    document.getElementById("hud-station").textContent = G.station.fuel.toFixed(0) + " gal";
-    document.getElementById("hud-stationbar").style.width = (G.station.fuel / G.station.max * 100) + "%";
+    const perG = L.delivered > 0.5 ? ((L.kwh + L.fuelBurned * GGE) / L.delivered).toFixed(1) : "—";
+    document.getElementById("hud-perg").textContent = perG + " kWh";
+
+    const fueled = G.stations.filter(s => s.fuel > 1).length;
+    document.getElementById("hud-stations").textContent = fueled + " / " + G.stations.length;
     const lost = document.getElementById("hud-lost");
     lost.textContent = L.lostDemand.toFixed(0) + " gal demand lost";
     lost.style.color = L.lostDemand > 1 ? "var(--red)" : "var(--muted)";
 
-    // ledger panel
     const evMi = Math.round(L.kwh * EV_MI_PER_KWH);
     document.getElementById("ledger").innerHTML =
       `<div class="row kwh"><span>⚡ Electricity to make fuel</span><b>${L.kwh.toFixed(0)} kWh</b></div>` +
       `<div class="row fuel"><span>🔥 Fuel burned moving fuel</span><b>${L.fuelBurned.toFixed(1)} gal</b></div>` +
       `<div class="row"><span>⛽ Fuel delivered to cars</span><b>${L.delivered.toFixed(1)} gal</b></div>` +
-      `<div class="row"><span>↪ That power as EV miles</span><b>${evMi.toLocaleString()} mi</b></div>`;
+      `<div class="row"><span>↪ That electricity as EV miles</span><b>${evMi.toLocaleString()} mi</b></div>`;
   }
 
   // ---------- inspector ----------
   function renderInspect() {
     const box = document.getElementById("inspect");
     const b = G.selected;
+    const demoBtn = document.getElementById("demoBtn");
     if (!b) { box.classList.remove("show"); return; }
     box.classList.add("show");
-    let html = "";
-    if (b.type === "station") {
+    let html = "", canDemo = true;
+    if (b._oil) {
+      const o = b; const fill = o.amount / o.max; const eroi = 1 + EROI_DECLINE * (1 - fill);
+      html = `<div class="row"><span>Type</span><b>Oil deposit</b></div>` +
+             `<div class="row"><span>Remaining</span><b>${Math.round(o.amount)} / ${o.max}</b></div>` +
+             `<div class="row"><span>Extraction energy</span><b>${eroi.toFixed(1)}× (EROI)</b></div>`;
+      canDemo = false;
+    } else if (b._station) {
       html = `<div class="row"><span>Type</span><b>Gas Station</b></div>` +
-             `<div class="row"><span>Fuel</span><b>${G.station.fuel.toFixed(0)} / ${G.station.max} gal</b></div>` +
-             `<div class="row"><span>Car demand</span><b>${(DEMAND * SECS_PER_DAY).toFixed(0)} gal/day</b></div>`;
+             `<div class="row"><span>Fuel</span><b>${b.fuel.toFixed(0)} / ${b.max} gal</b></div>` +
+             `<div class="row"><span>Car demand</span><b>${(DEMAND * 60).toFixed(0)} gal/min</b></div>`;
+      canDemo = false;
     } else {
-      const d = DEFS[b.type];
-      const net = onNet(b);
+      const d = DEFS[b.type]; const net = onNet(b);
       const netRow = `<div class="row"><span>On pipe net</span><b style="color:${net ? "var(--green)" : "var(--red)"}">${net ? "yes" : "no"}</b></div>`;
       html = `<div class="row"><span>Type</span><b>${d.name}${b.type === "port" ? " (" + portRole(b) + ")" : ""}</b></div>`;
-      if (b.type === "pumpjack") html += netRow;
-      if (b.type === "refinery") html += netRow + `<div class="row"><span>Fuel held</span><b>${(b.fuel || 0).toFixed(1)} gal</b></div>`;
-      if (b.type === "port") html += netRow + `<div class="row"><span>Fuel held</span><b>${(b.fuel || 0).toFixed(1)} gal</b></div>`;
-      html += `<div class="row"><span>Upkeep</span><b>$${MAINT[b.type]}/day</b></div>`;
+      if (b.type === "pumpjack") { const o = b.oil; const fill = o ? o.amount / o.max : 0; html += netRow + `<div class="row"><span>Well left</span><b>${o ? Math.round(o.amount) : 0}</b></div><div class="row"><span>Extraction energy</span><b>${(1 + EROI_DECLINE * (1 - fill)).toFixed(1)}×</b></div>`; }
+      else if (b.type === "refinery") html += netRow + `<div class="row"><span>Fuel held</span><b>${(b.fuel || 0).toFixed(1)} gal</b></div>`;
+      else if (b.type === "tank") html += netRow + `<div class="row"><span>Stored</span><b>${(b.fuel || 0).toFixed(0)} / ${TANK_CAP} gal</b></div>`;
+      else if (b.type === "port") html += netRow + `<div class="row"><span>Fuel held</span><b>${(b.fuel || 0).toFixed(1)} gal</b></div>`;
     }
     document.getElementById("inspectBody").innerHTML = html;
+    demoBtn.style.display = canDemo ? "" : "none";
   }
 
   // ---------- toolbar ----------
   function buildToolbar() {
-    const el = document.getElementById("tools");
-    el.innerHTML = "";
+    const el = document.getElementById("tools"); el.innerHTML = "";
     for (const type of TOOL_ORDER) {
       const d = DEFS[type];
       const btn = document.createElement("button");
       btn.className = "tool"; btn.dataset.type = type;
-      btn.innerHTML = `<span class="ic" style="background:${d.color}">${d.icon}</span>` +
-        `<span class="nm">${d.name}</span><span class="ct">$${d.cost.toLocaleString()}</span>`;
+      btn.innerHTML = `<span class="ic" style="background:${d.color}">${d.icon}</span><span class="nm">${d.name}</span><span class="ct">${d.tag}</span>`;
       btn.title = d.desc;
       btn.addEventListener("click", () => setTool(G.tool === type ? null : type));
       el.appendChild(btn);
@@ -790,60 +701,44 @@
   function setTool(t) {
     G.tool = t;
     for (const btn of document.querySelectorAll(".tool")) btn.classList.toggle("active", btn.dataset.type === t);
-    document.getElementById("hint").textContent = t
-      ? DEFS[t].desc
-      : "Click a tool, then a tile to build. Esc / right-click cancels.";
+    document.getElementById("hint").textContent = t ? DEFS[t].desc : "Click a tool, then a tile to build. Esc / right-click cancels.";
   }
 
   // ---------- placement ----------
   function canPlace(type, x, y) {
-    if (!inB(x, y)) return false;
-    if (occAt(x, y)) return false;
-    if (type === "pipe") return isLand(x, y) && !G.pipes.has(key(x, y));
-    if (type === "pumpjack") return x === G.oil.x && y === G.oil.y;
-    if (type === "refinery") return isLand(x, y) && !G.pipes.has(key(x, y));
-    if (type === "port") {
-      if (!isLand(x, y) || G.pipes.has(key(x, y))) return false;
-      // must be a coast tile (adjacent to water)
-      return [[1,0],[-1,0],[0,1],[0,-1]].some(([dx, dy]) => isWater(x + dx, y + dy));
-    }
+    if (!inB(x, y) || occAt(x, y) || stationAt(x, y)) return false;
+    if (type === "pipe") return isLand(x, y) && !oilAt(x, y) && !G.pipes.has(key(x, y));
+    if (type === "pumpjack") return !!oilAt(x, y);
+    if (type === "refinery" || type === "tank") return isLand(x, y) && !oilAt(x, y) && !G.pipes.has(key(x, y));
+    if (type === "port") return isLand(x, y) && !oilAt(x, y) && !G.pipes.has(key(x, y)) && [[1,0],[-1,0],[0,1],[0,-1]].some(([dx, dy]) => isWater(x + dx, y + dy));
     return false;
   }
   function place(type, x, y) {
     if (!canPlace(type, x, y)) {
-      if (type === "pumpjack" && !(x === G.oil.x && y === G.oil.y)) logMsg("Pumpjacks only go on the oil field.", "warn");
+      if (type === "pumpjack" && !oilAt(x, y)) logMsg("Pumpjacks only go on an oil deposit.", "warn");
       else if (type === "port") logMsg("Ports must sit on a coast tile (next to water).", "warn");
       return false;
     }
-    const cost = DEFS[type].cost;
-    if (G.cash < cost) { logMsg("Not enough cash for a " + DEFS[type].name + ".", "bad"); return false; }
-    G.cash -= cost;
-    if (type === "pipe") { G.pipes.add(key(x, y)); }
-    else G.buildings.push({ id: G.nextId++, type, x, y, built: true, fuel: 0, comp: -1 });
+    if (type === "pipe") G.pipes.add(key(x, y));
+    else { const b = { id: G.nextId++, type, x, y, fuel: 0, comps: new Set() }; if (type === "pumpjack") b.oil = oilAt(x, y); G.buildings.push(b); }
     computePipes();
     return true;
   }
-
   function demolish(b) {
-    if (!b || b.type === "station") return;
-    G.cash += Math.floor(DEFS[b.type].cost * 0.5);
+    if (!b || b._oil || b._station) return;
     G.buildings = G.buildings.filter(x => x !== b);
     G.selected = null; computePipes(); renderInspect();
-    logMsg("Demolished " + DEFS[b.type].name + " (50% back).", "warn");
+    logMsg("Demolished " + DEFS[b.type].name + ".", "warn");
   }
 
   // ---------- log ----------
   function logMsg(msg, kind) { G.log.unshift({ msg, kind }); if (G.log.length > 40) G.log.pop(); renderLog(); }
-  function renderLog() {
-    document.getElementById("log").innerHTML = G.log.slice(0, 12).map(l => `<div class="${l.kind || ""}">${l.msg}</div>`).join("");
-  }
+  function renderLog() { document.getElementById("log").innerHTML = G.log.slice(0, 10).map(l => `<div class="${l.kind || ""}">${l.msg}</div>`).join(""); }
 
   // ---------- input ----------
   function tileFromEvent(e) {
     const r = cv.getBoundingClientRect();
-    const x = Math.floor((e.clientX - r.left) / r.width * COLS);
-    const y = Math.floor((e.clientY - r.top) / r.height * ROWS);
-    return { x, y };
+    return { x: Math.floor((e.clientX - r.left) / r.width * COLS), y: Math.floor((e.clientY - r.top) / r.height * ROWS) };
   }
   let dragging = false;
   cv.addEventListener("contextmenu", e => { e.preventDefault(); setTool(null); });
@@ -851,72 +746,119 @@
     if (e.button === 2) return;
     const { x, y } = tileFromEvent(e);
     if (!inB(x, y)) return;
-    if (G.tool) {
-      if (place(G.tool, x, y) && G.tool === "pipe") dragging = true;
-    } else {
-      const b = occAt(x, y);
-      G.selected = b || null; renderInspect();
+    if (G.tool) { if (place(G.tool, x, y) && G.tool === "pipe") dragging = true; }
+    else {
+      const o = oilAt(x, y), st = stationAt(x, y), b = occAt(x, y);
+      G.selected = b || (st ? Object.assign(st, { _station: true }) : (o ? Object.assign(o, { _oil: true }) : null));
+      renderInspect();
     }
   });
   cv.addEventListener("pointermove", e => {
     if (!dragging || G.tool !== "pipe") return;
     const { x, y } = tileFromEvent(e);
-    if (inB(x, y) && canPlace("pipe", x, y) && G.cash >= DEFS.pipe.cost) place("pipe", x, y);
+    if (inB(x, y) && canPlace("pipe", x, y)) place("pipe", x, y);
   });
   window.addEventListener("pointerup", () => { dragging = false; });
   window.addEventListener("keydown", e => { if (e.key === "Escape") { setTool(null); G.selected = null; renderInspect(); } });
   document.getElementById("demoBtn").addEventListener("click", () => demolish(G.selected));
 
-  // ---------- overlay / report ----------
+  // ---------- overlays ----------
+  const overlay = document.getElementById("overlay");
+  const card = document.getElementById("overlayCard");
+
+  function showStart() {
+    overlay.classList.remove("hidden");
+    card.innerHTML =
+      `<h3>🛢 Fuel Chain</h3>
+       <p>Gas doesn't appear at the pump. Before a car can burn it, someone pumps crude oil, refines it, ships it across the sea, and trucks it to stations — and <b>every step burns energy</b>.</p>
+       <p>Build that chain yourself and keep <b>${STATIONS.length} gas stations</b> supplied until you've delivered <b>${TARGET_DELIVERED} gallons</b>. There's no money here — the only things that count are the <b>electricity</b> and the <b>fuel</b> it takes.</p>
+       <ul>
+         <li><b>Pump:</b> Pumpjacks on the oil deposits (left). The emptier the well, the more power each barrel costs.</li>
+         <li><b>Refine & connect:</b> lay Pipe from wells to a Refinery, add Storage Tanks to buffer, then an Export Port on the coast.</li>
+         <li><b>Ship:</b> build an Import Port on the island. Tankers cross automatically; trucks deliver to the stations.</li>
+         <li><b>Watch the meters:</b> electricity used, fuel burned, and energy-per-gallon climb the whole time.</li>
+       </ul>
+       <button class="start" id="startBtn">Start building ▶</button>
+       <div class="src">No money — just energy. <button class="about-link" id="aboutLink2">Read about the numbers →</button></div>`;
+    document.getElementById("startBtn").addEventListener("click", startGame);
+    document.getElementById("aboutLink2").addEventListener("click", () => showAbout(true));
+  }
+
+  function showAbout(fromStart) {
+    overlay.classList.remove("hidden");
+    card.innerHTML =
+      `<div class="about">
+        <h3>About these numbers</h3>
+        <p>This is a teaching model for Chapter 3. The <b>conversion constants</b> below are real and to scale. The simulation's <b>flow rates and volumes</b> are accelerated so a whole supply chain fits on one screen — so read the absolute totals as illustrative, but the <i>ratios</i> between electricity in, fuel burned, and fuel delivered follow the cited sources.</p>
+        <h4>Conversions (to scale)</h4>
+        <table>
+          <tr><td>Gasoline energy</td><td><b>33.7 kWh/gal</b> — EPA gallon-of-gasoline-equivalent.</td></tr>
+          <tr><td>EV efficiency</td><td><b>3.5 mi/kWh</b> — typical EPA-rated electric car.</td></tr>
+          <tr><td>Gas car economy</td><td><b>25 mpg</b> — U.S. real-world light-duty average.</td></tr>
+        </table>
+        <h4>Where the energy goes (ratios from the sources)</h4>
+        <table>
+          <tr><td>Extraction</td><td>~6–12% of a barrel's energy is spent pumping it; <b>rises as a field depletes</b> (declining EROI: ~100:1 a century ago, ~8–15:1 for shale today). Modeled by the per-well EROI multiplier.</td></tr>
+          <tr><td>Refining</td><td>One of the most energy-intensive industries; ~12–15% of crude energy is consumed, <b>mostly process heat from burning part of the crude/gas itself</b> (the fuel bucket here) plus a smaller slice of <b>purchased electricity</b> (~1–2 kWh/gal — the electricity bucket). We keep those separate on purpose, because only the electricity could be redirected straight to an EV.</td></tr>
+          <tr><td>Transport</td><td>Pipelines (electric pumps), ocean tankers (bunker fuel) and delivery trucks (diesel) burn a few % more — split into the electricity and fuel buckets accordingly.</td></tr>
+          <tr><td>At the wheels</td><td>Only ~<b>11–15%</b> of the crude's energy reaches a gas car's wheels. An EV on the same primary energy delivers <b>5–7×</b> more.</td></tr>
+        </table>
+        <h4>Sources</h4>
+        <p class="src">EROI literature (SPE Journal); DOE Petroleum Refining bandwidth study; Argonne GREET 2023; EPA fuel-economy & gge figures. As Chapter 3 notes, precise audited electricity figures for the whole U.S. oil supply chain aren't published in one place — these are well-sourced and order-of-magnitude, flagged rather than obscured.</p>
+        <button class="start" id="aboutBack">${fromStart ? "← Back" : "Close"}</button>
+      </div>`;
+    document.getElementById("aboutBack").addEventListener("click", () => { if (fromStart || !G.started) showStart(); else overlay.classList.add("hidden"); });
+  }
+
   function showReport() {
     const L = G.ledger;
-    const evMi = Math.round(L.kwh * EV_MI_PER_KWH);
-    const iceMi = Math.round(L.delivered * ICE_MPG);
-    const pct = iceMi > 0 ? Math.round(evMi / iceMi * 100) : 0;
-    const ov = document.getElementById("overlay");
-    ov.classList.remove("hidden");
-    ov.querySelector(".card").innerHTML =
+    const evMiElec = Math.round(L.kwh * EV_MI_PER_KWH);
+    const iceMiDelivered = Math.round(L.delivered * ICE_MPG);
+    const burnedKwh = L.fuelBurned * GGE;
+    const burnedIceMi = Math.round(L.fuelBurned * ICE_MPG);
+    const overheadKwh = L.kwh + burnedKwh;
+    const overheadEvMi = Math.round(overheadKwh * EV_MI_PER_KWH);
+    const ratio = iceMiDelivered > 0 ? (overheadEvMi / iceMiDelivered).toFixed(1) : "—";
+    overlay.classList.remove("hidden");
+    card.innerHTML =
       `<h3 class="win">⛽ Goal reached — now look at the bill</h3>
-       <p>You delivered <b>${L.delivered.toFixed(0)} gallons</b> to the gas station — about <b>${iceMi.toLocaleString()} miles</b> of gas-car driving. Here's what it quietly took to do that:</p>
+       <p>You delivered <b>${L.delivered.toFixed(0)} gallons</b> to ${G.stations.length} stations — about <b>${iceMiDelivered.toLocaleString()} miles</b> of gas-car driving. Here's what it quietly took:</p>
        <div class="bignum">
          <div><div class="n" style="color:var(--accent)">${L.kwh.toFixed(0)}</div><div class="l">kWh electricity</div></div>
          <div><div class="n" style="color:var(--orange)">${L.fuelBurned.toFixed(0)}</div><div class="l">gal fuel burned</div></div>
-         <div><div class="n" style="color:var(--green)">${evMi.toLocaleString()}</div><div class="l">EV miles from that power</div></div>
+         <div><div class="n" style="color:var(--green)">${overheadEvMi.toLocaleString()}</div><div class="l">EV miles in that overhead</div></div>
        </div>
-       <div class="punch">The electricity you spent <i>making and moving</i> this fuel could have driven an EV about <b>${evMi.toLocaleString()} miles</b> — roughly <b>${pct}%</b> as far as the gas itself moves a car — with no rig, refinery, tanker, or truck. And that's before the engine throws away ~80% of the fuel as heat.</div>
-       <p style="font-size:0.84rem">That's the hidden cost of gasoline: we spend electricity, then burn fuel, just to deliver fuel that gets burned again at ~20% efficiency. <b>Phase 2</b> will plug those same cars into solar + batteries and skip this whole chain.</p>
-       <div class="src">Illustrative model. Ratios follow Chapter 3 sources (EROI literature, DOE refining bandwidth study, Argonne GREET). Exact supply-chain figures are not published in one place.</div>
+       <div class="punch">
+         <p style="margin-bottom:0.5rem"><b>⚡ The electricity</b> you spent making and moving this fuel — ${L.kwh.toFixed(0)} kWh — could have driven an EV about <b>${evMiElec.toLocaleString()} miles</b> directly, with no rig, refinery, tanker, or truck.</p>
+         <p style="margin-bottom:0.5rem"><b>🔥 The fuel you burned</b> just moving fuel — ${L.fuelBurned.toFixed(0)} gallons — is product that never reached a customer. That's ${burnedIceMi.toLocaleString()} miles of gas-car driving spent on logistics, or <b>${Math.round(burnedKwh).toLocaleString()} kWh</b> of raw energy.</p>
+         <p style="margin:0">Together that's <b>${Math.round(overheadKwh).toLocaleString()} kWh</b> of overhead to deliver fuel an engine will then burn at ~20% efficiency. Poured straight into EVs, that overhead alone could drive about <b>${ratio}×</b> as far as all the gasoline you delivered.</p>
+       </div>
+       <p style="font-size:0.84rem"><b>Phase 2</b> plugs those same cars into solar + batteries and skips this entire chain.</p>
+       <div class="src">Illustrative model; constants to scale. <button class="about-link" id="aboutFromReport">How these numbers work →</button></div>
        <button class="start" id="againBtn" style="margin-top:0.6rem">Build it again ↻</button>`;
     document.getElementById("againBtn").addEventListener("click", startGame);
+    document.getElementById("aboutFromReport").addEventListener("click", () => showAbout(false));
   }
 
   function startGame() {
     G = fresh();
     buildMap(); computePipes(); buildToolbar();
-    document.getElementById("overlay").classList.add("hidden");
+    overlay.classList.add("hidden");
     G.started = true;
     setTool(null); renderInspect(); renderLog();
-    logMsg("Oil field surveyed. Start with a Pumpjack on the field.", "good");
+    logMsg("Field surveyed: " + G.oils.length + " deposits, " + G.stations.length + " stations to supply.", "good");
   }
 
-  document.getElementById("startBtn").addEventListener("click", startGame);
-  document.getElementById("pauseBtn").addEventListener("click", () => {
-    G.paused = !G.paused;
-    document.getElementById("pauseBtn").textContent = G.paused ? "▶ Resume" : "⏸ Pause";
-  });
-  document.getElementById("speedBtn").addEventListener("click", () => {
-    G.speed = G.speed === 1 ? 2 : (G.speed === 2 ? 3 : 1);
-    document.getElementById("speedBtn").textContent = "▶ " + G.speed + "×";
-  });
+  document.getElementById("aboutLink").addEventListener("click", () => showAbout(!G || !G.started));
+  document.getElementById("pauseBtn").addEventListener("click", () => { G.paused = !G.paused; document.getElementById("pauseBtn").textContent = G.paused ? "▶ Resume" : "⏸ Pause"; });
+  document.getElementById("speedBtn").addEventListener("click", () => { G.speed = G.speed === 1 ? 2 : (G.speed === 2 ? 3 : 1); document.getElementById("speedBtn").textContent = "▶ " + G.speed + "×"; });
 
   // ---------- main loop ----------
   let last = performance.now(), acc = 0;
   function frame(now) {
-    let real = (now - last) / 1000; last = now;
-    real = Math.min(real, 0.25);
+    let real = (now - last) / 1000; last = now; real = Math.min(real, 0.25);
     if (G.started && !G.paused && !G.over) {
-      acc += real * G.speed;
-      let guard = 0;
+      acc += real * G.speed; let guard = 0;
       while (acc >= STEP && !G.over && guard < 40) { step(STEP); acc -= STEP; guard++; }
     }
     draw(); renderHud();
@@ -926,27 +868,17 @@
   // ---------- debug hook (only with ?debug) ----------
   if (location.search.includes("debug")) {
     window.__fc = {
-      grant: (n) => { G.cash += n || 100000; },
       tick: (secs) => { const n = Math.round((secs || 1) / STEP); for (let i = 0; i < n; i++) step(STEP); },
       build: (type, x, y) => place(type, x, y),
-      pipe: (x1, y1, x2, y2) => { // lay a straight L-pipe for quick setup
-        for (let x = Math.min(x1, x2); x <= Math.max(x1, x2); x++) place("pipe", x, y1);
-        for (let y = Math.min(y1, y2); y <= Math.max(y1, y2); y++) place("pipe", x2, y);
-      },
-      state: () => ({
-        t: +G.t.toFixed(1), cash: Math.round(G.cash), kwh: +G.ledger.kwh.toFixed(1),
-        burned: +G.ledger.fuelBurned.toFixed(1), delivered: +G.ledger.delivered.toFixed(1),
-        lost: +G.ledger.lostDemand.toFixed(1), station: +G.station.fuel.toFixed(1),
-        oil: Math.round(G.oil.amount), tankers: G.tankers.length, trucks: G.trucks.length,
-        buildings: G.buildings.map(b => b.type + "@" + b.x + "," + b.y), pipes: G.pipes.size, over: G.over,
-      }),
+      pipe: (x1, y1, x2, y2) => { for (let x = Math.min(x1, x2); x <= Math.max(x1, x2); x++) place("pipe", x, y1); for (let y = Math.min(y1, y2); y <= Math.max(y1, y2); y++) place("pipe", x2, y); },
+      state: () => ({ t: +G.t.toFixed(1), kwh: +G.ledger.kwh.toFixed(1), burned: +G.ledger.fuelBurned.toFixed(1), delivered: +G.ledger.delivered.toFixed(1), lost: +G.ledger.lostDemand.toFixed(1), stations: G.stations.map(s => +s.fuel.toFixed(0)), oils: G.oils.map(o => Math.round(o.amount)), tankers: G.tankers.length, trucks: G.trucks.length, buildings: G.buildings.map(b => b.type + "@" + b.x + "," + b.y), pipes: G.pipes.size, over: G.over }),
       go: () => { G.started = true; G.paused = false; },
     };
   }
 
   // ---------- boot ----------
   G = fresh();
-  buildMap(); computePipes(); buildToolbar(); renderLog();
+  buildMap(); computePipes(); buildToolbar(); renderLog(); showStart();
   requestAnimationFrame(frame);
 })();
 </script>
