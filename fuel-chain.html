@@ -1,0 +1,954 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fuel Chain — The Hidden Cost of Gasoline</title>
+<style>
+  :root {
+    --bg: #0d1117;
+    --surface: #161b22;
+    --surface2: #1f2937;
+    --border: #30363d;
+    --text: #e6edf3;
+    --muted: #8b949e;
+    --accent: #58a6ff;
+    --green: #3fb950;
+    --orange: #f97316;
+    --red: #f85149;
+    --yellow: #d29922;
+    --purple: #a371f7;
+    --cyan: #56d4dd;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    line-height: 1.5;
+  }
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(13,17,23,0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 1.5rem;
+    display: flex; align-items: center; gap: 1.5rem; height: 56px;
+  }
+  .nav-brand { font-weight: 700; font-size: 1rem; color: var(--accent); text-decoration: none; letter-spacing: -0.02em; }
+  .nav-back { color: var(--muted); text-decoration: none; font-size: 0.85rem; }
+  .nav-back:hover { color: var(--text); }
+  .nav-spacer { flex: 1; }
+  .nav-tag { font-size: 0.75rem; color: var(--muted); }
+
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 1.25rem 1.25rem 3rem; }
+  .title-row { display: flex; align-items: baseline; gap: 0.75rem; flex-wrap: wrap; margin-bottom: 0.75rem; }
+  h1 { font-size: 1.6rem; font-weight: 800; letter-spacing: -0.02em; }
+  h1 span { color: var(--orange); }
+  .subtitle { color: var(--muted); font-size: 0.9rem; }
+
+  /* HUD top bar */
+  .hud {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(135px, 1fr));
+    gap: 0.5rem; margin-bottom: 0.75rem;
+  }
+  .stat {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 8px;
+    padding: 0.5rem 0.7rem;
+  }
+  .stat .label { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
+  .stat .value { font-size: 1.05rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .stat .sub { font-size: 0.68rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .bar { height: 5px; background: var(--surface2); border-radius: 3px; margin-top: 0.35rem; overflow: hidden; }
+  .bar > i { display: block; height: 100%; width: 0%; transition: width 0.15s linear; }
+
+  .game { display: grid; grid-template-columns: 1fr 248px; gap: 0.85rem; align-items: start; }
+  @media (max-width: 880px) { .game { grid-template-columns: 1fr; } }
+
+  .stage { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 0.5rem; position: relative; }
+  canvas { display: block; width: 100%; height: auto; border-radius: 6px; cursor: pointer; touch-action: none; }
+
+  .panel { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 0.75rem; }
+  .panel h2 { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.07em; color: var(--muted); margin-bottom: 0.55rem; }
+  .tools { display: flex; flex-direction: column; gap: 0.35rem; }
+  .tool {
+    display: flex; align-items: center; gap: 0.6rem; width: 100%; text-align: left;
+    background: var(--surface2); border: 1px solid var(--border); border-radius: 7px;
+    color: var(--text); padding: 0.45rem 0.55rem; cursor: pointer; font-size: 0.82rem;
+    transition: border-color 0.15s, background 0.15s;
+  }
+  .tool:hover { border-color: var(--accent); }
+  .tool.active { border-color: var(--accent); background: rgba(88,166,255,0.12); }
+  .tool:disabled { opacity: 0.45; cursor: not-allowed; }
+  .tool .ic { width: 22px; height: 22px; border-radius: 5px; flex: none; display: grid; place-items: center; font-size: 0.85rem; font-weight: 800; color: #0d1117; }
+  .tool .nm { flex: 1; font-weight: 600; }
+  .tool .ct { font-size: 0.68rem; color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+  .hint { font-size: 0.72rem; color: var(--muted); margin-top: 0.6rem; line-height: 1.5; }
+  .log { margin-top: 0.75rem; max-height: 130px; overflow-y: auto; font-size: 0.72rem; }
+  .log div { padding: 0.18rem 0; border-top: 1px solid var(--border); color: var(--muted); }
+  .log div.warn { color: var(--yellow); }
+  .log div.bad { color: var(--red); }
+  .log div.good { color: var(--green); }
+
+  .controls { display: flex; gap: 0.4rem; margin-top: 0.6rem; }
+  .btn { flex:1; background: var(--surface2); border: 1px solid var(--border); color: var(--text);
+    border-radius: 7px; padding: 0.4rem; cursor: pointer; font-size: 0.78rem; font-weight: 600; }
+  .btn:hover { border-color: var(--accent); }
+
+  /* ledger */
+  .ledger { margin-top: 0.75rem; }
+  .ledger .row { display: flex; justify-content: space-between; padding: 0.2rem 0; font-size: 0.76rem; color: var(--muted); border-top: 1px solid var(--border); }
+  .ledger .row:first-child { border-top: none; }
+  .ledger .row b { color: var(--text); font-variant-numeric: tabular-nums; }
+  .ledger .row.kwh b { color: var(--accent); }
+  .ledger .row.fuel b { color: var(--orange); }
+
+  /* selected building inspector */
+  .inspect { margin-top: 0.6rem; font-size: 0.78rem; display: none; }
+  .inspect.show { display: block; }
+  .inspect .row { display: flex; justify-content: space-between; padding: 0.15rem 0; color: var(--muted); }
+  .inspect .row b { color: var(--text); font-variant-numeric: tabular-nums; }
+
+  /* overlay */
+  .overlay {
+    position: absolute; inset: 0.5rem; border-radius: 6px;
+    background: rgba(13,17,23,0.94); backdrop-filter: blur(4px);
+    display: grid; place-items: center; text-align: center; padding: 1.5rem; z-index: 5;
+    overflow-y: auto;
+  }
+  .overlay.hidden { display: none; }
+  .overlay .card { max-width: 560px; }
+  .overlay h3 { font-size: 1.5rem; margin-bottom: 0.6rem; }
+  .overlay p { color: var(--muted); font-size: 0.88rem; margin-bottom: 0.5rem; }
+  .overlay ul { text-align: left; color: var(--muted); font-size: 0.84rem; margin: 0.6rem 0 1rem 1.1rem; line-height: 1.6; }
+  .overlay .start { background: var(--accent); color: #0d1117; border: none; font-weight: 800;
+    padding: 0.6rem 1.4rem; border-radius: 8px; cursor: pointer; font-size: 0.95rem; }
+  .overlay h3.win { color: var(--green); }
+  .bignum { display: flex; gap: 0.6rem; justify-content: center; flex-wrap: wrap; margin: 0.8rem 0; }
+  .bignum > div { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 0.6rem 0.9rem; min-width: 120px; }
+  .bignum .n { font-size: 1.3rem; font-weight: 800; font-variant-numeric: tabular-nums; }
+  .bignum .l { font-size: 0.66rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; }
+  .punch { background: rgba(88,166,255,0.1); border: 1px solid var(--accent); border-radius: 8px; padding: 0.8rem; font-size: 0.9rem; color: var(--text); margin: 0.8rem 0; }
+  .src { font-size: 0.68rem; color: var(--muted); margin-top: 0.4rem; }
+  kbd { background: var(--surface2); border: 1px solid var(--border); border-radius: 4px; padding: 0 0.3rem; font-size: 0.8em; }
+</style>
+</head>
+<body>
+<nav>
+  <a class="nav-brand" href="index.html">⚡ Power Shift</a>
+  <a class="nav-back" href="chapter3.html">← Chapter 3: The Invisible Cost of Fuel</a>
+  <span class="nav-spacer"></span>
+  <span class="nav-tag">Interactive Lab</span>
+</nav>
+
+<div class="wrap">
+  <div class="title-row">
+    <h1><span>🛢 Fuel</span> Chain</h1>
+    <span class="subtitle">Build the whole supply chain that puts gas in a car — and watch the hidden energy bill add up.</span>
+  </div>
+
+  <!-- HUD -->
+  <div class="hud">
+    <div class="stat">
+      <div class="label">Cash</div>
+      <div class="value" id="hud-cash">$0</div>
+      <div class="sub" id="hud-net">net $0 / day</div>
+    </div>
+    <div class="stat">
+      <div class="label">Delivered to cars ⛽</div>
+      <div class="value" id="hud-delivered">0 / 0 gal</div>
+      <div class="sub">your goal</div>
+      <div class="bar"><i id="hud-delbar" style="background:var(--green)"></i></div>
+    </div>
+    <div class="stat">
+      <div class="label">Electricity used ⚡</div>
+      <div class="value" id="hud-kwh" style="color:var(--accent)">0 kWh</div>
+      <div class="sub" id="hud-kwhrate">to run the chain</div>
+    </div>
+    <div class="stat">
+      <div class="label">Fuel burned moving fuel 🔥</div>
+      <div class="value" id="hud-burned" style="color:var(--orange)">0 gal</div>
+      <div class="sub">tankers · trucks · refining</div>
+    </div>
+    <div class="stat">
+      <div class="label">Station fuel</div>
+      <div class="value" id="hud-station">0 gal</div>
+      <div class="sub" id="hud-lost">0 gal demand lost</div>
+      <div class="bar"><i id="hud-stationbar" style="background:var(--yellow)"></i></div>
+    </div>
+  </div>
+
+  <div class="game">
+    <div class="stage">
+      <canvas id="cv" width="936" height="520"></canvas>
+      <div class="overlay" id="overlay">
+        <div class="card">
+          <h3>🛢 Fuel Chain</h3>
+          <p>Gas doesn't appear at the pump. Before a car can burn it, someone has to pump crude oil, refine it, ship it across the sea, and truck it to a station — and <b>every one of those steps burns energy</b>.</p>
+          <p>Build that chain yourself. Your job: keep the gas station across the water supplied until you've delivered the goal amount of fuel to cars.</p>
+          <ul>
+            <li><b>Pump:</b> place a Pumpjack on the oil field (left). It runs on electricity.</li>
+            <li><b>Connect:</b> lay Pipe from the well to a Refinery, then to an Export Port on the coast.</li>
+            <li><b>Ship:</b> build an Import Port on the island. Tankers cross automatically, trucks deliver to the station.</li>
+            <li><b>Watch the meters:</b> every step adds to the electricity and fuel the chain quietly consumes.</li>
+          </ul>
+          <button class="start" id="startBtn">Start building ▶</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>Build</h2>
+      <div class="tools" id="tools"></div>
+
+      <div class="inspect" id="inspect">
+        <h2 style="margin-top:0.8rem">Selected</h2>
+        <div id="inspectBody"></div>
+        <div class="controls">
+          <button class="btn" id="demoBtn" style="border-color:var(--red);color:var(--red)">Demolish</button>
+        </div>
+      </div>
+
+      <div class="hint" id="hint">
+        Click a tool, then a tile to build. <kbd>Esc</kbd> / right-click cancels. Hold to drag-lay pipe. Click a building to inspect it.
+      </div>
+
+      <div class="controls">
+        <button class="btn" id="pauseBtn">⏸ Pause</button>
+        <button class="btn" id="speedBtn">▶ 1×</button>
+      </div>
+
+      <div class="ledger" id="ledger"></div>
+      <div class="log" id="log"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+"use strict";
+(() => {
+  // ============================================================
+  //  Fuel Chain — a teaching sim for Chapter 3 (Invisible Cost of Fuel)
+  //  Self-contained, no build step. Add ?debug to the URL for window.__fc.
+  //
+  //  The numbers below are illustrative and tuned to make the supply-chain
+  //  energy cost legible, not to be a precise refinery model. The *ratios*
+  //  (only ~10-15% of crude energy reaches a car; the electricity to make
+  //  fuel rivals the driving the fuel provides) follow Chapter 3's sources:
+  //  EROI literature, DOE refining bandwidth study, Argonne GREET.
+  // ============================================================
+
+  // ---------- grid / map ----------
+  const COLS = 36, ROWS = 20, TILE = 26;
+  const W = COLS * TILE, H = ROWS * TILE;
+  const STEP = 0.1;                 // sim step seconds (10 Hz)
+  const SECS_PER_DAY = 60;          // for per-day maintenance accrual
+
+  // landmass layout (column bands): mainland | water | island
+  const MAIN_MAX_X = 13;            // cols 0..13 mainland
+  const WATER_MAX_X = 21;           // cols 14..21 water; 22..35 island
+  const OIL = { x: 4, y: 11, amount: 4000 };  // the oil field
+  const STATION = { x: 31, y: 9 };            // pre-placed gas station
+
+  // ---------- economy ($) ----------
+  const START_CASH = 25000;
+  const ELEC_PRICE = 0.12;          // $ per kWh drawn from the grid
+  const FUEL_SELL = 3.50;           // $ per gallon cars pay at the pump
+  const COST = { pumpjack: 3000, pipe: 120, refinery: 8000, port: 6000 };
+  const MAINT = { pumpjack: 300, refinery: 1200, port: 600, pipe: 10, station: 0 }; // $/day
+
+  // ---------- energy intensities (the lesson) ----------
+  // electricity (kWh) consumed per unit handled at each stage:
+  const KWH_EXTRACT = 0.8;          // per crude pumped (pumpjack motors, injection)
+  const KWH_REFINE  = 1.6;          // per crude refined (the hidden factory)
+  const KWH_PIPE    = 0.03;         // per fuel unit, per pipe tile (pumping stations)
+  const KWH_PORT    = 0.4;          // per fuel unit handled at the export port
+  const REFINE_YIELD = 0.85;        // 15% of crude is burned/lost to run refining
+  // fuel (gal) burned just moving fuel around:
+  const TANKER_BURN = 0.08;         // fraction of cargo burned as bunker fuel per crossing
+  const TRUCK_BURN  = 0.06;         // fraction of cargo burned as diesel per delivery
+
+  // ---------- flow rates ----------
+  const REFINE_RATE = 0.8;          // crude/s a refinery can process
+  const PIPE_FLOW   = 1.4;          // fuel/s a pipe can move to the port
+  const TANKER_CAP = 22, TRUCK_CAP = 11;
+  const TANKER_SPEED = 3.2, TRUCK_SPEED = 3.6, CAR_SPEED = 4.5; // tiles/s
+  const DEMAND = 0.55;              // gal/s cars want at the station
+  const MAX_TANKERS = 3, MAX_TRUCKS = 4, MAX_CARS = 5;
+
+  // ---------- goal + payoff ----------
+  const TARGET_DELIVERED = 120;     // gallons to cars to complete the lesson
+  const EV_MI_PER_KWH = 3.5;        // a typical EV
+  const ICE_MPG = 25;               // a typical gas car
+
+  // ---------- building definitions ----------
+  const DEFS = {
+    pumpjack: { name: "Pumpjack", icon: "🛢", color: "#f97316", cost: COST.pumpjack, desc: "Place on the oil field. Pumps crude — and runs on electricity." },
+    pipe:     { name: "Pipe",     icon: "═",  color: "#8b949e", cost: COST.pipe,     desc: "Carries crude & fuel. Drag to lay a line. Pumping it costs electricity." },
+    refinery: { name: "Refinery", icon: "🏭", color: "#a371f7", cost: COST.refinery, desc: "Turns crude into fuel. Draws power and burns ~15% of the crude itself." },
+    port:     { name: "Port",     icon: "⚓", color: "#56d4dd", cost: COST.port,     desc: "On a coast. Export (mainland) loads tankers; Import (island) sends trucks." },
+  };
+  const TOOL_ORDER = ["pumpjack", "pipe", "refinery", "port"];
+
+  // ---------- colors ----------
+  const TC = { land: "#2a2620", main: "#332c1f", island: "#1e3326", water: "#13243a", grid: "rgba(255,255,255,0.04)" };
+
+  let G = null;
+
+  // ---------- helpers ----------
+  const key = (x, y) => x + "," + y;
+  const inB = (x, y) => x >= 0 && y >= 0 && x < COLS && y < ROWS;
+  const isWater = (x, y) => x > MAIN_MAX_X && x <= WATER_MAX_X;
+  const isLand = (x, y) => inB(x, y) && !isWater(x, y);
+  const landmass = (x, y) => (x <= MAIN_MAX_X ? 0 : (x > WATER_MAX_X ? 1 : -1)); // 0 main, 1 island, -1 water
+  const dist = (ax, ay, bx, by) => Math.hypot(ax - bx, ay - by);
+
+  function fresh() {
+    return {
+      t: 0, day: 1, paused: true, speed: 1, started: false, over: null,
+      cash: START_CASH, netPerDay: 0,
+      buildings: [], pipes: new Set(),
+      tankers: [], trucks: [], cars: [],
+      oil: { x: OIL.x, y: OIL.y, amount: OIL.amount, max: OIL.amount },
+      station: { x: STATION.x, y: STATION.y, fuel: 0, max: 60 },
+      ledger: { kwh: 0, kwhRate: 0, fuelBurned: 0, delivered: 0, lostDemand: 0, revenue: 0, elecCost: 0, maint: 0 },
+      carTimer: 0,
+      selected: null, tool: null, log: [], nextId: 1,
+    };
+  }
+
+  function occAt(x, y) { return G.buildings.find(b => b.x === x && b.y === y) || null; }
+
+  // ---------- map ----------
+  function buildMap() {
+    // pre-placed gas station on the island
+    G.buildings.push({ id: G.nextId++, type: "station", x: STATION.x, y: STATION.y, built: true });
+  }
+
+  // ---------- pipe network (flood-fill into components) ----------
+  function computePipes() {
+    const comp = new Map();      // "x,y" -> component id
+    let next = 0;
+    for (const k of G.pipes) {
+      if (comp.has(k)) continue;
+      const id = next++;
+      const stack = [k];
+      comp.set(k, id);
+      while (stack.length) {
+        const cur = stack.pop();
+        const [cx, cy] = cur.split(",").map(Number);
+        for (const [dx, dy] of [[1,0],[-1,0],[0,1],[0,-1]]) {
+          const nk = key(cx + dx, cy + dy);
+          if (G.pipes.has(nk) && !comp.has(nk)) { comp.set(nk, id); stack.push(nk); }
+        }
+      }
+    }
+    // tag each fluid building with EVERY pipe component it touches (4-neighbour).
+    // A refinery often bridges two segments — the crude line in and the fuel line
+    // out — so it must belong to both, not just the first one found.
+    for (const b of G.buildings) {
+      if (b.type === "station") continue;
+      b.comps = new Set();
+      for (const [dx, dy] of [[1,0],[-1,0],[0,1],[0,-1]]) {
+        const c = comp.get(key(b.x + dx, b.y + dy));
+        if (c !== undefined) b.comps.add(c);
+      }
+    }
+    G.pipeComp = comp;
+  }
+
+  const onNet = b => b.comps && b.comps.size > 0;
+  function shareComp(a, b) {
+    if (!a.comps || !b.comps) return false;
+    for (const id of a.comps) if (b.comps.has(id)) return true;
+    return false;
+  }
+  function pipeLenShared(a, b) {
+    let n = 0;
+    for (const [k, c] of G.pipeComp) { void k; if (a.comps.has(c) && b.comps.has(c)) n++; }
+    return n;
+  }
+
+  // ---------- A* over the grid with a passability predicate ----------
+  function pass(x, y, domain, goalKey) {
+    if (!inB(x, y)) return false;
+    if (goalKey && key(x, y) === goalKey) return true;
+    if (domain === "sea") return isWater(x, y);
+    // land: walkable land tile not blocked by a building (pipes are fine to drive over)
+    if (!isLand(x, y)) return false;
+    const b = occAt(x, y);
+    if (b && b.type !== "station") return false;
+    return true;
+  }
+
+  function astar(sx, sy, gx, gy, domain) {
+    if (sx === gx && sy === gy) return [];
+    const goalKey = key(gx, gy);
+    const open = new Map([[key(sx, sy), 0]]);
+    const g = new Map([[key(sx, sy), 0]]);
+    const came = new Map();
+    const dirs = [[1,0,1],[-1,0,1],[0,1,1],[0,-1,1],[1,1,1.41],[1,-1,1.41],[-1,1,1.41],[-1,-1,1.41]];
+    let guard = 0, maxIter = COLS * ROWS * 6;
+    while (open.size && guard++ < maxIter) {
+      let cur = "", best = Infinity;
+      for (const [k, f] of open) if (f < best) { best = f; cur = k; }
+      open.delete(cur);
+      const [cx, cy] = cur.split(",").map(Number);
+      if (cx === gx && cy === gy) {
+        const path = []; let k = cur;
+        while (k !== key(sx, sy)) {
+          const [px, py] = k.split(",").map(Number);
+          path.push({ x: px + 0.5, y: py + 0.5 });
+          k = came.get(k); if (!k) break;
+        }
+        return path.reverse();
+      }
+      const gc = g.get(cur);
+      for (const [dx, dy, cost] of dirs) {
+        const nx = cx + dx, ny = cy + dy;
+        if (!pass(nx, ny, domain, goalKey)) continue;
+        if (dx && dy) { // no corner-cutting
+          if (!pass(cx + dx, cy, domain, goalKey) || !pass(cx, cy + dy, domain, goalKey)) continue;
+        }
+        const nk = key(nx, ny), tentative = gc + cost;
+        if (tentative < (g.get(nk) ?? Infinity)) {
+          came.set(nk, cur); g.set(nk, tentative);
+          open.set(nk, tentative + dist(nx, ny, gx, gy));
+        }
+      }
+    }
+    return null;
+  }
+
+  // a tile of the given domain adjacent to a building, nearest to (tx,ty)
+  function adjOf(b, domain, tx, ty) {
+    let best = null, bd = Infinity;
+    for (const [dx, dy] of [[1,0],[-1,0],[0,1],[0,-1],[1,1],[1,-1],[-1,1],[-1,-1]]) {
+      const x = b.x + dx, y = b.y + dy;
+      if (domain === "sea" ? isWater(x, y) : (isLand(x, y) && !occAt(x, y))) {
+        const d = dist(x, y, tx ?? b.x, ty ?? b.y);
+        if (d < bd) { bd = d; best = { x, y }; }
+      }
+    }
+    return best;
+  }
+
+  // role of a port: export on the mainland, import on the island
+  const portRole = b => (landmass(b.x, b.y) === 0 ? "export" : "import");
+  const ports = role => G.buildings.filter(b => b.type === "port" && b.built && portRole(b) === role);
+
+  // ---------- sim step ----------
+  function step(dt) {
+    const L = G.ledger;
+    L.kwhRate = 0;
+    let tickKwh = 0, tickRevenue = 0;
+
+    computePipes();
+
+    const refineries = G.buildings.filter(b => b.type === "refinery" && b.built);
+    const pumpjacks = G.buildings.filter(b => b.type === "pumpjack" && b.built);
+    const exports = ports("export");
+    const imports = ports("import");
+
+    // --- extraction + refining: refinery pulls crude from wells on its pipe net ---
+    for (const r of refineries) {
+      if (!onNet(r)) continue;
+      const wells = pumpjacks.filter(p => shareComp(p, r));
+      if (!wells.length || G.oil.amount <= 0) continue;
+      const want = REFINE_RATE * dt;
+      const got = Math.min(want, G.oil.amount);
+      if (got <= 0) continue;
+      G.oil.amount -= got;
+      tickKwh += got * (KWH_EXTRACT + KWH_REFINE);   // pump + refine electricity
+      L.fuelBurned += got * (1 - REFINE_YIELD);      // crude burned to run the refinery
+      r.fuel = (r.fuel || 0) + got * REFINE_YIELD;   // fuel produced
+    }
+
+    // --- pipe transport: export port pulls fuel from refineries on its net ---
+    for (const p of exports) {
+      if (!onNet(p)) continue;
+      for (const r of refineries) {
+        if (!shareComp(r, p) || !(r.fuel > 0)) continue;
+        const len = pipeLenShared(r, p);
+        const moved = Math.min(PIPE_FLOW * dt, r.fuel);
+        r.fuel -= moved;
+        p.fuel = (p.fuel || 0) + moved;
+        tickKwh += moved * (KWH_PIPE * len + KWH_PORT); // pumping + port handling
+      }
+    }
+
+    // --- tankers: export -> import across the water ---
+    if (imports.length && G.tankers.length < MAX_TANKERS) {
+      const src = exports.find(p => (p.fuel || 0) >= TANKER_CAP);
+      if (src) {
+        const dst = imports[0];
+        const a = adjOf(src, "sea", dst.x, dst.y), b = adjOf(dst, "sea", src.x, src.y);
+        if (a && b) {
+          const path = astar(a.x, a.y, b.x, b.y, "sea");
+          if (path) {
+            src.fuel -= TANKER_CAP;
+            const burn = TANKER_CAP * TANKER_BURN;
+            L.fuelBurned += burn;
+            G.tankers.push({ x: a.x + 0.5, y: a.y + 0.5, path, cargo: TANKER_CAP - burn, target: dst.id });
+          }
+        }
+      }
+    }
+    advanceAgents(G.tankers, TANKER_SPEED, dt, (t) => {
+      const dst = G.buildings.find(b => b.id === t.target);
+      if (dst) dst.fuel = (dst.fuel || 0) + t.cargo;
+    });
+
+    // --- trucks: import -> station on the island ---
+    const st = G.station;
+    if (imports.length && G.trucks.length < MAX_TRUCKS && st.fuel < st.max * 0.8) {
+      const src = imports.find(p => (p.fuel || 0) >= TRUCK_CAP);
+      if (src) {
+        const a = adjOf(src, "land", st.x, st.y), b = adjOf({ x: st.x, y: st.y }, "land", src.x, src.y);
+        if (a && b) {
+          const path = astar(a.x, a.y, b.x, b.y, "land");
+          if (path) {
+            src.fuel -= TRUCK_CAP;
+            const burn = TRUCK_CAP * TRUCK_BURN;
+            L.fuelBurned += burn;
+            G.trucks.push({ x: a.x + 0.5, y: a.y + 0.5, path, cargo: TRUCK_CAP - burn });
+          }
+        }
+      }
+    }
+    advanceAgents(G.trucks, TRUCK_SPEED, dt, () => { st.fuel = Math.min(st.max, st.fuel + TRUCK_CAP * (1 - TRUCK_BURN)); });
+
+    // --- demand: cars draw fuel from the station ---
+    const want = DEMAND * dt;
+    const served = Math.min(want, st.fuel);
+    st.fuel -= served;
+    L.delivered += served;
+    tickRevenue += served * FUEL_SELL;
+    if (served < want) L.lostDemand += (want - served);
+
+    // car visuals (cosmetic, only when the station can serve)
+    G.carTimer -= dt;
+    if (G.carTimer <= 0 && st.fuel > 1 && G.cars.length < MAX_CARS) {
+      G.carTimer = 1.4 + Math.random() * 1.6;
+      const fromTop = Math.random() < 0.5;
+      const edge = { x: COLS - 1, y: fromTop ? 0 : ROWS - 1 };
+      const a = adjOf({ x: st.x, y: st.y }, "land", edge.x, edge.y);
+      if (a) {
+        const path = astar(edge.x, edge.y, a.x, a.y, "land");
+        if (path) G.cars.push({ x: edge.x + 0.5, y: edge.y + 0.5, path, phase: "in", wait: 0, home: edge });
+      }
+    }
+    updateCars(dt);
+
+    // --- money ---
+    L.revenue += tickRevenue;
+    const elecCost = tickKwh * ELEC_PRICE;
+    let maintPerDay = 0;
+    for (const b of G.buildings) maintPerDay += (MAINT[b.type] || 0);
+    maintPerDay += G.pipes.size * MAINT.pipe;
+    const maintTick = maintPerDay * (dt / SECS_PER_DAY);
+    G.cash += tickRevenue - elecCost - maintTick;
+    L.kwh += tickKwh; L.elecCost += elecCost; L.maint += maintTick;
+    L.kwhRate = tickKwh / dt; // kW (kWh per second)
+    G.netPerDay = (tickRevenue / dt - elecCost / dt - maintPerDay / SECS_PER_DAY) * SECS_PER_DAY;
+
+    // --- clock ---
+    G.t += dt;
+    if (G.t >= G.day * SECS_PER_DAY) G.day++;
+
+    // --- goal ---
+    if (!G.over && L.delivered >= TARGET_DELIVERED) { G.over = "win"; showReport(); }
+  }
+
+  // move agents along their path; call done() and despawn on arrival
+  function advanceAgents(arr, speed, dt, done) {
+    for (let i = arr.length - 1; i >= 0; i--) {
+      const a = arr[i];
+      let budget = speed * dt;
+      while (budget > 1e-6 && a.path.length) {
+        const n = a.path[0];
+        const d = dist(a.x, a.y, n.x, n.y);
+        if (d < 1e-6) { a.path.shift(); continue; }
+        const move = Math.min(budget, d);
+        a.x += (n.x - a.x) / d * move; a.y += (n.y - a.y) / d * move;
+        budget -= move;
+        if (move >= d - 1e-6) { a.x = n.x; a.y = n.y; a.path.shift(); }
+      }
+      if (!a.path.length) { done(a); arr.splice(i, 1); }
+    }
+  }
+
+  function updateCars(dt) {
+    for (let i = G.cars.length - 1; i >= 0; i--) {
+      const c = G.cars[i];
+      if (c.phase === "in") {
+        let budget = CAR_SPEED * dt;
+        while (budget > 1e-6 && c.path.length) {
+          const n = c.path[0]; const d = dist(c.x, c.y, n.x, n.y);
+          if (d < 1e-6) { c.path.shift(); continue; }
+          const move = Math.min(budget, d);
+          c.x += (n.x - c.x) / d * move; c.y += (n.y - c.y) / d * move; budget -= move;
+          if (move >= d - 1e-6) { c.x = n.x; c.y = n.y; c.path.shift(); }
+        }
+        if (!c.path.length) { c.phase = "fuel"; c.wait = 1.2; }
+      } else if (c.phase === "fuel") {
+        c.wait -= dt;
+        if (c.wait <= 0) {
+          const p = astar(Math.floor(c.x), Math.floor(c.y), c.home.x, c.home.y, "land");
+          c.path = p || []; c.phase = "out";
+        }
+      } else {
+        let budget = CAR_SPEED * dt;
+        while (budget > 1e-6 && c.path.length) {
+          const n = c.path[0]; const d = dist(c.x, c.y, n.x, n.y);
+          if (d < 1e-6) { c.path.shift(); continue; }
+          const move = Math.min(budget, d);
+          c.x += (n.x - c.x) / d * move; c.y += (n.y - c.y) / d * move; budget -= move;
+          if (move >= d - 1e-6) { c.x = n.x; c.y = n.y; c.path.shift(); }
+        }
+        if (!c.path.length) G.cars.splice(i, 1);
+      }
+    }
+  }
+
+  // ---------- rendering ----------
+  const cv = document.getElementById("cv");
+  const ctx = cv.getContext("2d");
+
+  function draw() {
+    ctx.clearRect(0, 0, W, H);
+    // terrain
+    for (let y = 0; y < ROWS; y++) for (let x = 0; x < COLS; x++) {
+      ctx.fillStyle = isWater(x, y) ? TC.water : (landmass(x, y) === 0 ? TC.main : TC.island);
+      ctx.fillRect(x * TILE, y * TILE, TILE, TILE);
+    }
+    // subtle grid
+    ctx.strokeStyle = TC.grid; ctx.lineWidth = 1;
+    for (let x = 0; x <= COLS; x++) { ctx.beginPath(); ctx.moveTo(x * TILE, 0); ctx.lineTo(x * TILE, H); ctx.stroke(); }
+    for (let y = 0; y <= ROWS; y++) { ctx.beginPath(); ctx.moveTo(0, y * TILE); ctx.lineTo(W, y * TILE); ctx.stroke(); }
+
+    // oil field
+    const o = G.oil;
+    const of = o.amount / o.max;
+    ctx.fillStyle = "rgba(20,15,30," + (0.25 + 0.5 * of) + ")";
+    roundRect(o.x * TILE + 2, o.y * TILE + 2, TILE - 4, TILE - 4, 5); ctx.fill();
+    ctx.strokeStyle = "#6e5494"; ctx.lineWidth = 1.5;
+    roundRect(o.x * TILE + 2, o.y * TILE + 2, TILE - 4, TILE - 4, 5); ctx.stroke();
+    glyph("⬤", o.x, o.y, "#1b1330", 0.42);
+
+    // pipes
+    ctx.strokeStyle = "#7d8590"; ctx.lineWidth = Math.max(3, TILE * 0.22);
+    ctx.lineCap = "round";
+    for (const k of G.pipes) {
+      const [x, y] = k.split(",").map(Number);
+      const cx = x * TILE + TILE / 2, cy = y * TILE + TILE / 2;
+      for (const [dx, dy] of [[1,0],[0,1]]) {
+        if (G.pipes.has(key(x + dx, y + dy))) {
+          ctx.beginPath(); ctx.moveTo(cx, cy);
+          ctx.lineTo((x + dx) * TILE + TILE / 2, (y + dy) * TILE + TILE / 2); ctx.stroke();
+        }
+      }
+      ctx.fillStyle = "#7d8590";
+      ctx.beginPath(); ctx.arc(cx, cy, TILE * 0.13, 0, 7); ctx.fill();
+    }
+    ctx.lineCap = "butt";
+
+    // buildings
+    for (const b of G.buildings) {
+      if (b.type === "station") { drawStation(b); continue; }
+      const d = DEFS[b.type];
+      ctx.fillStyle = d.color; ctx.globalAlpha = b.built ? 1 : 0.5;
+      roundRect(b.x * TILE + 3, b.y * TILE + 3, TILE - 6, TILE - 6, 5); ctx.fill();
+      ctx.globalAlpha = 1;
+      glyph(d.icon, b.x, b.y, "#0d1117", 0.46);
+      if (b.type === "port") {
+        const role = portRole(b);
+        ctx.fillStyle = "#0d1117"; ctx.font = "bold 8px system-ui"; ctx.textAlign = "center";
+        ctx.fillText(role === "export" ? "OUT" : "IN", b.x * TILE + TILE / 2, b.y * TILE + TILE - 4);
+      }
+      // small fuel pip on fluid buildings
+      if (b.fuel > 0) {
+        ctx.fillStyle = "var";
+        ctx.fillStyle = "#f9a516";
+        const w = (TILE - 8) * Math.min(1, b.fuel / 30);
+        ctx.fillRect(b.x * TILE + 4, b.y * TILE + TILE - 6, w, 3);
+      }
+      if (b === G.selected) sel(b.x, b.y);
+    }
+
+    // agents
+    for (const t of G.tankers) drawAgent(t, "#56d4dd", 0.5, "🚢");
+    for (const t of G.trucks) drawAgent(t, "#f97316", 0.4, "🚚");
+    for (const c of G.cars) drawAgent(c, "#e6edf3", 0.3, "🚗");
+  }
+
+  function drawStation(b) {
+    ctx.fillStyle = "#d29922";
+    roundRect(b.x * TILE + 3, b.y * TILE + 3, TILE - 6, TILE - 6, 5); ctx.fill();
+    glyph("⛽", b.x, b.y, "#0d1117", 0.46);
+    const f = G.station.fuel / G.station.max;
+    ctx.fillStyle = "rgba(0,0,0,0.45)"; ctx.fillRect(b.x * TILE + 4, b.y * TILE + TILE - 6, TILE - 8, 3);
+    ctx.fillStyle = f > 0.25 ? "#3fb950" : "#f85149";
+    ctx.fillRect(b.x * TILE + 4, b.y * TILE + TILE - 6, (TILE - 8) * f, 3);
+    if (b === G.selected) sel(b.x, b.y);
+  }
+
+  function drawAgent(a, color, r, emoji) {
+    const px = a.x * TILE, py = a.y * TILE;
+    ctx.font = Math.round(TILE * 0.7) + "px system-ui";
+    ctx.textAlign = "center"; ctx.textBaseline = "middle";
+    ctx.fillText(emoji, px, py + 1);
+  }
+
+  function glyph(ch, x, y, color, scale) {
+    ctx.fillStyle = color; ctx.font = "bold " + Math.round(TILE * scale) + "px system-ui";
+    ctx.textAlign = "center"; ctx.textBaseline = "middle";
+    ctx.fillText(ch, x * TILE + TILE / 2, y * TILE + TILE / 2 + 1);
+  }
+  function roundRect(x, y, w, h, r) {
+    ctx.beginPath();
+    ctx.moveTo(x + r, y);
+    ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r);
+    ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath();
+  }
+  function sel(x, y) {
+    ctx.strokeStyle = "#e6edf3"; ctx.lineWidth = 2;
+    roundRect(x * TILE + 1, y * TILE + 1, TILE - 2, TILE - 2, 6); ctx.stroke();
+  }
+
+  // ---------- HUD ----------
+  function renderHud() {
+    const L = G.ledger;
+    document.getElementById("hud-cash").textContent = "$" + Math.round(G.cash).toLocaleString();
+    const net = Math.round(G.netPerDay);
+    const netEl = document.getElementById("hud-net");
+    netEl.textContent = "net " + (net >= 0 ? "+$" : "-$") + Math.abs(net).toLocaleString() + " / day";
+    netEl.style.color = net >= 0 ? "var(--green)" : "var(--red)";
+
+    document.getElementById("hud-delivered").textContent = L.delivered.toFixed(0) + " / " + TARGET_DELIVERED + " gal";
+    document.getElementById("hud-delbar").style.width = Math.min(100, L.delivered / TARGET_DELIVERED * 100) + "%";
+    document.getElementById("hud-kwh").textContent = L.kwh.toFixed(0) + " kWh";
+    document.getElementById("hud-kwhrate").textContent = G.started ? L.kwhRate.toFixed(1) + " kW now" : "to run the chain";
+    document.getElementById("hud-burned").textContent = L.fuelBurned.toFixed(1) + " gal";
+
+    document.getElementById("hud-station").textContent = G.station.fuel.toFixed(0) + " gal";
+    document.getElementById("hud-stationbar").style.width = (G.station.fuel / G.station.max * 100) + "%";
+    const lost = document.getElementById("hud-lost");
+    lost.textContent = L.lostDemand.toFixed(0) + " gal demand lost";
+    lost.style.color = L.lostDemand > 1 ? "var(--red)" : "var(--muted)";
+
+    // ledger panel
+    const evMi = Math.round(L.kwh * EV_MI_PER_KWH);
+    document.getElementById("ledger").innerHTML =
+      `<div class="row kwh"><span>⚡ Electricity to make fuel</span><b>${L.kwh.toFixed(0)} kWh</b></div>` +
+      `<div class="row fuel"><span>🔥 Fuel burned moving fuel</span><b>${L.fuelBurned.toFixed(1)} gal</b></div>` +
+      `<div class="row"><span>⛽ Fuel delivered to cars</span><b>${L.delivered.toFixed(1)} gal</b></div>` +
+      `<div class="row"><span>↪ That power as EV miles</span><b>${evMi.toLocaleString()} mi</b></div>`;
+  }
+
+  // ---------- inspector ----------
+  function renderInspect() {
+    const box = document.getElementById("inspect");
+    const b = G.selected;
+    if (!b) { box.classList.remove("show"); return; }
+    box.classList.add("show");
+    let html = "";
+    if (b.type === "station") {
+      html = `<div class="row"><span>Type</span><b>Gas Station</b></div>` +
+             `<div class="row"><span>Fuel</span><b>${G.station.fuel.toFixed(0)} / ${G.station.max} gal</b></div>` +
+             `<div class="row"><span>Car demand</span><b>${(DEMAND * SECS_PER_DAY).toFixed(0)} gal/day</b></div>`;
+    } else {
+      const d = DEFS[b.type];
+      const net = onNet(b);
+      const netRow = `<div class="row"><span>On pipe net</span><b style="color:${net ? "var(--green)" : "var(--red)"}">${net ? "yes" : "no"}</b></div>`;
+      html = `<div class="row"><span>Type</span><b>${d.name}${b.type === "port" ? " (" + portRole(b) + ")" : ""}</b></div>`;
+      if (b.type === "pumpjack") html += netRow;
+      if (b.type === "refinery") html += netRow + `<div class="row"><span>Fuel held</span><b>${(b.fuel || 0).toFixed(1)} gal</b></div>`;
+      if (b.type === "port") html += netRow + `<div class="row"><span>Fuel held</span><b>${(b.fuel || 0).toFixed(1)} gal</b></div>`;
+      html += `<div class="row"><span>Upkeep</span><b>$${MAINT[b.type]}/day</b></div>`;
+    }
+    document.getElementById("inspectBody").innerHTML = html;
+  }
+
+  // ---------- toolbar ----------
+  function buildToolbar() {
+    const el = document.getElementById("tools");
+    el.innerHTML = "";
+    for (const type of TOOL_ORDER) {
+      const d = DEFS[type];
+      const btn = document.createElement("button");
+      btn.className = "tool"; btn.dataset.type = type;
+      btn.innerHTML = `<span class="ic" style="background:${d.color}">${d.icon}</span>` +
+        `<span class="nm">${d.name}</span><span class="ct">$${d.cost.toLocaleString()}</span>`;
+      btn.title = d.desc;
+      btn.addEventListener("click", () => setTool(G.tool === type ? null : type));
+      el.appendChild(btn);
+    }
+  }
+  function setTool(t) {
+    G.tool = t;
+    for (const btn of document.querySelectorAll(".tool")) btn.classList.toggle("active", btn.dataset.type === t);
+    document.getElementById("hint").textContent = t
+      ? DEFS[t].desc
+      : "Click a tool, then a tile to build. Esc / right-click cancels.";
+  }
+
+  // ---------- placement ----------
+  function canPlace(type, x, y) {
+    if (!inB(x, y)) return false;
+    if (occAt(x, y)) return false;
+    if (type === "pipe") return isLand(x, y) && !G.pipes.has(key(x, y));
+    if (type === "pumpjack") return x === G.oil.x && y === G.oil.y;
+    if (type === "refinery") return isLand(x, y) && !G.pipes.has(key(x, y));
+    if (type === "port") {
+      if (!isLand(x, y) || G.pipes.has(key(x, y))) return false;
+      // must be a coast tile (adjacent to water)
+      return [[1,0],[-1,0],[0,1],[0,-1]].some(([dx, dy]) => isWater(x + dx, y + dy));
+    }
+    return false;
+  }
+  function place(type, x, y) {
+    if (!canPlace(type, x, y)) {
+      if (type === "pumpjack" && !(x === G.oil.x && y === G.oil.y)) logMsg("Pumpjacks only go on the oil field.", "warn");
+      else if (type === "port") logMsg("Ports must sit on a coast tile (next to water).", "warn");
+      return false;
+    }
+    const cost = DEFS[type].cost;
+    if (G.cash < cost) { logMsg("Not enough cash for a " + DEFS[type].name + ".", "bad"); return false; }
+    G.cash -= cost;
+    if (type === "pipe") { G.pipes.add(key(x, y)); }
+    else G.buildings.push({ id: G.nextId++, type, x, y, built: true, fuel: 0, comp: -1 });
+    computePipes();
+    return true;
+  }
+
+  function demolish(b) {
+    if (!b || b.type === "station") return;
+    G.cash += Math.floor(DEFS[b.type].cost * 0.5);
+    G.buildings = G.buildings.filter(x => x !== b);
+    G.selected = null; computePipes(); renderInspect();
+    logMsg("Demolished " + DEFS[b.type].name + " (50% back).", "warn");
+  }
+
+  // ---------- log ----------
+  function logMsg(msg, kind) { G.log.unshift({ msg, kind }); if (G.log.length > 40) G.log.pop(); renderLog(); }
+  function renderLog() {
+    document.getElementById("log").innerHTML = G.log.slice(0, 12).map(l => `<div class="${l.kind || ""}">${l.msg}</div>`).join("");
+  }
+
+  // ---------- input ----------
+  function tileFromEvent(e) {
+    const r = cv.getBoundingClientRect();
+    const x = Math.floor((e.clientX - r.left) / r.width * COLS);
+    const y = Math.floor((e.clientY - r.top) / r.height * ROWS);
+    return { x, y };
+  }
+  let dragging = false;
+  cv.addEventListener("contextmenu", e => { e.preventDefault(); setTool(null); });
+  cv.addEventListener("pointerdown", e => {
+    if (e.button === 2) return;
+    const { x, y } = tileFromEvent(e);
+    if (!inB(x, y)) return;
+    if (G.tool) {
+      if (place(G.tool, x, y) && G.tool === "pipe") dragging = true;
+    } else {
+      const b = occAt(x, y);
+      G.selected = b || null; renderInspect();
+    }
+  });
+  cv.addEventListener("pointermove", e => {
+    if (!dragging || G.tool !== "pipe") return;
+    const { x, y } = tileFromEvent(e);
+    if (inB(x, y) && canPlace("pipe", x, y) && G.cash >= DEFS.pipe.cost) place("pipe", x, y);
+  });
+  window.addEventListener("pointerup", () => { dragging = false; });
+  window.addEventListener("keydown", e => { if (e.key === "Escape") { setTool(null); G.selected = null; renderInspect(); } });
+  document.getElementById("demoBtn").addEventListener("click", () => demolish(G.selected));
+
+  // ---------- overlay / report ----------
+  function showReport() {
+    const L = G.ledger;
+    const evMi = Math.round(L.kwh * EV_MI_PER_KWH);
+    const iceMi = Math.round(L.delivered * ICE_MPG);
+    const pct = iceMi > 0 ? Math.round(evMi / iceMi * 100) : 0;
+    const ov = document.getElementById("overlay");
+    ov.classList.remove("hidden");
+    ov.querySelector(".card").innerHTML =
+      `<h3 class="win">⛽ Goal reached — now look at the bill</h3>
+       <p>You delivered <b>${L.delivered.toFixed(0)} gallons</b> to the gas station — about <b>${iceMi.toLocaleString()} miles</b> of gas-car driving. Here's what it quietly took to do that:</p>
+       <div class="bignum">
+         <div><div class="n" style="color:var(--accent)">${L.kwh.toFixed(0)}</div><div class="l">kWh electricity</div></div>
+         <div><div class="n" style="color:var(--orange)">${L.fuelBurned.toFixed(0)}</div><div class="l">gal fuel burned</div></div>
+         <div><div class="n" style="color:var(--green)">${evMi.toLocaleString()}</div><div class="l">EV miles from that power</div></div>
+       </div>
+       <div class="punch">The electricity you spent <i>making and moving</i> this fuel could have driven an EV about <b>${evMi.toLocaleString()} miles</b> — roughly <b>${pct}%</b> as far as the gas itself moves a car — with no rig, refinery, tanker, or truck. And that's before the engine throws away ~80% of the fuel as heat.</div>
+       <p style="font-size:0.84rem">That's the hidden cost of gasoline: we spend electricity, then burn fuel, just to deliver fuel that gets burned again at ~20% efficiency. <b>Phase 2</b> will plug those same cars into solar + batteries and skip this whole chain.</p>
+       <div class="src">Illustrative model. Ratios follow Chapter 3 sources (EROI literature, DOE refining bandwidth study, Argonne GREET). Exact supply-chain figures are not published in one place.</div>
+       <button class="start" id="againBtn" style="margin-top:0.6rem">Build it again ↻</button>`;
+    document.getElementById("againBtn").addEventListener("click", startGame);
+  }
+
+  function startGame() {
+    G = fresh();
+    buildMap(); computePipes(); buildToolbar();
+    document.getElementById("overlay").classList.add("hidden");
+    G.started = true;
+    setTool(null); renderInspect(); renderLog();
+    logMsg("Oil field surveyed. Start with a Pumpjack on the field.", "good");
+  }
+
+  document.getElementById("startBtn").addEventListener("click", startGame);
+  document.getElementById("pauseBtn").addEventListener("click", () => {
+    G.paused = !G.paused;
+    document.getElementById("pauseBtn").textContent = G.paused ? "▶ Resume" : "⏸ Pause";
+  });
+  document.getElementById("speedBtn").addEventListener("click", () => {
+    G.speed = G.speed === 1 ? 2 : (G.speed === 2 ? 3 : 1);
+    document.getElementById("speedBtn").textContent = "▶ " + G.speed + "×";
+  });
+
+  // ---------- main loop ----------
+  let last = performance.now(), acc = 0;
+  function frame(now) {
+    let real = (now - last) / 1000; last = now;
+    real = Math.min(real, 0.25);
+    if (G.started && !G.paused && !G.over) {
+      acc += real * G.speed;
+      let guard = 0;
+      while (acc >= STEP && !G.over && guard < 40) { step(STEP); acc -= STEP; guard++; }
+    }
+    draw(); renderHud();
+    requestAnimationFrame(frame);
+  }
+
+  // ---------- debug hook (only with ?debug) ----------
+  if (location.search.includes("debug")) {
+    window.__fc = {
+      grant: (n) => { G.cash += n || 100000; },
+      tick: (secs) => { const n = Math.round((secs || 1) / STEP); for (let i = 0; i < n; i++) step(STEP); },
+      build: (type, x, y) => place(type, x, y),
+      pipe: (x1, y1, x2, y2) => { // lay a straight L-pipe for quick setup
+        for (let x = Math.min(x1, x2); x <= Math.max(x1, x2); x++) place("pipe", x, y1);
+        for (let y = Math.min(y1, y2); y <= Math.max(y1, y2); y++) place("pipe", x2, y);
+      },
+      state: () => ({
+        t: +G.t.toFixed(1), cash: Math.round(G.cash), kwh: +G.ledger.kwh.toFixed(1),
+        burned: +G.ledger.fuelBurned.toFixed(1), delivered: +G.ledger.delivered.toFixed(1),
+        lost: +G.ledger.lostDemand.toFixed(1), station: +G.station.fuel.toFixed(1),
+        oil: Math.round(G.oil.amount), tankers: G.tankers.length, trucks: G.trucks.length,
+        buildings: G.buildings.map(b => b.type + "@" + b.x + "," + b.y), pipes: G.pipes.size, over: G.over,
+      }),
+      go: () => { G.started = true; G.paused = false; },
+    };
+  }
+
+  // ---------- boot ----------
+  G = fresh();
+  buildMap(); computePipes(); buildToolbar(); renderLog();
+  requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>
